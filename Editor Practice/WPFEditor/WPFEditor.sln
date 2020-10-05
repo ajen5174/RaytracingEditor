@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30517.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFEditor", "WPFEditor\WPFEditor.csproj", "{EDBFE61B-32CB-487E-88BB-E7F685A6E9BA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EDBFE61B-32CB-487E-88BB-E7F685A6E9BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDBFE61B-32CB-487E-88BB-E7F685A6E9BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDBFE61B-32CB-487E-88BB-E7F685A6E9BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDBFE61B-32CB-487E-88BB-E7F685A6E9BA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3AE874A5-C34C-4168-992F-F32926EB6134}
+	EndGlobalSection
+EndGlobal
