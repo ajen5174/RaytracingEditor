@@ -7,9 +7,13 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-		<Button Click="LaunchGraphics">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"></RowDefinition>
+			<RowDefinition Height="*"></RowDefinition>
+		</Grid.RowDefinitions>
+		<Button Click="LaunchGraphics" Grid.Row="0">
 			Launch Graphics
 		</Button>
-		
+		<Border></Border>
     </Grid>
 </Window>

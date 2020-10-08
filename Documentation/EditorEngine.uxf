@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>8</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>152</x>
+      <y>280</y>
+      <w>80</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>EditorEngine
+--
++int main()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>360</x>
+      <y>304</y>
+      <w>104</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>Model
+--
+-texture : Texture*
+-material : Material*
+-mesh : Mesh*</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>256</x>
+      <y>464</y>
+      <w>152</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>Mesh
+--
+-vertexArray : VertexArray
+
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>440</x>
+      <y>464</y>
+      <w>96</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>Texture
+--
+-texture : GLint
+
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>712</x>
+      <y>616</y>
+      <w>80</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>Material
+&lt;&lt;abstract&gt;&gt;
+--
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>360</x>
+      <y>384</y>
+      <w>24</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>416</x>
+      <y>384</y>
+      <w>80</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;80.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>448</x>
+      <y>384</y>
+      <w>304</w>
+      <h>248</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;360.0;290.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>680</x>
+      <y>288</y>
+      <w>112</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>Camera
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>560</x>
+      <y>360</y>
+      <w>120</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>Light
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>288</x>
+      <y>72</y>
+      <w>200</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>Entity
+--
++id : StringId
++transform : Transform
++components : vector&lt;Component*&gt;</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>696</x>
+      <y>424</y>
+      <w>152</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>Transform
+--
++position : vec3
++rotation : quat
++scale : vec3</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>80</x>
+      <y>464</y>
+      <w>112</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>VertexArray
+--
+-vao : GLint
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>584</x>
+      <y>744</y>
+      <w>104</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>Metal
+--
++albedo : vec3</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>696</x>
+      <y>744</y>
+      <w>104</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>Lambertian
+--
++albedo : vec3</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>808</x>
+      <y>744</y>
+      <w>128</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>Dielectric
+--
++refractionIndex : float</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>512</x>
+      <y>184</y>
+      <w>120</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>Component
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>760</x>
+      <y>696</y>
+      <w>136</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;150.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>744</x>
+      <y>696</y>
+      <w>24</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>640</x>
+      <y>696</y>
+      <w>104</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>110.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>680</x>
+      <y>136</y>
+      <w>168</w>
+      <h>104</h>
+    </coordinates>
+    <panel_attributes>Scene
+--
+-entities : vector&lt;Entity*&gt;
+
+--
++vector&lt;T*&gt; Get()
++vector&lt;T*&gt; Get(StringId id)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>872</x>
+      <y>120</y>
+      <w>104</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>StringId
+--
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>184</x>
+      <y>488</y>
+      <w>88</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>90.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+</diagram>

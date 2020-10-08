@@ -14,6 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Runtime.InteropServices;
+using System.Windows.Interop;
 
 namespace WPFEditor
 {
@@ -22,38 +24,55 @@ namespace WPFEditor
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		[DllImport("user32.dll")]
+		private static extern IntPtr SetWindowPos(
+									IntPtr handle,
+									IntPtr handleAfter,
+									int x,
+									int y,
+									int cx,
+									int cy,
+									uint flags
+		);
+		[DllImport("user32.dll")]
+		private static extern IntPtr SetParent(IntPtr child, IntPtr newParent);
+		[DllImport("user32.dll")]
+		private static extern IntPtr ShowWindow(IntPtr handle, int command);
+
+		[DllImport("..\\..\\..\\..\\..\\ExampleEngine\\x64\\Release\\ExampleEngine.dll")]
+		static extern bool StartEngine();
+		[DllImport("..\\..\\..\\..\\..\\ExampleEngine\\x64\\Release\\ExampleEngine.dll")]
+		static extern bool InitializeWindow();
+		[DllImport("..\\..\\..\\..\\..\\ExampleEngine\\x64\\Release\\ExampleEngine.dll")]
+		static extern IntPtr GetSDLWindowHandle();
+
+
 		public MainWindow()
 		{
 			InitializeComponent();
+
+			
+			
+
 		}
 
 
 		private void LaunchGraphics(object sender, RoutedEventArgs e)
 		{
 			Trace.WriteLine("Launching...");
-			try
+			if(InitializeWindow())
 			{
-				using (Process myProcess = new Process())
-				{
-					myProcess.StartInfo.UseShellExecute = false;
-					string dir = Directory.GetCurrentDirectory();
-					dir = Directory.GetParent(dir).FullName;
-					dir = Directory.GetParent(dir).FullName;
-					dir = Directory.GetParent(dir).FullName;
-					dir = Directory.GetParent(dir).FullName;
-					dir = Directory.GetParent(dir).FullName;
-					dir += "\\ExampleEngine\\x64\\Release\\ExampleEngine.exe";
-					Trace.WriteLine(dir);
-					myProcess.StartInfo.FileName = dir;
-					myProcess.Start();
+				IntPtr windowHandle = GetSDLWindowHandle();
+				Trace.WriteLine(windowHandle.ToString());
 
-				}
-			} 
-			catch (Exception except)
-			{
-				Trace.WriteLine(except.Message);
+				SetWindowPos(windowHandle, IntPtr.Zero, 200, 200, 0, 0, 0x0401);
+				IntPtr editorWindow = new WindowInteropHelper(this).Handle;
+				SetParent(windowHandle, editorWindow);
+				ShowWindow(windowHandle, 1);
+				StartEngine();
 			}
 			
+
 		}
 	}
 }

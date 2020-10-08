@@ -24,5 +24,13 @@
     <ClCompile Include="..\external\glad\src\glad.c">
       <Filter>external</Filter>
     </ClCompile>
+    <ClCompile Include="EngineLibrary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="EngineLibrary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
