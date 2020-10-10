@@ -42,7 +42,7 @@ HWND GetSDLWindowHandle()
 
 bool InitializeWindow()
 {
-	if (engineWindow || engineContext || !InitializeSDLAndOpenGL())
+	if (engineWindow || engineContext || !InitializeGraphics())
 	{
 		return false;
 	}

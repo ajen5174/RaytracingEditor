@@ -9,8 +9,9 @@
       <w>100</w>
       <h>60</h>
     </coordinates>
-    <panel_attributes>Editor
---</panel_attributes>
+    <panel_attributes>MainWindow
+--
+</panel_attributes>
     <additional_attributes/>
   </element>
 </diagram>
