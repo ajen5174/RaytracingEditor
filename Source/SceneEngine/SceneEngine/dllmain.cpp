@@ -1,5 +1,10 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
-#include "pch.h"
+
+#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+// Windows Header Files
+#include <windows.h>
+#include "EngineLibrary.h"
+
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
@@ -17,3 +22,9 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     return TRUE;
 }
 
+int main(int argc, char** argv)
+{
+    InitializeWindow();
+    StartEngine();
+    return 0;
+}
