@@ -10,5 +10,5 @@
 extern "C" ENGINE_DLL bool StartEngine();
 extern "C" ENGINE_DLL HWND GetSDLWindowHandle();
 extern "C" ENGINE_DLL bool InitializeWindow();
-bool InitializeSDLAndOpenGL();
+bool InitializeGraphics();
 void RunEngine();

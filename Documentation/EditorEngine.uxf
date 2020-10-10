@@ -4,21 +4,32 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>152</x>
-      <y>280</y>
-      <w>80</w>
-      <h>80</h>
+      <x>576</x>
+      <y>8</y>
+      <w>232</w>
+      <h>176</h>
     </coordinates>
-    <panel_attributes>EditorEngine
+    <panel_attributes>EngineLibrary
 --
-+int main()</panel_attributes>
++static engineWindow : SDL_Window*
++static engineContext : SDL_GLContext
++static isRunning : bool
++static scene : Scene
+--
+extern bool StartEngine()
+extern bool LoadScene(fileLocation : String)
+extern HWND GetSDLWindowHandle()
+extern bool InitializeWindow()
+extern bool ShutdownEngine()
+InitializeGraphics()
+RunEngine();</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>360</x>
-      <y>304</y>
+      <x>1000</x>
+      <y>632</y>
       <w>104</w>
       <h>88</h>
     </coordinates>
@@ -26,45 +37,52 @@
 --
 -texture : Texture*
 -material : Material*
--mesh : Mesh*</panel_attributes>
+-mesh : Mesh*
+--
++void Draw()</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>256</x>
-      <y>464</y>
+      <x>832</x>
+      <y>712</y>
       <w>152</w>
       <h>88</h>
     </coordinates>
     <panel_attributes>Mesh
 --
 -vertexArray : VertexArray
-
+-directory : string
 --
++void Draw()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>816</x>
+      <y>856</y>
+      <w>488</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>Texture
+--
++texture : GLuint
++unit : GLuint
++target : GLenum
+--
+
++void CreateTexture(filename : string, target : GLenum, unit : GLuint)
++void CreateTexture(width : u32, height : u32, target : GLenum, format : GL_enum, unit : GLuint)
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>440</x>
-      <y>464</y>
-      <w>96</w>
-      <h>88</h>
-    </coordinates>
-    <panel_attributes>Texture
---
--texture : GLint
-
---</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>712</x>
-      <y>616</y>
+      <x>1216</x>
+      <y>632</y>
       <w>80</w>
       <h>88</h>
     </coordinates>
@@ -78,111 +96,150 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>360</x>
-      <y>384</y>
+      <x>976</x>
+      <y>712</y>
+      <w>48</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>40.0;10.0;40.0;80.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1056</x>
+      <y>712</y>
       <w>24</w>
-      <h>96</h>
+      <h>160</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;180.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>416</x>
-      <y>384</y>
-      <w>80</w>
-      <h>96</h>
+      <x>1096</x>
+      <y>680</y>
+      <w>136</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;80.0;100.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>448</x>
-      <y>384</y>
-      <w>304</w>
-      <h>248</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;360.0;290.0</additional_attributes>
+    <additional_attributes>10.0;10.0;150.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>680</x>
-      <y>288</y>
-      <w>112</w>
-      <h>48</h>
+      <x>72</x>
+      <y>360</y>
+      <w>448</w>
+      <h>152</h>
     </coordinates>
     <panel_attributes>Camera
 --
-</panel_attributes>
++viewMatrix : mat4
++projectionMatrix : mat4
+
+-fov : float
+-aspectRatio : float
+-nearClip : float
+-farClip : float
+
+--
++void SetProjection(fov : float, aspectRatio : float, nearClip : float, farClip : float)</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>560</x>
-      <y>360</y>
-      <w>120</w>
-      <h>48</h>
+      <x>1080</x>
+      <y>440</y>
+      <w>128</w>
+      <h>88</h>
     </coordinates>
     <panel_attributes>Light
 --
+//direction is based on the transform rotation
++intensity : float
++lightType : LightType
++color : vec3</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>224</x>
+      <y>96</y>
+      <w>264</w>
+      <h>232</h>
+    </coordinates>
+    <panel_attributes>Entity
+--
++transform : Transform
++localTransform : Transform
++selected : bool
+#scene : Scene
+-parent : Entity*
+-components : vector&lt;Component*&gt;
+-children : vector&lt;Entity*&gt;
+
+--
++T* GetComponent&lt;T&gt;(name : StringId)
++void Update()
++void Draw()
++void AddComponent(component : Component*)
++void RemoveComponent(component : Component*)
++vector&lt;Entity*&gt; GetChildren()
+-bool LoadComponents(Value&amp; value)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>552</x>
+      <y>400</y>
+      <w>232</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>Transform
+--
++translation : vec3
++rotation : quat
++scale : vec3
+--
++inline mat4 GetMatrix()
++inline operator mat4 ()
++void Transform&amp; operator=(matrix : mat4)
++bool Load(Value value)
+
+
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>288</x>
-      <y>72</y>
-      <w>200</w>
-      <h>96</h>
-    </coordinates>
-    <panel_attributes>Entity
---
-+id : StringId
-+transform : Transform
-+components : vector&lt;Component*&gt;</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>696</x>
-      <y>424</y>
-      <w>152</w>
-      <h>88</h>
-    </coordinates>
-    <panel_attributes>Transform
---
-+position : vec3
-+rotation : quat
-+scale : vec3</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>80</x>
-      <y>464</y>
-      <w>112</w>
-      <h>88</h>
+      <x>392</x>
+      <y>712</y>
+      <w>400</w>
+      <h>128</h>
     </coordinates>
     <panel_attributes>VertexArray
 --
--vao : GLint
---</panel_attributes>
+#vao : GLuint
+#vertexCount : GLuint
+#vertexBuffers : vector&lt;VertexBuffer&gt;
+--
++CreateBuffer(attrib : eAttrib, size : GLsizei, numVertex : GLsizei, data : void*)
++SetAttribute(attrib : eAttrib, numVertex : GLint, stride : GLsizei, offset : size_t)
++virtual void Draw(primitiveType : GLenum)
++void Bind()</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>584</x>
-      <y>744</y>
+      <x>1080</x>
+      <y>760</y>
       <w>104</w>
       <h>64</h>
     </coordinates>
@@ -194,8 +251,8 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>696</x>
-      <y>744</y>
+      <x>1200</x>
+      <y>760</y>
       <w>104</w>
       <h>64</h>
     </coordinates>
@@ -207,8 +264,8 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>808</x>
-      <y>744</y>
+      <x>1320</x>
+      <y>760</y>
       <w>128</w>
       <h>64</h>
     </coordinates>
@@ -220,32 +277,39 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>512</x>
-      <y>184</y>
+      <x>832</x>
+      <y>344</y>
       <w>120</w>
-      <h>96</h>
+      <h>120</h>
     </coordinates>
     <panel_attributes>Component
+&lt;&lt;abstract&gt;&gt;
 --
+#entity : Entity
+
+--
++virtual void Update()
++Entity* GetOwner()
++void SetOwner(owner : Entity*)
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>760</x>
+      <x>1288</x>
       <y>696</y>
-      <w>136</w>
-      <h>64</h>
+      <w>120</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;150.0;60.0</additional_attributes>
+    <additional_attributes>10.0;10.0;130.0;10.0;130.0;80.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>744</x>
-      <y>696</y>
+      <x>1248</x>
+      <y>712</y>
       <w>24</w>
       <h>64</h>
     </coordinates>
@@ -255,21 +319,21 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>640</x>
+      <x>1136</x>
       <y>696</y>
-      <w>104</w>
-      <h>64</h>
+      <w>96</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>110.0;10.0;10.0;60.0</additional_attributes>
+    <additional_attributes>100.0;10.0;10.0;10.0;10.0;80.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>680</x>
-      <y>136</y>
-      <w>168</w>
-      <h>104</h>
+      <x>576</x>
+      <y>224</y>
+      <w>232</w>
+      <h>152</h>
     </coordinates>
     <panel_attributes>Scene
 --
@@ -278,32 +342,562 @@
 --
 +vector&lt;T*&gt; Get()
 +vector&lt;T*&gt; Get(StringId id)
++void Update()
++void Draw()
++void Add(entity : Entity*)
++Entity* Remove(entity : Entity*, destroy : bool)
++Entity* GetEntityByName(StringId name)
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>872</x>
-      <y>120</y>
-      <w>104</w>
-      <h>80</h>
+      <x>1216</x>
+      <y>232</y>
+      <w>296</w>
+      <h>208</h>
     </coordinates>
     <panel_attributes>StringId
 --
+-id : u64
+-index : u64
+-const static MAX_ENTRIES : u64
+-const static MAX_NAME_SIZE : u64
+-static uniqueID : u64
+-static names : char*
+--
++StringId(name : string, unique : bool)
++StringId(name : char*, unique : bool)
++u64 GetId()
++char* CStr()
++static void AllocNames()
++static void FreeNames()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>784</x>
+      <y>736</y>
+      <w>64</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>60.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1248</x>
+      <y>456</y>
+      <w>136</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>eLightType
+&lt;&lt;enum&gt;&gt;
+--
+POINT
+DIRECTION</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1200</x>
+      <y>472</y>
+      <w>64</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;60.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>480</x>
+      <y>288</y>
+      <w>88</w>
+      <h>184</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;70.0;10.0;70.0;210.0;90.0;210.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>480</x>
+      <y>216</y>
+      <w>368</w>
+      <h>184</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;90.0;10.0;90.0;210.0;440.0;210.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>824</x>
+      <y>576</y>
+      <w>24</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>944</x>
+      <y>440</y>
+      <w>152</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>800</x>
+      <y>496</y>
+      <w>120</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>RenderComponent
+&lt;&lt;abstract&gt;&gt;
+--
 
+--
++virtual void Draw()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>848</x>
+      <y>456</y>
+      <w>24</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>720</x>
+      <y>616</y>
+      <w>144</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>ModelRenderComponent
+--
+-model : Model*
+
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>856</x>
+      <y>640</y>
+      <w>160</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;180.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>936</x>
+      <y>152</y>
+      <w>192</w>
+      <h>128</h>
+    </coordinates>
+    <panel_attributes>Object
+&lt;&lt;abstract&gt;&gt;
+--
+#name : StringId
+
+--
++virtual void Destroy()
++virtual bool Load(value : Value&amp;)
++virtual void Initialize()
++StringId&amp; GetName()
 </panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>184</x>
-      <y>488</y>
-      <w>88</w>
+      <x>480</x>
+      <y>200</y>
+      <w>472</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>570.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>800</x>
+      <y>224</y>
+      <w>152</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>170.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>480</x>
+      <y>264</y>
+      <w>112</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
-    <additional_attributes>90.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>120.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>480</x>
+      <y>256</y>
+      <w>112</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;120.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1120</x>
+      <y>256</y>
+      <w>112</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;120.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>944</x>
+      <y>272</y>
+      <w>144</w>
+      <h>128</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>160.0;10.0;160.0;140.0;10.0;140.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1024</x>
+      <y>272</y>
+      <w>24</w>
+      <h>376</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;450.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1040</x>
+      <y>272</y>
+      <w>216</w>
+      <h>376</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;380.0;250.0;380.0;250.0;450.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>896</x>
+      <y>272</y>
+      <w>96</w>
+      <h>456</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>100.0;10.0;100.0;410.0;10.0;410.0;10.0;550.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>984</x>
+      <y>272</y>
+      <w>24</w>
+      <h>600</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;730.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>512</x>
+      <y>536</y>
+      <w>128</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>eAttrib
+&lt;&lt;enum&gt;&gt;
+--
+POSITION
+NORMAL
+COLOR
+TEXCOORD
+MULTI
+TANGENT
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>384</x>
+      <y>584</y>
+      <w>120</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>VertexBuffer
+--
++attrib : eAttrib
++vbo : GLuint
++num : GLsizei
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>392</x>
+      <y>872</y>
+      <w>408</w>
+      <h>104</h>
+    </coordinates>
+    <panel_attributes>VertexIndexArray
+--
+#ibo : GLuint
+#indexCount : GLuint
+#indexType : GLenum
+--
++void CreateIndexBuffer(indexType : GLenum, numIndex : GLsizei, data : void*)
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>576</x>
+      <y>832</y>
+      <w>24</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>464</x>
+      <y>648</y>
+      <w>24</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>552</x>
+      <y>648</y>
+      <w>24</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>680</x>
+      <y>176</y>
+      <w>24</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>512</x>
+      <y>384</y>
+      <w>336</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>400.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>8</x>
+      <y>520</y>
+      <w>368</w>
+      <h>280</h>
+    </coordinates>
+    <panel_attributes>Input
+--
+-keystate : vector&lt;Uint8&gt;
+-prevKeystate : vector&lt;Uint8&gt;
+-numKeys : int
+-mouseButtonState : Uint32
+-prevMouseButtonState : Uint32
+-mousePosition : vec2
+-prevMousePosition : vec2
+-actions : map&lt;StringId, InputInfo&gt;
+--
++bool Initialize()
++void Shutdown()
++void Update()
++void AddAction(action : StringI&amp;d, id : int, device : eDevice, index : int)
++eButtonState GetButton(action : StringId&amp;)
++bool GetButton(action : StringId&amp;, eButtonState state)
++eButtonState(button : int, device : eDevice, index : int)
+#bool GetButtonDown(button : int, device : eDevice, index : int)
+#bool GetPreviousButtonDown(button : int, device : eDevice, index : int)
++float GetAxisAbsolute(action : StringId&amp;)
++float GetAxisAbsolute(axis : eAxis, device : eDevice, index : int)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>296</x>
+      <y>824</y>
+      <w>88</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>eButtonState
+&lt;&lt;enum&gt;&gt;
+--
+IDLE
+PRESSED
+HELD
+RELEASED</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>80</x>
+      <y>824</y>
+      <w>104</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>eDevice
+&lt;&lt;enum&gt;&gt;
+--
+KEYBOARD
+MOUSE
+CONTROLLER</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>8</x>
+      <y>824</y>
+      <w>64</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>eAxis
+&lt;&lt;enum&gt;&gt;
+--
+X
+Y
+Z</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>192</x>
+      <y>824</y>
+      <w>96</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>InputInfo
+--
++id : int
++device : eDevice
++index : int</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>32</x>
+      <y>792</y>
+      <w>24</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>128</x>
+      <y>792</y>
+      <w>24</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>232</x>
+      <y>792</y>
+      <w>24</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>328</x>
+      <y>792</y>
+      <w>24</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>24</x>
+      <y>40</y>
+      <w>568</w>
+      <h>496</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>690.0;10.0;10.0;10.0;10.0;600.0</additional_attributes>
   </element>
 </diagram>

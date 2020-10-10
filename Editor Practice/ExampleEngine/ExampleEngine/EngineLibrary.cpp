@@ -89,7 +89,7 @@ void RunEngine()
 	}
 }
 
-bool InitializeSDLAndOpenGL()
+bool InitializeGraphics()
 {
 	int result = SDL_Init(SDL_INIT_VIDEO);
 	if (result != 0)
