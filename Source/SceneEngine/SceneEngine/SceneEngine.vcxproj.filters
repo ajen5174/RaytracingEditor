@@ -22,6 +22,9 @@
     <Filter Include="Renderer">
       <UniqueIdentifier>{8f0c5bff-4600-41c0-8646-a12c4e8bf609}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{dbc9f7ac-240f-4dc8-94aa-6771601f1b7b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineLibrary.h">
@@ -65,5 +68,13 @@
     <ClCompile Include="Renderer\Mesh.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\fragment.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\vertex.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

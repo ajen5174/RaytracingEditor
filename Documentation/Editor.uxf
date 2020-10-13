@@ -4,13 +4,27 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>270</x>
-      <y>230</y>
-      <w>100</w>
-      <h>60</h>
+      <x>20</x>
+      <y>120</y>
+      <w>370</w>
+      <h>290</h>
     </coordinates>
     <panel_attributes>MainWindow
 --
+
+--
+-void NewClick(sender : object, e : RoutedEventArgs)
+-void OpenClick(sender : object, e : RoutedEventArgs)
+-void SaveClick(sender : object, e : RoutedEventArgs)
+-void SaveAsClick(sender : object, e : RoutedEventArgs)
+
+-void UndoClick(sender : object, e : RoutedEventArgs)
+-void RedoClick(sender : object, e : RoutedEventArgs)
+-void CutClick(sender : object, e : RoutedEventArgs)
+-void CopyClick(sender : object, e : RoutedEventArgs)
+-void PasteClick(sender : object, e : RoutedEventArgs)
+-void RenderClick(sender : object, e : RoutedEventArgs)
+-void SettingsClick(sender : object, e : RoutedEventArgs)
 </panel_attributes>
     <additional_attributes/>
   </element>

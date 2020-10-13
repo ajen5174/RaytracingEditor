@@ -8,8 +8,13 @@
 #define ENGINE_DLL __declspec(dllimport)
 #endif
 
+typedef void(*DebugCallback) (const char* str);
+
 extern "C" ENGINE_DLL bool StartEngine();
 extern "C" ENGINE_DLL HWND GetSDLWindowHandle();
 extern "C" ENGINE_DLL bool InitializeWindow();
+extern "C" ENGINE_DLL void StopEngine();
+extern "C" ENGINE_DLL void RegisterDebugCallback(DebugCallback callback);
+
 bool InitializeGraphics();
 void RunEngine();

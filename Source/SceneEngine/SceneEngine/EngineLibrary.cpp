@@ -1,5 +1,10 @@
 #include "EngineLibrary.h"
-
+#include <string>
+#include <fstream>
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
+#include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 float vertices[] = {
     -0.5f, -0.5f, 0.0f,
      0.5f, -0.5f, 0.0f,
@@ -12,6 +17,24 @@ static SDL_Window* engineWindow = nullptr;
 static SDL_GLContext engineContext = nullptr;
 static bool isRunning = false;
 
+bool quit = false;
+
+DebugCallback gDebugCallback;
+
+
+ENGINE_DLL void RegisterDebugCallback(DebugCallback callback)
+{
+	if (callback)
+	{
+		gDebugCallback = callback;
+	}
+}
+
+
+ENGINE_DLL void StopEngine()
+{
+	quit = true;
+}
 
 ENGINE_DLL bool StartEngine()
 {
@@ -46,6 +69,14 @@ ENGINE_DLL bool InitializeWindow()
     }
 }
 
+void PrintDebugMessage(std::string message)
+{
+	if (gDebugCallback)
+	{
+		gDebugCallback(message.c_str());
+	}
+}
+
 bool InitializeGraphics()
 {
 	int result = SDL_Init(SDL_INIT_VIDEO);
@@ -55,8 +86,7 @@ bool InitializeGraphics()
 		return false;
 	}
 
-	Uint32 flags = SDL_WINDOW_OPENGL;// | SDL_WINDOW_BORDERLESS | SDL_WINDOW_HIDDEN;
-	flags |= (false) ? SDL_WINDOW_FULLSCREEN : 0;
+	Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_BORDERLESS;// | SDL_WINDOW_HIDDEN;
 
 	engineWindow = SDL_CreateWindow("OpenGL", 100, 100, 800, 600, flags); 
 	if (engineWindow == nullptr)
@@ -83,27 +113,134 @@ bool InitializeGraphics()
 
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CCW);
-	glCullFace(GL_FRONT);
+	glCullFace(GL_BACK);
 
 	return true;
 }
 
 void RunEngine()
 {
-	bool quit = false;
+	int success;
+	char infoLog[512];
+
+	char* vertexSource;
+	std::ifstream stream("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\vertex.vert", std::ios::binary|std::ios::ate);
+	
+	if (stream.is_open())
+	{
+		int size = stream.tellg();
+		vertexSource = new char[size];
+		PrintDebugMessage(std::to_string(size));
+		stream.seekg(0, std::ios::beg);
+		stream.read(vertexSource, size);
+
+		if (vertexSource[size - 1] != '\0')
+		{
+			PrintDebugMessage("Not null terminated");
+		}
+
+		stream.close();
+	}
+	else
+	{
+		PrintDebugMessage("Vertex shader could not be opened");
+		return;
+	}
+
+	
+
+	GLuint vertexShader;
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+
+	glShaderSource(vertexShader, 1, &vertexSource, NULL);
+	glCompileShader(vertexShader);
+
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		std::cout << "ERROR::VERTEX::SHADER::COMPILE_FAILED\n" << infoLog << std::endl;
+		PrintDebugMessage(infoLog);
+		quit = true;
+	}
+
+	char* fragSource;
+	std::ifstream streamTwo("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\fragment.frag", std::ios::binary|std::ios::ate);
+	if (streamTwo.is_open())
+	{
+		size_t size = streamTwo.tellg();
+		fragSource = new char[size];
+		streamTwo.seekg(0, std::ios::beg);
+		streamTwo.read(fragSource, size);
+		streamTwo.close();
+	}
+	else
+	{
+		PrintDebugMessage("Fragment shader could not be opened");
+		return;
+	}
+
+
+
+	GLuint fragmentShader;
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &fragSource, NULL);
+	glCompileShader(fragmentShader);
+
+
+	GLuint shaderProgram;
+	shaderProgram = glCreateProgram();
+
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+		PrintDebugMessage(std::string(infoLog) + "Shader source: \n" + vertexSource);
+		quit = true;
+	}
+
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+	glUseProgram(shaderProgram);
+
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+
+	glBindVertexArray(vao);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	glm::mat4 trans = glm::mat4(1.0f);
+
 	SDL_Event sdlEvent;
 	while (!quit)
 	{
-		color1[0] = color1[0] > 1.0f ? 0.0f : color1[0] + 0.00001f;
-		if (false) //use this here to swap to the other color based on the argument passed in
-		{
-			glClearColor(0.85f, 0.85f, 0.85f, 1.0f);
-		}
-		else
-		{
-			glClearColor(color1[0], color1[1], color1[2], 1.0f);
-		}
+		//update
+		trans = glm::rotate(trans, glm::radians(0.05f), glm::vec3(0.0, 0.0, 1.0));
+		GLuint transformLoc = glGetUniformLocation(shaderProgram, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, (float*)&trans);
+
+		//draw
+		glClearColor(color1[0], color1[1], color1[2], 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glUseProgram(shaderProgram);
+		glBindVertexArray(vao);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		SDL_GL_SwapWindow(engineWindow);
 		SDL_PollEvent(&sdlEvent);
@@ -119,10 +256,14 @@ void RunEngine()
 			}
 			break;
 		case SDL_MOUSEBUTTONDOWN:
-			color1[1] = 1.0f;
+			//color1[1] = 1.0f;
 			break;
 		}
 
 		SDL_PumpEvents();
 	}
+
+	glDeleteVertexArrays(1, &vao);
+	glDeleteBuffers(1, &vbo);
+	glDeleteProgram(shaderProgram);
 }
