@@ -10,6 +10,7 @@
 
 typedef void(*DebugCallback) (const char* str);
 
+extern "C" ENGINE_DLL void ResizeWindow(int width, int height);
 extern "C" ENGINE_DLL bool StartEngine();
 extern "C" ENGINE_DLL HWND GetSDLWindowHandle();
 extern "C" ENGINE_DLL bool InitializeWindow();

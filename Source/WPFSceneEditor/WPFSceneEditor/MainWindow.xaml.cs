@@ -27,33 +27,9 @@ namespace WPFSceneEditor
 	public partial class MainWindow : Window
 	{
 
-		[DllImport("user32.dll")]
-		private static extern IntPtr SetWindowPos(
-									IntPtr handle,
-									IntPtr handleAfter,
-									int x,
-									int y,
-									int cx,
-									int cy,
-									uint flags);
-		[DllImport("user32.dll")]
-		private static extern IntPtr SetParent(IntPtr child, IntPtr newParent);
-		[DllImport("user32.dll")]
-		private static extern IntPtr ShowWindow(IntPtr handle, int command);
+		private IntPtr EditorHandle;
+		private IntPtr SceneHandle;
 
-		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
-		static extern bool StartEngine();
-		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
-		static extern bool InitializeWindow();
-		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
-		static extern IntPtr GetSDLWindowHandle();
-		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
-		static extern IntPtr StopEngine();
-		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
-		static extern void RegisterDebugCallback(DebugCallback callback);
-
-
-		private delegate void DebugCallback(string message);
 
 		public MainWindow()
 		{
@@ -75,17 +51,16 @@ namespace WPFSceneEditor
 			{
 				Trace.WriteLine("DONE!", "Rendering");
 				Trace.WriteLine("Launching...");
-				if (InitializeWindow())
+				if (Engine.InitializeWindow())
 				{
-					RegisterDebugCallback(new DebugCallback(PrintDebugMessage));
-					IntPtr windowHandle = GetSDLWindowHandle();
-					Trace.WriteLine(windowHandle.ToString());
+					SceneHandle = Engine.GetSDLWindowHandle();
+					EditorHandle = new WindowInteropHelper(this).Handle;
 
-					SetWindowPos(windowHandle, IntPtr.Zero, 200, 200, 0, 0, 0x0401);
-					IntPtr editorWindow = new WindowInteropHelper(this).Handle;
-					SetParent(windowHandle, editorWindow);
-					ShowWindow(windowHandle, 1);
-					StartEngine();
+					Engine.RegisterDebugCallback(new Engine.DebugCallback(PrintDebugMessage));
+					
+					ResizeSceneWindow();
+
+					Engine.StartEngine();
 
 					Trace.WriteLine("Engine closed");
 
@@ -97,20 +72,36 @@ namespace WPFSceneEditor
 
 		private void Button_Click(object sender, RoutedEventArgs e)
 		{
-			IntPtr testing = GetSDLWindowHandle();
+			IntPtr testing = Engine.GetSDLWindowHandle();
 			Trace.WriteLine(testing.ToString());
 		}
 
 		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
 			Trace.WriteLine("Window closing");
-			StopEngine();
+			Engine.StopEngine();
 			Trace.WriteLine("Engine stopped");
 		}
 
 		private static void PrintDebugMessage(string message)
 		{
 			Trace.WriteLine(message, "ENGINE_DEBUG");
+		}
+
+		private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+		{
+			ResizeSceneWindow();
+		}
+
+		private void ResizeSceneWindow()
+		{
+			//Trace.WriteLine("Scene Handle: " + SceneHandle.ToString());
+			//Trace.WriteLine(EngineContainer.ActualHeight + " " + EngineContainer.ActualWidth);
+			Point EngineTopLeft = EngineContainer.TransformToAncestor(this).Transform(new Point(0, 0));
+			Engine.ResizeWindow((int)Math.Ceiling(EngineContainer.ActualWidth), (int)Math.Ceiling(EngineContainer.ActualHeight));
+			Engine.SetWindowPos(SceneHandle, IntPtr.Zero, (int)EngineTopLeft.X, (int)EngineTopLeft.Y, (int)Math.Ceiling(EngineContainer.ActualWidth), (int)Math.Ceiling(EngineContainer.ActualHeight), 0x0040);
+			Engine.SetParent(SceneHandle, EditorHandle);
+			Engine.ShowWindow(SceneHandle, 1);
 		}
 	}
 }

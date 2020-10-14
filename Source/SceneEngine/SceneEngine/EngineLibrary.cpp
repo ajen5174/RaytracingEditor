@@ -17,6 +17,10 @@ static SDL_Window* engineWindow = nullptr;
 static SDL_GLContext engineContext = nullptr;
 static bool isRunning = false;
 
+int windowWidth = 800;
+int windowHeight = 600;
+bool sizeChanged = false;
+
 bool quit = false;
 
 DebugCallback gDebugCallback;
@@ -28,6 +32,13 @@ ENGINE_DLL void RegisterDebugCallback(DebugCallback callback)
 	{
 		gDebugCallback = callback;
 	}
+}
+
+ENGINE_DLL void ResizeWindow(int width, int height)
+{
+	windowWidth = width;
+	windowHeight = height;
+	sizeChanged = true;
 }
 
 
@@ -75,6 +86,10 @@ void PrintDebugMessage(std::string message)
 	{
 		gDebugCallback(message.c_str());
 	}
+	else
+	{
+		
+	}
 }
 
 bool InitializeGraphics()
@@ -86,9 +101,13 @@ bool InitializeGraphics()
 		return false;
 	}
 
-	Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_BORDERLESS;// | SDL_WINDOW_HIDDEN;
+#ifdef _WINDLL
+	Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_BORDERLESS | SDL_WINDOW_RESIZABLE;// | SDL_WINDOW_HIDDEN;
+#else
+	Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;// | SDL_WINDOW_BORDERLESS;// | SDL_WINDOW_HIDDEN;
+#endif
 
-	engineWindow = SDL_CreateWindow("OpenGL", 100, 100, 800, 600, flags); 
+	engineWindow = SDL_CreateWindow("OpenGL", 100, 100, windowWidth, windowHeight, flags); 
 	if (engineWindow == nullptr)
 	{
 		SDL_Log("Failed to create window: %s", SDL_GetError());
@@ -107,6 +126,8 @@ bool InitializeGraphics()
 	if (!gladLoadGL()) {
 		exit(-1);
 	}
+	
+
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
@@ -124,8 +145,11 @@ void RunEngine()
 	char infoLog[512];
 
 	char* vertexSource;
+#ifdef _WINDLL
 	std::ifstream stream("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\vertex.vert", std::ios::binary|std::ios::ate);
-	
+#else
+	std::ifstream stream("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\vertex.vert", std::ios::binary | std::ios::ate);
+#endif
 	if (stream.is_open())
 	{
 		int size = stream.tellg();
@@ -134,7 +158,7 @@ void RunEngine()
 		stream.seekg(0, std::ios::beg);
 		stream.read(vertexSource, size);
 
-		if (vertexSource[size - 1] != '\0')
+		if (vertexSource[size] != '\0')
 		{
 			PrintDebugMessage("Not null terminated");
 		}
@@ -164,7 +188,11 @@ void RunEngine()
 	}
 
 	char* fragSource;
+#ifdef _WINDLL
 	std::ifstream streamTwo("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\fragment.frag", std::ios::binary|std::ios::ate);
+#else
+	std::ifstream streamTwo("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\fragment.frag", std::ios::binary|std::ios::ate);
+#endif
 	if (streamTwo.is_open())
 	{
 		size_t size = streamTwo.tellg();
@@ -186,6 +214,13 @@ void RunEngine()
 	glShaderSource(fragmentShader, 1, &fragSource, NULL);
 	glCompileShader(fragmentShader);
 
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+		std::cout << "ERROR::VERTEX::SHADER::COMPILE_FAILED\n" << infoLog << std::endl;
+		PrintDebugMessage(infoLog);
+		quit = true;
+	}
 
 	GLuint shaderProgram;
 	shaderProgram = glCreateProgram();
@@ -198,7 +233,7 @@ void RunEngine()
 	if (!success) {
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-		PrintDebugMessage(std::string(infoLog) + "Shader source: \n" + vertexSource);
+		PrintDebugMessage(std::string(infoLog) + "Shader source: \n" + fragSource);
 		quit = true;
 	}
 
@@ -258,7 +293,21 @@ void RunEngine()
 		case SDL_MOUSEBUTTONDOWN:
 			//color1[1] = 1.0f;
 			break;
+		case SDL_WINDOWEVENT:
+			if (sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED)
+			{
+				sizeChanged = false;
+				PrintDebugMessage("Resizing to " + std::to_string(windowWidth) + " by " + std::to_string(windowHeight));
+				//windowWidth = sdlEvent.window.data1;
+				//windowHeight = sdlEvent.window.data2;
+				SDL_SetWindowSize(engineWindow, windowWidth, windowHeight);
+				glViewport(0, 0, windowWidth, windowHeight);
+				
+			}
+			
+			break;
 		}
+		
 
 		SDL_PumpEvents();
 	}

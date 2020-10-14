@@ -5,10 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFSceneEditor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="1100"
-		Loaded="Window_Loaded" Closing="Window_Closing">
-	<DockPanel>
-		<Menu DockPanel.Dock="Top">
+        Title="MainWindow" Height="800" Width="1000"
+		Loaded="Window_Loaded" Closing="Window_Closing"
+		SizeChanged="Window_SizeChanged">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="1*"/>
+			<ColumnDefinition Width="6*"/>
+			<ColumnDefinition Width="3*"/>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="1*"/>
+			<RowDefinition Height="6*"/>
+			<RowDefinition Height="2*"/>
+		</Grid.RowDefinitions>
+		<Menu Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0" MaxHeight="40" VerticalAlignment="Top">
 			<MenuItem Header="_File">
 				<MenuItem Header="_New"/>
 				<MenuItem Header="_Open"/>
@@ -26,8 +37,25 @@
 				<MenuItem Header="_Paste"/>
 			</MenuItem>
 		</Menu>
-		<Button DockPanel.Dock="Left" Click="Button_Click" Width="100" Height="70">Test</Button>
-	</DockPanel>
+		<Button
+			Click="Button_Click" Width="70" Height="35"
+			HorizontalAlignment="Center" Margin="5"
+			VerticalAlignment="Top"
+			Grid.Column="0" Grid.Row="1">Test</Button>
+		<Border Grid.Column="1" Grid.Row="1"
+				BorderBrush="Black" BorderThickness="4">
+
+			<Grid Name="EngineContainer">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition/>
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition/>
+				</Grid.RowDefinitions>
+			</Grid>
+		</Border>
+	</Grid>
+	
 	<!--<Grid>
 		
 	</Grid>-->
