@@ -2,6 +2,8 @@
 
 #include <string>
 
+#ifndef STRINGID_H
+#define STRINGID_H
 class StringId
 {
 public:
@@ -31,3 +33,4 @@ private:
 	static char* names;
 
 };
+#endif

@@ -54,6 +54,7 @@
 				</Grid.RowDefinitions>
 			</Grid>
 		</Border>
+		<TextBlock Name="DebugOutput" Grid.Row="2" Grid.Column="1"></TextBlock>
 	</Grid>
 	
 	<!--<Grid>

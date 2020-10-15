@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <glad/glad.h>
 #include <SDL_syswm.h>
+#include <string>
 
 #ifdef SCENEENGINE_EXPORTS
 #define ENGINE_DLL __declspec(dllexport)
@@ -19,3 +20,4 @@ extern "C" ENGINE_DLL void RegisterDebugCallback(DebugCallback callback);
 
 bool InitializeGraphics();
 void RunEngine();
+void PrintDebugMessage(std::string message);

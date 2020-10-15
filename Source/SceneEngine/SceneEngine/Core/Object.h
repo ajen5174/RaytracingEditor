@@ -2,7 +2,8 @@
 #include "StringId.h"
 #include "../external/rapidjson/document.h"
 
-
+#ifndef OBJECT_H
+#define OBJECT_H
 class Object
 {
 public:
@@ -17,3 +18,4 @@ public:
 protected:
 	StringId name;
 };
+#endif

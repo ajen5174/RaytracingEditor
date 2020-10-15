@@ -163,24 +163,41 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Components\Component.h" />
+    <ClInclude Include="Components\ModelRenderComponent.h" />
+    <ClInclude Include="Components\RenderComponent.h" />
+    <ClInclude Include="Components\Transform.h" />
+    <ClInclude Include="Core\Entity.h" />
     <ClInclude Include="Core\Object.h" />
+    <ClInclude Include="Core\Scene.h" />
     <ClInclude Include="Core\StringId.h" />
     <ClInclude Include="EngineLibrary.h" />
     <ClInclude Include="Renderer\Mesh.h" />
     <ClInclude Include="Renderer\Model.h" />
+    <ClInclude Include="Renderer\Shader.h" />
     <ClInclude Include="Renderer\VertexArray.h" />
     <ClInclude Include="Renderer\VertexIndexArray.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\external\glad\src\glad.c" />
+    <ClCompile Include="Components\Component.cpp" />
+    <ClCompile Include="Components\ModelRenderComponent.cpp" />
+    <ClCompile Include="Components\Transform.cpp" />
+    <ClCompile Include="Core\Entity.cpp" />
+    <ClCompile Include="Core\Scene.cpp" />
     <ClCompile Include="Core\StringId.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EngineLibrary.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
     <ClCompile Include="Renderer\Model.cpp" />
+    <ClCompile Include="Renderer\Shader.cpp" />
+    <ClCompile Include="Renderer\VertexArray.cpp" />
+    <ClCompile Include="Renderer\VertexIndexArray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\fragment.frag" />
+    <None Include="Shaders\matrix_fragment.frag" />
+    <None Include="Shaders\matrix_vertex.vert" />
     <None Include="Shaders\vertex.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

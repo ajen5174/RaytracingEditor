@@ -72,8 +72,7 @@ namespace WPFSceneEditor
 
 		private void Button_Click(object sender, RoutedEventArgs e)
 		{
-			IntPtr testing = Engine.GetSDLWindowHandle();
-			Trace.WriteLine(testing.ToString());
+			
 		}
 
 		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -83,9 +82,10 @@ namespace WPFSceneEditor
 			Trace.WriteLine("Engine stopped");
 		}
 
-		private static void PrintDebugMessage(string message)
+		private void PrintDebugMessage(string message)
 		{
 			Trace.WriteLine(message, "ENGINE_DEBUG");
+			DebugOutput.Text += "ENGINE_DEBUG: " + message + "\n";
 		}
 
 		private void Window_SizeChanged(object sender, SizeChangedEventArgs e)

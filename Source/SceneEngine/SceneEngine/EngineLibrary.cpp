@@ -5,6 +5,7 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "Core/Entity.h"
 float vertices[] = {
     -0.5f, -0.5f, 0.0f,
      0.5f, -0.5f, 0.0f,
@@ -141,6 +142,15 @@ bool InitializeGraphics()
 
 void RunEngine()
 {
+	StringId::AllocNames();
+	StringId entityName = "TestingEntity";
+	Entity* testEntity = new Entity(entityName);
+	StringId transformName = "TestingTransform";
+	Transform* testTransform = new Transform(transformName, testEntity);
+	testEntity->AddComponent(testTransform);
+
+	PrintDebugMessage(testEntity->GetComponent<Transform>()->ToString());
+
 	int success;
 	char infoLog[512];
 
@@ -315,4 +325,6 @@ void RunEngine()
 	glDeleteVertexArrays(1, &vao);
 	glDeleteBuffers(1, &vbo);
 	glDeleteProgram(shaderProgram);
+
+	StringId::FreeNames();
 }
