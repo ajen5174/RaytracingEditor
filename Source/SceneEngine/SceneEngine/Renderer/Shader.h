@@ -5,18 +5,23 @@
 #include <map>
 #include "../Core/Object.h"
 
-class Shader// : public Object
+class Shader : public Object
 {
 public:
-
+	Shader(StringId& name);
 	~Shader();
+	// Inherited via Object
+	virtual void Destroy() override;
+	virtual bool Load(const rapidjson::Value&) override;
+	virtual void Initialize() override;
+
 	void CreateFromFile(const std::string& filename, GLenum shaderType);
 	void CreateFromSource(const std::string& source, GLenum shaderType);
 
 	void Link();
 	void Use();
 
-	GLuint GetShaderId() { return shader; }
+	GLuint GetProgramId() { return shader; }
 	bool IsLinked() { return linked; }
 
 	void SetUniform(const std::string& name, float x, float y, float z);
@@ -37,4 +42,6 @@ private:
 	GLuint shader;
 	bool linked = false;
 	std::map<std::string, GLint> uniforms;
+
+	
 };

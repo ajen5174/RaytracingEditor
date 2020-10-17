@@ -45,7 +45,7 @@
 		<Border Grid.Column="1" Grid.Row="1"
 				BorderBrush="Black" BorderThickness="4">
 
-			<Grid Name="EngineContainer">
+			<Grid Name="EngineContainer" Background="LightGray">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition/>
 				</Grid.ColumnDefinitions>
@@ -54,7 +54,9 @@
 				</Grid.RowDefinitions>
 			</Grid>
 		</Border>
-		<TextBlock Name="DebugOutput" Grid.Row="2" Grid.Column="1"></TextBlock>
+		<ScrollViewer Grid.Row="2" Grid.Column="1">
+			<TextBlock Name="DebugOutput" ></TextBlock>
+		</ScrollViewer>
 	</Grid>
 	
 	<!--<Grid>

@@ -29,6 +29,7 @@ namespace WPFSceneEditor
 
 		private IntPtr EditorHandle;
 		private IntPtr SceneHandle;
+		private float EngineAspectRatio = 16f / 9f;
 
 
 		public MainWindow()
@@ -98,8 +99,16 @@ namespace WPFSceneEditor
 			//Trace.WriteLine("Scene Handle: " + SceneHandle.ToString());
 			//Trace.WriteLine(EngineContainer.ActualHeight + " " + EngineContainer.ActualWidth);
 			Point EngineTopLeft = EngineContainer.TransformToAncestor(this).Transform(new Point(0, 0));
-			Engine.ResizeWindow((int)Math.Ceiling(EngineContainer.ActualWidth), (int)Math.Ceiling(EngineContainer.ActualHeight));
-			Engine.SetWindowPos(SceneHandle, IntPtr.Zero, (int)EngineTopLeft.X, (int)EngineTopLeft.Y, (int)Math.Ceiling(EngineContainer.ActualWidth), (int)Math.Ceiling(EngineContainer.ActualHeight), 0x0040);
+			int newWidth = (int)Math.Ceiling(EngineContainer.ActualWidth);
+			int newHeight = (int)((float)Math.Ceiling(EngineContainer.ActualWidth) / EngineAspectRatio);
+			if(newHeight > EngineContainer.ActualHeight)
+			{
+				newHeight = (int)Math.Ceiling(EngineContainer.ActualHeight);
+				newWidth = (int)((float)Math.Ceiling(EngineContainer.ActualHeight) * EngineAspectRatio);
+			}
+			
+			Engine.ResizeWindow(newWidth, newHeight);
+			Engine.SetWindowPos(SceneHandle, IntPtr.Zero, (int)EngineTopLeft.X, (int)EngineTopLeft.Y, newWidth, newHeight, 0x0040);
 			Engine.SetParent(SceneHandle, EditorHandle);
 			Engine.ShowWindow(SceneHandle, 1);
 		}

@@ -172,6 +172,7 @@
     <ClInclude Include="Core\Scene.h" />
     <ClInclude Include="Core\StringId.h" />
     <ClInclude Include="EngineLibrary.h" />
+    <ClInclude Include="Renderer\Camera.h" />
     <ClInclude Include="Renderer\Mesh.h" />
     <ClInclude Include="Renderer\Model.h" />
     <ClInclude Include="Renderer\Shader.h" />
@@ -188,6 +189,7 @@
     <ClCompile Include="Core\StringId.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EngineLibrary.cpp" />
+    <ClCompile Include="Renderer\Camera.cpp" />
     <ClCompile Include="Renderer\Mesh.cpp" />
     <ClCompile Include="Renderer\Model.cpp" />
     <ClCompile Include="Renderer\Shader.cpp" />

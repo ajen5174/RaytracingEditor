@@ -6,11 +6,62 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Core/Entity.h"
+#include "Renderer/Shader.h"
+#include "Renderer/VertexArray.h"
+#include "Renderer/Camera.h"
 float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f
+	-0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f, -0.5f,
+	 0.5f,  0.5f, -0.5f,
+	 0.5f,  0.5f, -0.5f,
+	-0.5f,  0.5f, -0.5f,
+	-0.5f, -0.5f, -0.5f,
+
+	-0.5f, -0.5f,  0.5f,
+	 0.5f, -0.5f,  0.5f,
+	 0.5f,  0.5f,  0.5f,
+	 0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f,  0.5f,
+	-0.5f, -0.5f,  0.5f,
+
+	-0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f, -0.5f,
+	-0.5f, -0.5f, -0.5f,
+	-0.5f, -0.5f, -0.5f,
+	-0.5f, -0.5f,  0.5f,
+	-0.5f,  0.5f,  0.5f,
+
+	 0.5f,  0.5f,  0.5f,
+	 0.5f,  0.5f, -0.5f,
+	 0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f,  0.5f,
+	 0.5f,  0.5f,  0.5f,
+
+	-0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f,  0.5f,
+	 0.5f, -0.5f,  0.5f,
+	-0.5f, -0.5f,  0.5f,
+	-0.5f, -0.5f, -0.5f,
+
+	-0.5f,  0.5f, -0.5f,
+	 0.5f,  0.5f, -0.5f,
+	 0.5f,  0.5f,  0.5f,
+	 0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f, -0.5f
 };
+
+//float vertices[] = {
+//	 0.5f,  0.5f, 0.0f,
+//	 0.5f, -0.5f, 0.0f,
+//	-0.5f,  0.5f, 0.0f,
+//
+//	 0.5f, -0.5f, 0.0f,
+//	-0.5f, -0.5f, 0.0f,
+//	-0.5f,  0.5f, 0.0f
+//};
 
 float color1[] = { 0.2f, 0.3f, 0.3f };
 
@@ -133,9 +184,9 @@ bool InitializeGraphics()
 	glDepthFunc(GL_LESS);
 
 
-	glEnable(GL_CULL_FACE);
-	glFrontFace(GL_CCW);
-	glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
+	//glFrontFace(GL_CCW);
+	//glCullFace(GL_BACK);
 
 	return true;
 }
@@ -151,141 +202,72 @@ void RunEngine()
 
 	PrintDebugMessage(testEntity->GetComponent<Transform>()->ToString());
 
-	int success;
-	char infoLog[512];
-
-	char* vertexSource;
+	StringId programName = "BasicShader";
+	Shader* program = new Shader(programName);
+	//read file nonsense?
 #ifdef _WINDLL
-	std::ifstream stream("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\vertex.vert", std::ios::binary|std::ios::ate);
+	std::string vertexPath("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\matrix_vertex.vert");
 #else
-	std::ifstream stream("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\vertex.vert", std::ios::binary | std::ios::ate);
+	std::string vertexPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\matrix_vertex.vert");
 #endif
-	if (stream.is_open())
-	{
-		int size = stream.tellg();
-		vertexSource = new char[size];
-		PrintDebugMessage(std::to_string(size));
-		stream.seekg(0, std::ios::beg);
-		stream.read(vertexSource, size);
-
-		if (vertexSource[size] != '\0')
-		{
-			PrintDebugMessage("Not null terminated");
-		}
-
-		stream.close();
-	}
-	else
-	{
-		PrintDebugMessage("Vertex shader could not be opened");
-		return;
-	}
-
-	
-
-	GLuint vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-	glShaderSource(vertexShader, 1, &vertexSource, NULL);
-	glCompileShader(vertexShader);
-
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::VERTEX::SHADER::COMPILE_FAILED\n" << infoLog << std::endl;
-		PrintDebugMessage(infoLog);
-		quit = true;
-	}
 
 	char* fragSource;
 #ifdef _WINDLL
-	std::ifstream streamTwo("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\fragment.frag", std::ios::binary|std::ios::ate);
+	std::string fragPath("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\matrix_fragment.frag");
 #else
-	std::ifstream streamTwo("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\fragment.frag", std::ios::binary|std::ios::ate);
+	std::string fragPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\matrix_fragment.frag");
 #endif
-	if (streamTwo.is_open())
-	{
-		size_t size = streamTwo.tellg();
-		fragSource = new char[size];
-		streamTwo.seekg(0, std::ios::beg);
-		streamTwo.read(fragSource, size);
-		streamTwo.close();
-	}
-	else
-	{
-		PrintDebugMessage("Fragment shader could not be opened");
-		return;
-	}
+
+	program->CreateFromFile(vertexPath, GL_VERTEX_SHADER);
+	program->CreateFromFile(fragPath, GL_FRAGMENT_SHADER);
+	program->Link();
+	program->Use();
 
 
+	VertexArray* va;
+	va = new VertexArray();
+	va->CreateBuffer(VertexArray::eAttrib::POSITION, sizeof(vertices), 36, vertices);
+	va->Bind();
+	va->SetAttribute(VertexArray::eAttrib::POSITION, 3, 3 * sizeof(float), 0);
 
-	GLuint fragmentShader;
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragSource, NULL);
-	glCompileShader(fragmentShader);
-
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::VERTEX::SHADER::COMPILE_FAILED\n" << infoLog << std::endl;
-		PrintDebugMessage(infoLog);
-		quit = true;
-	}
-
-	GLuint shaderProgram;
-	shaderProgram = glCreateProgram();
-
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-		PrintDebugMessage(std::string(infoLog) + "Shader source: \n" + fragSource);
-		quit = true;
-	}
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
-	glUseProgram(shaderProgram);
-
-	GLuint vbo;
-	glGenBuffers(1, &vbo);
-
-	GLuint vao;
-	glGenVertexArrays(1, &vao);
-
-	glBindVertexArray(vao);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	
 
 	glm::mat4 trans = glm::mat4(1.0f);
+
+
+
+	Camera* cam;
+	StringId cameraName = "testCamera";
+	cam = new Camera(cameraName, testEntity);
+
+	cam->SetProjection(45.0f, (float)windowWidth / (float)windowHeight, 0.01f, 100.0f);
+	
+	testEntity->AddComponent(cam);
+
+	testEntity->Update();
+
 
 	SDL_Event sdlEvent;
 	while (!quit)
 	{
 		//update
-		trans = glm::rotate(trans, glm::radians(0.05f), glm::vec3(0.0, 0.0, 1.0));
-		GLuint transformLoc = glGetUniformLocation(shaderProgram, "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, (float*)&trans);
+		
+		
+		//trans = cam->projectionMatrix * glm::rotate(trans, glm::radians(0.05f), glm::vec3(0.0, 0.0, 1.0));
+		trans = glm::rotate(trans, glm::radians(0.05f), glm::vec3(0.0f, 1.0f, 1.0f));
+		
+		
+		program->SetUniform("model", trans);
+		program->SetUniform("view", glm::mat4(1.0f));
+		program->SetUniform("projection", glm::mat4(1.0f));
+
 
 		//draw
 		glClearColor(color1[0], color1[1], color1[2], 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glUseProgram(shaderProgram);
-		glBindVertexArray(vao);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		program->Use();
+		va->Draw();
 
 		SDL_GL_SwapWindow(engineWindow);
 		SDL_PollEvent(&sdlEvent);
@@ -322,9 +304,8 @@ void RunEngine()
 		SDL_PumpEvents();
 	}
 
-	glDeleteVertexArrays(1, &vao);
-	glDeleteBuffers(1, &vbo);
-	glDeleteProgram(shaderProgram);
-
+	delete va;
+	delete testEntity;
+	delete program;
 	StringId::FreeNames();
 }

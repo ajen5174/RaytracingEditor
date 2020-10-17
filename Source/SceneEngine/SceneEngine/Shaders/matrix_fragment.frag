@@ -3,7 +3,7 @@ out vec4 FragColor;
 
 in vec3 ourColor;
 
-uniform mat4 myModel;
+uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 

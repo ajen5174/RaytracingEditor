@@ -1,4 +1,6 @@
 #include "VertexArray.h"
+//#include <string>
+#include "../EngineLibrary.h"
 
 VertexArray::VertexArray()
 {

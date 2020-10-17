@@ -1,7 +1,14 @@
 #include "Shader.h"
 #include <iostream>
+#include <fstream>
 #include <glm/glm/gtc/type_ptr.hpp>
 #include "../EngineLibrary.h"
+
+Shader::Shader(StringId& name)
+	:Object(name)
+{
+	shader = glCreateProgram();
+}
 
 Shader::~Shader()
 {
@@ -25,9 +32,25 @@ Shader::~Shader()
 void Shader::CreateFromFile(const std::string& filename, GLenum shaderType)
 {
 	//read file in to a string
-	std::string source;
+	
+	std::ifstream stream(filename, std::ios::binary | std::ios::ate);
 
-	CreateFromSource(source, shaderType);
+	if (stream.is_open())
+	{
+		int size = stream.tellg();
+		std::string strSource(size, ' ');
+		stream.seekg(0, std::ios::beg);
+		stream.read(&strSource[0], size);
+
+		CreateFromSource(strSource, shaderType);
+
+		stream.close();
+	}
+	else
+	{
+		PrintDebugMessage("Shader could not be opened; " + filename);
+		return;
+	}
 }
 
 void Shader::CreateFromSource(const std::string& source, GLenum shaderType)
@@ -48,8 +71,10 @@ void Shader::CreateFromSource(const std::string& source, GLenum shaderType)
 		{
 			std::string infoLog(length, ' ');
 			glGetShaderInfoLog(s, length, &length, &infoLog[0]);
-			std::cout << "ERROR::VERTEX::SHADER::COMPILE_FAILED\n" << infoLog << std::endl;
-			PrintDebugMessage(infoLog);
+			std::cout << "ERROR::SHADER::COMPILE_FAILED\n" << infoLog << std::endl;
+			PrintDebugMessage("Shader Compile Failed: \n" + infoLog);
+			PrintDebugMessage("Source length: " + std::to_string(source.length()));
+			PrintDebugMessage("GPU Source length: " + std::to_string(length));
 		}
 
 		glDeleteShader(s);
@@ -165,4 +190,17 @@ GLint Shader::GetUniform(const std::string& name)
 	}
 
 	return uniforms[name];
+}
+
+void Shader::Destroy()
+{
+}
+
+bool Shader::Load(const rapidjson::Value&)
+{
+	return false;
+}
+
+void Shader::Initialize()
+{
 }
