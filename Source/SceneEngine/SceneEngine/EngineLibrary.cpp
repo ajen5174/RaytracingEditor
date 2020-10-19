@@ -198,6 +198,7 @@ void RunEngine()
 	Entity* testEntity = new Entity(entityName);
 	StringId transformName = "TestingTransform";
 	Transform* testTransform = new Transform(transformName, testEntity);
+	testTransform->translation = glm::vec3(0.0f, 0.0f, -10.0f);
 	testEntity->AddComponent(testTransform);
 
 	PrintDebugMessage(testEntity->GetComponent<Transform>()->ToString());
@@ -241,7 +242,7 @@ void RunEngine()
 	cam = new Camera(cameraName, testEntity);
 
 	cam->SetProjection(45.0f, (float)windowWidth / (float)windowHeight, 0.01f, 100.0f);
-	
+	PrintDebugMessage(std::to_string(windowWidth) + " " + std::to_string(windowHeight));
 	testEntity->AddComponent(cam);
 
 	testEntity->Update();
@@ -254,12 +255,12 @@ void RunEngine()
 		
 		
 		//trans = cam->projectionMatrix * glm::rotate(trans, glm::radians(0.05f), glm::vec3(0.0, 0.0, 1.0));
-		trans = glm::rotate(trans, glm::radians(0.05f), glm::vec3(0.0f, 1.0f, 1.0f));
+		trans = glm::rotate(trans, glm::radians(0.05f), glm::vec3(0.0f, 0.0f, 1.0f));
 		
 		
 		program->SetUniform("model", trans);
-		program->SetUniform("view", glm::mat4(1.0f));
-		program->SetUniform("projection", glm::mat4(1.0f));
+		program->SetUniform("view", cam->viewMatrix);
+		program->SetUniform("projection", cam->projectionMatrix);
 
 
 		//draw
