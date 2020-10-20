@@ -29,10 +29,10 @@ void VertexArray::CreateBuffer(eAttrib attrib, GLsizei size, GLsizei numVertex, 
 	vertexBuffers.push_back(vertexBuffer);
 }
 
-void VertexArray::SetAttribute(eAttrib attrib, GLint numVertex, GLsizei stride, uint64_t offset)
+void VertexArray::SetAttribute(eAttrib attrib, GLint numData, GLsizei stride, uint64_t offset)
 {
 	glEnableVertexAttribArray(attrib);
-	glVertexAttribPointer(attrib, numVertex, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offset));
+	glVertexAttribPointer(attrib, numData, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(offset));
 
 }
 

@@ -27,3 +27,16 @@ bool Mesh::Load(const rapidjson::Value&)
 void Mesh::Initialize()
 {
 }
+
+bool Mesh::Load(const aiMesh* mesh)
+{
+    
+
+    vertexArray.CreateBuffer(VertexArray::eAttrib::POSITION, (sizeof(float) * 3) * mesh->mNumVertices, mesh->mNumVertices, &mesh->mVertices[0].x);
+    vertexArray.Bind();
+    vertexArray.SetAttribute(VertexArray::eAttrib::POSITION, 3, 3 * sizeof(float), 0);
+
+
+
+    return false;
+}

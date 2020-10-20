@@ -52,7 +52,7 @@ private:
 public:
 	//Transform transform;
 	//Transform localTransform;
-	bool selected;
+	bool selected = false;
 
 protected:
 	Scene* scene;

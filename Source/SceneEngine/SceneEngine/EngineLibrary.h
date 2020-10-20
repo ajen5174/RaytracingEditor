@@ -1,3 +1,4 @@
+#define NOMINMAX //this define prevents the windows.h from compiling their min and max functions, which collide with assimp for some reason
 #include <SDL.h>
 #include <glad/glad.h>
 #include <SDL_syswm.h>

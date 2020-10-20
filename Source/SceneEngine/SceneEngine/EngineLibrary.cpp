@@ -9,49 +9,51 @@
 #include "Renderer/Shader.h"
 #include "Renderer/VertexArray.h"
 #include "Renderer/Camera.h"
-float vertices[] = {
-	-0.5f, -0.5f, -0.5f,
-	 0.5f, -0.5f, -0.5f,
-	 0.5f,  0.5f, -0.5f,
-	 0.5f,  0.5f, -0.5f,
-	-0.5f,  0.5f, -0.5f,
-	-0.5f, -0.5f, -0.5f,
-
-	-0.5f, -0.5f,  0.5f,
-	 0.5f, -0.5f,  0.5f,
-	 0.5f,  0.5f,  0.5f,
-	 0.5f,  0.5f,  0.5f,
-	-0.5f,  0.5f,  0.5f,
-	-0.5f, -0.5f,  0.5f,
-
-	-0.5f,  0.5f,  0.5f,
-	-0.5f,  0.5f, -0.5f,
-	-0.5f, -0.5f, -0.5f,
-	-0.5f, -0.5f, -0.5f,
-	-0.5f, -0.5f,  0.5f,
-	-0.5f,  0.5f,  0.5f,
-
-	 0.5f,  0.5f,  0.5f,
-	 0.5f,  0.5f, -0.5f,
-	 0.5f, -0.5f, -0.5f,
-	 0.5f, -0.5f, -0.5f,
-	 0.5f, -0.5f,  0.5f,
-	 0.5f,  0.5f,  0.5f,
-
-	-0.5f, -0.5f, -0.5f,
-	 0.5f, -0.5f, -0.5f,
-	 0.5f, -0.5f,  0.5f,
-	 0.5f, -0.5f,  0.5f,
-	-0.5f, -0.5f,  0.5f,
-	-0.5f, -0.5f, -0.5f,
-
-	-0.5f,  0.5f, -0.5f,
-	 0.5f,  0.5f, -0.5f,
-	 0.5f,  0.5f,  0.5f,
-	 0.5f,  0.5f,  0.5f,
-	-0.5f,  0.5f,  0.5f,
-	-0.5f,  0.5f, -0.5f
-};
+#include "Renderer/Model.h"
+#include "Components/ModelRenderComponent.h"
+//float vertices[] = {
+//	-0.5f, -0.5f, -0.5f,
+//	 0.5f, -0.5f, -0.5f,
+//	 0.5f,  0.5f, -0.5f,
+//	 0.5f,  0.5f, -0.5f,
+//	-0.5f,  0.5f, -0.5f,
+//	-0.5f, -0.5f, -0.5f,
+//
+//	-0.5f, -0.5f,  0.5f,
+//	 0.5f, -0.5f,  0.5f,
+//	 0.5f,  0.5f,  0.5f,
+//	 0.5f,  0.5f,  0.5f,
+//	-0.5f,  0.5f,  0.5f,
+//	-0.5f, -0.5f,  0.5f,
+//
+//	-0.5f,  0.5f,  0.5f,
+//	-0.5f,  0.5f, -0.5f,
+//	-0.5f, -0.5f, -0.5f,
+//	-0.5f, -0.5f, -0.5f,
+//	-0.5f, -0.5f,  0.5f,
+//	-0.5f,  0.5f,  0.5f,
+//
+//	 0.5f,  0.5f,  0.5f,
+//	 0.5f,  0.5f, -0.5f,
+//	 0.5f, -0.5f, -0.5f,
+//	 0.5f, -0.5f, -0.5f,
+//	 0.5f, -0.5f,  0.5f,
+//	 0.5f,  0.5f,  0.5f,
+//
+//	-0.5f, -0.5f, -0.5f,
+//	 0.5f, -0.5f, -0.5f,
+//	 0.5f, -0.5f,  0.5f,
+//	 0.5f, -0.5f,  0.5f,
+//	-0.5f, -0.5f,  0.5f,
+//	-0.5f, -0.5f, -0.5f,
+//
+//	-0.5f,  0.5f, -0.5f,
+//	 0.5f,  0.5f, -0.5f,
+//	 0.5f,  0.5f,  0.5f,
+//	 0.5f,  0.5f,  0.5f,
+//	-0.5f,  0.5f,  0.5f,
+//	-0.5f,  0.5f, -0.5f
+//};
 
 //float vertices[] = {
 //	 0.5f,  0.5f, 0.0f,
@@ -194,47 +196,21 @@ bool InitializeGraphics()
 void RunEngine()
 {
 	StringId::AllocNames();
+
 	StringId entityName = "TestingEntity";
 	Entity* testEntity = new Entity(entityName);
 	StringId transformName = "TestingTransform";
 	Transform* testTransform = new Transform(transformName, testEntity);
-	testTransform->translation = glm::vec3(0.0f, 0.0f, -10.0f);
+	testTransform->translation = glm::vec3(0.0f, 0.0f, -2.0f);
 	testEntity->AddComponent(testTransform);
 
 	PrintDebugMessage(testEntity->GetComponent<Transform>()->ToString());
 
-	StringId programName = "BasicShader";
-	Shader* program = new Shader(programName);
-	//read file nonsense?
-#ifdef _WINDLL
-	std::string vertexPath("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\matrix_vertex.vert");
-#else
-	std::string vertexPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\matrix_vertex.vert");
-#endif
 
-	char* fragSource;
-#ifdef _WINDLL
-	std::string fragPath("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\matrix_fragment.frag");
-#else
-	std::string fragPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\matrix_fragment.frag");
-#endif
-
-	program->CreateFromFile(vertexPath, GL_VERTEX_SHADER);
-	program->CreateFromFile(fragPath, GL_FRAGMENT_SHADER);
-	program->Link();
-	program->Use();
-
-
-	VertexArray* va;
-	va = new VertexArray();
-	va->CreateBuffer(VertexArray::eAttrib::POSITION, sizeof(vertices), 36, vertices);
-	va->Bind();
-	va->SetAttribute(VertexArray::eAttrib::POSITION, 3, 3 * sizeof(float), 0);
-
-	
-
-	glm::mat4 trans = glm::mat4(1.0f);
-
+	//Model* model = new Model(modelPath);
+	StringId rcName = "RenderComponent";
+	ModelRenderComponent* rc = new ModelRenderComponent(rcName, testEntity);
+	testEntity->AddComponent(rc);
 
 
 	Camera* cam;
@@ -245,30 +221,25 @@ void RunEngine()
 	PrintDebugMessage(std::to_string(windowWidth) + " " + std::to_string(windowHeight));
 	testEntity->AddComponent(cam);
 
-	testEntity->Update();
+	//glm::mat4 trans = glm::mat4(1.0f);
+	//trans = glm::rotate(trans, glm::radians(0.05f), glm::vec3(0.0f, 0.0f, 1.0f));
 
+		testEntity->Update();
+		testEntity->Update();
+		testEntity->Update();
 
 	SDL_Event sdlEvent;
 	while (!quit)
 	{
 		//update
 		
-		
 		//trans = cam->projectionMatrix * glm::rotate(trans, glm::radians(0.05f), glm::vec3(0.0, 0.0, 1.0));
-		trans = glm::rotate(trans, glm::radians(0.05f), glm::vec3(0.0f, 0.0f, 1.0f));
-		
-		
-		program->SetUniform("model", trans);
-		program->SetUniform("view", cam->viewMatrix);
-		program->SetUniform("projection", cam->projectionMatrix);
-
 
 		//draw
 		glClearColor(color1[0], color1[1], color1[2], 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		program->Use();
-		va->Draw();
+		testEntity->Draw();
 
 		SDL_GL_SwapWindow(engineWindow);
 		SDL_PollEvent(&sdlEvent);
@@ -284,7 +255,19 @@ void RunEngine()
 			}
 			break;
 		case SDL_MOUSEBUTTONDOWN:
+		{
+
+
 			//color1[1] = 1.0f;
+			//loop through entities to deselect, then check for selection
+			testEntity->selected = false;
+			//viewport space
+			int mouseX, mouseY;
+			SDL_GetMouseState(&mouseX, &mouseY);
+			PrintDebugMessage("Mouse at: " + std::to_string(mouseX) + ", " + std::to_string(mouseY));
+
+
+		}
 			break;
 		case SDL_WINDOWEVENT:
 			if (sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED)
@@ -305,8 +288,6 @@ void RunEngine()
 		SDL_PumpEvents();
 	}
 
-	delete va;
 	delete testEntity;
-	delete program;
 	StringId::FreeNames();
 }

@@ -20,7 +20,10 @@ void Entity::Update()
 void Entity::Draw()
 {
 	RenderComponent* renderComponent = GetComponent<RenderComponent>();
-	renderComponent->Draw();
+	if (renderComponent)
+	{
+		renderComponent->Draw();
+	}
 
 	for (Entity* child : children)
 	{

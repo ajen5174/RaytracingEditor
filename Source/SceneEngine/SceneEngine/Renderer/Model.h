@@ -6,7 +6,7 @@
 class Model : Object
 {
 public:
-	Model(std::string filename);
+	Model(std::string name);
 	~Model();
 	void Draw();
 

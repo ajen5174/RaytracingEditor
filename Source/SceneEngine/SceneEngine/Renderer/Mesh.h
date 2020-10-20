@@ -2,6 +2,7 @@
 #include <string>
 #include "VertexArray.h"
 #include "..\\Core\Object.h"
+#include <assimp\include\assimp\mesh.h>
 
 class Mesh : Object
 {
@@ -16,6 +17,7 @@ public:
 	virtual bool Load(const rapidjson::Value&) override;
 	virtual void Initialize() override;
 
+	bool Load(const aiMesh* mesh);
 
 
 private:
