@@ -30,7 +30,7 @@ namespace WPFSceneEditor
 		private IntPtr EditorHandle;
 		private IntPtr SceneHandle;
 		private float EngineAspectRatio = 16f / 9f;
-
+		private float selectedEntityID = 0.0f;
 
 		public MainWindow()
 		{
@@ -58,7 +58,8 @@ namespace WPFSceneEditor
 					EditorHandle = new WindowInteropHelper(this).Handle;
 
 					Engine.RegisterDebugCallback(new Engine.DebugCallback(PrintDebugMessage));
-					
+					Engine.RegisterSelectionCallback(new Engine.SelectionCallback(EntitySelect));
+
 					ResizeSceneWindow();
 
 					Engine.StartEngine();
@@ -83,11 +84,7 @@ namespace WPFSceneEditor
 			Trace.WriteLine("Engine stopped");
 		}
 
-		private void PrintDebugMessage(string message)
-		{
-			Trace.WriteLine(message, "ENGINE_DEBUG");
-			DebugOutput.Text += "ENGINE_DEBUG: " + message + "\n";
-		}
+		
 
 		private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
 		{
@@ -111,6 +108,39 @@ namespace WPFSceneEditor
 			Engine.SetWindowPos(SceneHandle, IntPtr.Zero, (int)EngineTopLeft.X, (int)EngineTopLeft.Y, newWidth, newHeight, 0x0040);
 			Engine.SetParent(SceneHandle, EditorHandle);
 			Engine.ShowWindow(SceneHandle, 1);
+		}
+
+		private void PrintDebugMessage(string message)
+		{
+			Trace.WriteLine(message, "ENGINE_DEBUG");
+			DebugOutput.Text += "ENGINE_DEBUG: " + message + "\n";
+		}
+
+		private void EntitySelect(float entityID)
+		{
+			selectedEntityID = entityID;
+
+			float[] data = new float[9];
+			Engine.GetFloatData(selectedEntityID, 1, data, 9);
+
+			TranslationBoxX.Text = "" + data[0];
+			TranslationBoxY.Text = "" + data[1];
+			TranslationBoxZ.Text = "" + data[2];
+
+
+			//DebugOutput.Text += "DATA: " + data[5] + "\n";
+
+			//DebugOutput.Text += "ENGINE_SELECT: " + entityID + "\n";
+
+		}
+
+		private void TranslationBox_KeyUp(object sender, KeyEventArgs e)
+		{
+			float translationX = float.Parse(TranslationBoxX.Text);
+			float translationY = float.Parse(TranslationBoxY.Text);
+			float translationZ = float.Parse(TranslationBoxZ.Text);
+			float[] data = { translationX, translationY, translationZ};
+			Engine.SetFloatData(selectedEntityID, 1, data, 3);
 		}
 	}
 }

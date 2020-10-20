@@ -8,6 +8,7 @@ namespace WPFSceneEditor
 	public static class Engine
 	{
 		public delegate void DebugCallback(string message);
+		public delegate void SelectionCallback(float entityID);
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr SetWindowPos(
@@ -35,7 +36,13 @@ namespace WPFSceneEditor
 		public static extern IntPtr StopEngine();
 		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
 		public static extern void RegisterDebugCallback(DebugCallback callback);
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void RegisterSelectionCallback(SelectionCallback callback);
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void GetFloatData(float entityID, int component, [In, Out] float[] data, int size);
 
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void SetFloatData(float entityID, int component, [In] float[] data, int size);
 
 	}
 }

@@ -7,10 +7,10 @@ class Entity;
 enum class ComponentType
 {
 	NONE = 0,
-	TRANSFORM = 1,
-	LIGHT = 2,
-	MODEL = 4,
-	CAMERA = 8
+	TRANSFORM,
+	LIGHT,
+	MODEL_RENDER,
+	CAMERA
 };
 
 class Component : public Object

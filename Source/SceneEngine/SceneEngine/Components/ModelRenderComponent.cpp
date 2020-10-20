@@ -51,6 +51,8 @@ ModelRenderComponent::ModelRenderComponent(StringId& name, Entity* owner)
 	pickShader->CreateFromFile(pickFragPath, GL_FRAGMENT_SHADER);
 	pickShader->Link();
 	pickShader->Use();
+	pickShader->SetUniform("objectID", owner->GetName().GetFloatId());
+
 }
 
 void ModelRenderComponent::Update()
@@ -75,7 +77,7 @@ void ModelRenderComponent::Draw()
 {
 	//use shader
 	shader->Use();
-	if (!owner->selected)
+	//if (!owner->selected)
 	{
 		model->Draw();
 	}
@@ -86,6 +88,9 @@ void ModelRenderComponent::DrawPick()
 	//use shader
 	pickShader->Use();
 	//PrintDebugMessage(std::to_string(owner->GetName().GetFloatId()));
-	pickShader->SetUniform("objectID", owner->GetName().GetFloatId());
-	model->Draw();
+	//if (!owner->selected)
+	{
+		model->Draw();
+	}
+
 }

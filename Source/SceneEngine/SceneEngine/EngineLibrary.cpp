@@ -13,59 +13,6 @@
 #include "Components/ModelRenderComponent.h"
 #include "Core/PickTexture.h"
 #include "Core/scene.h"
-//float vertices[] = {
-//	-0.5f, -0.5f, -0.5f,
-//	 0.5f, -0.5f, -0.5f,
-//	 0.5f,  0.5f, -0.5f,
-//	 0.5f,  0.5f, -0.5f,
-//	-0.5f,  0.5f, -0.5f,
-//	-0.5f, -0.5f, -0.5f,
-//
-//	-0.5f, -0.5f,  0.5f,
-//	 0.5f, -0.5f,  0.5f,
-//	 0.5f,  0.5f,  0.5f,
-//	 0.5f,  0.5f,  0.5f,
-//	-0.5f,  0.5f,  0.5f,
-//	-0.5f, -0.5f,  0.5f,
-//
-//	-0.5f,  0.5f,  0.5f,
-//	-0.5f,  0.5f, -0.5f,
-//	-0.5f, -0.5f, -0.5f,
-//	-0.5f, -0.5f, -0.5f,
-//	-0.5f, -0.5f,  0.5f,
-//	-0.5f,  0.5f,  0.5f,
-//
-//	 0.5f,  0.5f,  0.5f,
-//	 0.5f,  0.5f, -0.5f,
-//	 0.5f, -0.5f, -0.5f,
-//	 0.5f, -0.5f, -0.5f,
-//	 0.5f, -0.5f,  0.5f,
-//	 0.5f,  0.5f,  0.5f,
-//
-//	-0.5f, -0.5f, -0.5f,
-//	 0.5f, -0.5f, -0.5f,
-//	 0.5f, -0.5f,  0.5f,
-//	 0.5f, -0.5f,  0.5f,
-//	-0.5f, -0.5f,  0.5f,
-//	-0.5f, -0.5f, -0.5f,
-//
-//	-0.5f,  0.5f, -0.5f,
-//	 0.5f,  0.5f, -0.5f,
-//	 0.5f,  0.5f,  0.5f,
-//	 0.5f,  0.5f,  0.5f,
-//	-0.5f,  0.5f,  0.5f,
-//	-0.5f,  0.5f, -0.5f
-//};
-
-//float vertices[] = {
-//	 0.5f,  0.5f, 0.0f,
-//	 0.5f, -0.5f, 0.0f,
-//	-0.5f,  0.5f, 0.0f,
-//
-//	 0.5f, -0.5f, 0.0f,
-//	-0.5f, -0.5f, 0.0f,
-//	-0.5f,  0.5f, 0.0f
-//};
 
 float color1[] = { 0.2f, 0.3f, 0.3f };
 
@@ -79,8 +26,82 @@ bool sizeChanged = false;
 
 bool quit = false;
 
-DebugCallback gDebugCallback;
+Scene* scene;
 
+DebugCallback gDebugCallback;
+SelectionCallback gSelectionCallback;
+
+
+ENGINE_DLL void SetFloatData(float entityID, int component, float* data, int size)
+{
+	Entity* entity = scene->GetEntityByFloatId(entityID);
+	ComponentType type = (ComponentType)component;
+	if (!entity)
+	{
+		return;
+	}
+
+	switch (type)
+	{
+	case ComponentType::NONE:
+		break;
+
+	case ComponentType::TRANSFORM:
+		Transform* t = entity->GetComponent<Transform>();
+
+		t->translation = glm::vec3(data[0], data[1], data[2]);
+		PrintDebugMessage("translation set");
+		if (size < 9)
+			return;
+
+		t->rotation = glm::vec3(data[3], data[4], data[5]);
+
+		t->scale = glm::vec3(data[6], data[7], data[8]);
+
+		break;
+	}
+}
+
+
+ENGINE_DLL void GetFloatData(float entityID, int component, float* data, int size)
+{
+	Entity* entity = scene->GetEntityByFloatId(entityID);
+	ComponentType type = (ComponentType)component;
+
+	switch (type)
+	{
+	case ComponentType::NONE:
+		break;
+
+	case ComponentType::TRANSFORM:
+		Transform* t = entity->GetComponent<Transform>();
+		if (size < 9)
+			return;
+		data[0] = t->translation.x;
+		data[1] = t->translation.y;
+		data[2] = t->translation.z;
+
+		glm::vec3 rotation = glm::eulerAngles(t->rotation) * 180.0f / AI_MATH_PI_F;
+		data[3] = rotation.x;
+		data[4] = rotation.y;
+		data[5] = rotation.z;
+
+		PrintDebugMessage(std::to_string(rotation.z));
+
+		data[6] = t->scale.x;
+		data[7] = t->scale.y;
+		data[8] = t->scale.z;
+		break;
+	}
+}
+
+ENGINE_DLL void RegisterSelectionCallback(SelectionCallback callback)
+{
+	if (callback)
+	{
+		gSelectionCallback = callback;
+	}
+}
 
 ENGINE_DLL void RegisterDebugCallback(DebugCallback callback)
 {
@@ -148,6 +169,18 @@ void PrintDebugMessage(std::string message)
 	}
 }
 
+void EntitySelect(float entityID)
+{
+	if (gSelectionCallback)
+	{
+		gSelectionCallback(entityID);
+	}
+	else
+	{
+
+	}
+}
+
 bool InitializeGraphics()
 {
 	int result = SDL_Init(SDL_INIT_VIDEO);
@@ -199,7 +232,7 @@ void RunEngine()
 {
 	StringId::AllocNames();
 
-	Scene* scene = new Scene();
+	scene = new Scene();
 	
 
 
@@ -208,6 +241,7 @@ void RunEngine()
 	StringId transformName = "TestingTransform";
 	Transform* testTransform = new Transform(transformName, testEntity);
 	testTransform->translation = glm::vec3(0.0f, 0.0f, -2.0f);
+	testTransform->rotation = glm::vec3(0.0f, 0.0f, glm::radians(90.0f));
 	testEntity->AddComponent(testTransform);
 
 	PrintDebugMessage(testEntity->GetComponent<Transform>()->ToString());
@@ -239,9 +273,7 @@ void RunEngine()
 	scene->Add(testEntity);
 	scene->Add(camEntity);
 	scene->mainCamera = cam;
-	scene->Update();
-	scene->Update();
-	scene->Update();
+
 
 
 	PickTexture* pick = new PickTexture();
@@ -253,7 +285,7 @@ void RunEngine()
 	while (!quit)
 	{
 		//update
-		
+		scene->Update();
 		//trans = cam->projectionMatrix * glm::rotate(trans, glm::radians(0.05f), glm::vec3(0.0, 0.0, 1.0));
 
 		//render picking stuff
@@ -287,19 +319,19 @@ void RunEngine()
 
 			//color1[1] = 1.0f;
 			//loop through entities to deselect, then check for selection
-			testEntity->selected = false;
+			//testEntity->selected = false;
 			//viewport space
 			int mouseX, mouseY;
 			SDL_GetMouseState(&mouseX, &mouseY);
-			PrintDebugMessage("Mouse at: " + std::to_string(mouseX) + ", " + std::to_string(mouseY));
+			//PrintDebugMessage("Mouse at: " + std::to_string(mouseX) + ", " + std::to_string(mouseY));
 			PickTexture::PickInfo info = pick->ReadPixel(mouseX, windowHeight - mouseY - 1);
-			PrintDebugMessage("ID read: " + std::to_string(info.objectID) + ", " + std::to_string(info.primitiveID));
+			//PrintDebugMessage("ID read: " + std::to_string(info.objectID) + ", " + std::to_string(info.primitiveID));
 			float idRead = info.objectID;
 			Entity* selected = scene->GetEntityByFloatId(idRead);
-			PrintDebugMessage("ID of suzanne: " + std::to_string(testEntity->GetName().GetId()));
+			//PrintDebugMessage("ID of suzanne: " + std::to_string(testEntity->GetName().GetId()));
 			if (selected)
 			{
-				PrintDebugMessage("Selected an object");
+				EntitySelect(idRead);
 				selected->selected = true;
 			}
 			else
