@@ -19,6 +19,9 @@ public:
 
 	bool Load(const aiMesh* mesh);
 
+public:
+	int drawIndex;
+
 
 private:
 	VertexArray vertexArray;

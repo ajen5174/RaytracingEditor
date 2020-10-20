@@ -1,9 +1,9 @@
 #include "Mesh.h"
 
+
 Mesh::Mesh(std::string filename)
     : Object(filename.c_str())
 {
-    
 }
 
 Mesh::~Mesh()

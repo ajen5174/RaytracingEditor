@@ -24,7 +24,7 @@ void Camera::SetProjection(float fov, float aspectRatio, float nearClip, float f
 void Camera::Update()
 {
 	Transform* transform = owner->GetComponent<Transform>();
-	glm::vec3 target = transform->translation + transform->rotation * glm::vec3(0.0f, 0.0f, 1.0f);
+	glm::vec3 target = transform->translation + (transform->rotation * glm::vec3(0.0f, 0.0f, 1.0f));
 
 	viewMatrix = glm::lookAt(transform->translation, target, glm::vec3(0.0f, 1.0f, 0.0f));
 }

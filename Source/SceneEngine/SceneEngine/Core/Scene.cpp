@@ -16,10 +16,19 @@ void Scene::Draw()
 	}
 }
 
+void Scene::DrawPick()
+{
+	for (Entity* e : entities)
+	{
+		e->DrawPick();
+	}
+}
+
 void Scene::Add(Entity* entity)
 {
 	if (entity != nullptr)
 	{
+		entity->scene = this;
 		entities.push_back(entity);
 	}
 }
@@ -44,12 +53,37 @@ Entity* Scene::Remove(Entity* entity, bool destroy)
 	return entity;
 }
 
+Entity* Scene::GetEntityByName(uint32_t name)
+{
+	Entity* entity = nullptr;
+	for (Entity* e : entities)
+	{
+		if (e->GetName().GetId() == name)
+		{
+			entity = e;
+		}
+	}
+	return entity;
+}
 Entity* Scene::GetEntityByName(StringId& name)
 {
 	Entity* entity = nullptr;
 	for (Entity* e : entities)
 	{
 		if (e->GetName() == name)
+		{
+			entity = e;
+		}
+	}
+	return entity;
+}
+
+Entity* Scene::GetEntityByFloatId(float id)
+{
+	Entity* entity = nullptr;
+	for (Entity* e : entities)
+	{
+		if (e->GetName().GetFloatId() == id)
 		{
 			entity = e;
 		}

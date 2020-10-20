@@ -1,7 +1,7 @@
 #include "StringId.h"
 
 
-uint64_t StringId::uniqueId = 0;
+uint32_t StringId::uniqueId = 0;
 char* StringId::names = nullptr;
 
 StringId::StringId(const char* string, bool unique)
@@ -13,13 +13,13 @@ StringId::StringId(const char* string, bool unique)
 		uniqueString += std::to_string(uniqueId);
 		uniqueId++;
 
-		id = static_cast<uint64_t>(std::hash<std::string>{}(uniqueString.c_str()));
+		id = static_cast<uint32_t>(std::hash<std::string>{}(uniqueString.c_str()));
 		index = id % MAX_ENTRIES;
 		strcpy_s(names + (index * MAX_NAME_SIZE), MAX_NAME_SIZE, uniqueString.c_str());
 	}
 	else
 	{
-		id = static_cast<uint64_t>(std::hash<std::string>{}(string));
+		id = static_cast<uint32_t>(std::hash<std::string>{}(string));
 		index = id % MAX_ENTRIES;
 		strcpy_s(names + (index * MAX_NAME_SIZE), MAX_NAME_SIZE, string);
 	}

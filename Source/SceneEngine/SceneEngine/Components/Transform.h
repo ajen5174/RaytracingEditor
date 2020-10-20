@@ -9,7 +9,7 @@ class Transform : public Component
 {
 
 public:
-	Transform(StringId& name, Entity* owner) : translation(0.0f), rotation(1.0f, 0.0f, 0.0f, 0.0f), scale(1.0f), Component(name, owner){}
+	Transform(StringId& name, Entity* owner) : translation(0.0f), rotation(glm::vec3(0.0f, 0.0f, 0.0f)), scale(1.0f), Component(name, owner){}
 	Transform(StringId& name, Entity* owner, const glm::vec3& translation, const glm::quat& rotation = glm::quat(glm::vec3(0.0f)), const glm::vec3& scale = glm::vec3(1.0f))
 		:translation(translation), rotation(rotation), scale(scale), Component(name, owner){}
 

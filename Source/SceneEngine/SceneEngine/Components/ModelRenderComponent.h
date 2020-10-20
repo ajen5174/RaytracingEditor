@@ -11,10 +11,12 @@ public:
 	// Inherited via RenderComponent
 	virtual void Update() override;
 	virtual void Draw() override;
+	virtual void DrawPick() override;
 
 private:
 	Model* model;
 	Shader* shader;
+	Shader* pickShader;
 };
 
 

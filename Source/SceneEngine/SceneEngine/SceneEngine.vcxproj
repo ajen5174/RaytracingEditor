@@ -169,6 +169,7 @@
     <ClInclude Include="Components\Transform.h" />
     <ClInclude Include="Core\Entity.h" />
     <ClInclude Include="Core\Object.h" />
+    <ClInclude Include="Core\PickTexture.h" />
     <ClInclude Include="Core\Scene.h" />
     <ClInclude Include="Core\StringId.h" />
     <ClInclude Include="EngineLibrary.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="Components\ModelRenderComponent.cpp" />
     <ClCompile Include="Components\Transform.cpp" />
     <ClCompile Include="Core\Entity.cpp" />
+    <ClCompile Include="Core\PickTexture.cpp" />
     <ClCompile Include="Core\Scene.cpp" />
     <ClCompile Include="Core\StringId.cpp" />
     <ClCompile Include="dllmain.cpp" />
@@ -200,6 +202,8 @@
     <None Include="Shaders\fragment.frag" />
     <None Include="Shaders\matrix_fragment.frag" />
     <None Include="Shaders\matrix_vertex.vert" />
+    <None Include="Shaders\picking.frag" />
+    <None Include="Shaders\picking.vert" />
     <None Include="Shaders\vertex.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

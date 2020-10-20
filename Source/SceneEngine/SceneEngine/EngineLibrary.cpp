@@ -11,6 +11,8 @@
 #include "Renderer/Camera.h"
 #include "Renderer/Model.h"
 #include "Components/ModelRenderComponent.h"
+#include "Core/PickTexture.h"
+#include "Core/scene.h"
 //float vertices[] = {
 //	-0.5f, -0.5f, -0.5f,
 //	 0.5f, -0.5f, -0.5f,
@@ -197,6 +199,10 @@ void RunEngine()
 {
 	StringId::AllocNames();
 
+	Scene* scene = new Scene();
+	
+
+
 	StringId entityName = "TestingEntity";
 	Entity* testEntity = new Entity(entityName);
 	StringId transformName = "TestingTransform";
@@ -212,21 +218,36 @@ void RunEngine()
 	ModelRenderComponent* rc = new ModelRenderComponent(rcName, testEntity);
 	testEntity->AddComponent(rc);
 
+	StringId camEntityName = "CamEntity";
+	Entity* camEntity = new Entity(camEntityName);
+	Transform* camTransform = new Transform(transformName, camEntity);
+	camTransform->translation = glm::vec3(0.0f, 0.0f, 5.0f);
+	camTransform->rotation = glm::vec3(0.0f, glm::radians(180.0f), 0.0f);
+	camEntity->AddComponent(camTransform);
 
 	Camera* cam;
 	StringId cameraName = "testCamera";
-	cam = new Camera(cameraName, testEntity);
+	cam = new Camera(cameraName, camEntity);
 
 	cam->SetProjection(45.0f, (float)windowWidth / (float)windowHeight, 0.01f, 100.0f);
 	PrintDebugMessage(std::to_string(windowWidth) + " " + std::to_string(windowHeight));
-	testEntity->AddComponent(cam);
+	camEntity->AddComponent(cam);
 
 	//glm::mat4 trans = glm::mat4(1.0f);
 	//trans = glm::rotate(trans, glm::radians(0.05f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-		testEntity->Update();
-		testEntity->Update();
-		testEntity->Update();
+	scene->Add(testEntity);
+	scene->Add(camEntity);
+	scene->mainCamera = cam;
+	scene->Update();
+	scene->Update();
+	scene->Update();
+
+
+	PickTexture* pick = new PickTexture();
+	pick->Initialize(windowHeight, windowWidth);
+	
+	
 
 	SDL_Event sdlEvent;
 	while (!quit)
@@ -235,11 +256,17 @@ void RunEngine()
 		
 		//trans = cam->projectionMatrix * glm::rotate(trans, glm::radians(0.05f), glm::vec3(0.0, 0.0, 1.0));
 
+		//render picking stuff
+		pick->EnableWriting();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		scene->DrawPick();
+		pick->DisableWriting();
+
 		//draw
 		glClearColor(color1[0], color1[1], color1[2], 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		testEntity->Draw();
+		scene->Draw();
 
 		SDL_GL_SwapWindow(engineWindow);
 		SDL_PollEvent(&sdlEvent);
@@ -265,8 +292,20 @@ void RunEngine()
 			int mouseX, mouseY;
 			SDL_GetMouseState(&mouseX, &mouseY);
 			PrintDebugMessage("Mouse at: " + std::to_string(mouseX) + ", " + std::to_string(mouseY));
-
-
+			PickTexture::PickInfo info = pick->ReadPixel(mouseX, windowHeight - mouseY - 1);
+			PrintDebugMessage("ID read: " + std::to_string(info.objectID) + ", " + std::to_string(info.primitiveID));
+			float idRead = info.objectID;
+			Entity* selected = scene->GetEntityByFloatId(idRead);
+			PrintDebugMessage("ID of suzanne: " + std::to_string(testEntity->GetName().GetId()));
+			if (selected)
+			{
+				PrintDebugMessage("Selected an object");
+				selected->selected = true;
+			}
+			else
+			{
+				PrintDebugMessage("failed to find ID: " + std::to_string(idRead));
+			}
 		}
 			break;
 		case SDL_WINDOWEVENT:
@@ -288,6 +327,8 @@ void RunEngine()
 		SDL_PumpEvents();
 	}
 
-	delete testEntity;
+	delete scene;
+	//delete camEntity;
+	//delete testEntity;
 	StringId::FreeNames();
 }

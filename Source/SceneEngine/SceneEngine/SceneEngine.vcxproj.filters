@@ -75,6 +75,9 @@
     <ClInclude Include="Renderer\Camera.h">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Core\PickTexture.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -122,6 +125,9 @@
     <ClCompile Include="Renderer\Camera.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Core\PickTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\fragment.frag">
@@ -134,6 +140,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\matrix_vertex.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\picking.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\picking.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

@@ -18,19 +18,20 @@ public:
 	std::string ToString() const;
 	const char* cStr() const;
 
-	uint64_t GetId() const { return id; }
+	uint32_t GetId() const { return id; }
+	float GetFloatId() const { return static_cast<float>(id); }
 
 	static void AllocNames();
 	static void FreeNames();
 
 
 private:
-	uint64_t id;
-	uint64_t index;
-	static const uint64_t MAX_ENTRIES = 65536;
-	static const uint64_t MAX_NAME_SIZE = 256;
+	uint32_t id;
+	uint32_t index;
+	static const uint32_t MAX_ENTRIES = 65536;
+	static const uint32_t MAX_NAME_SIZE = 256;
 
-	static uint64_t uniqueId;
+	static uint32_t uniqueId;
 	static char* names;
 
 };

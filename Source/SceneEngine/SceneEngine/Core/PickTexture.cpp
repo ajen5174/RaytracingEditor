@@ -1,5 +1,6 @@
 #include "PickTexture.h"
 #include <cstddef>
+#include "../EngineLibrary.h"
 
 PickTexture::PickTexture()
 {
@@ -28,6 +29,12 @@ bool PickTexture::Initialize(int windowHeight, int windowWidth)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, windowWidth, windowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
 
+    //glGenRenderbuffers(1, &depthTexture);
+    //glBindRenderbuffer(GL_RENDERBUFFER, depthTexture);
+    //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, windowWidth, windowHeight);
+    //glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthTexture);
+
     glReadBuffer(GL_NONE);
 
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
@@ -35,6 +42,7 @@ bool PickTexture::Initialize(int windowHeight, int windowWidth)
     GLenum Status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
     if (Status != GL_FRAMEBUFFER_COMPLETE) {
+        PrintDebugMessage("Pick FrameBuffer did not complete");
         return false;
     }
 
@@ -54,13 +62,13 @@ void PickTexture::DisableWriting()
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
-float PickTexture::ReadPixel(int x, int y)
+PickTexture::PickInfo PickTexture::ReadPixel(int x, int y)
 {
     //bind the buffer to READ
     glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
     glReadBuffer(GL_COLOR_ATTACHMENT0);
 
-    float pixel[3] = { 0.0f };
+    PickInfo pixel;
     //this lets us read the pixels
     glReadPixels(x, y, 1, 1, GL_RGB, GL_FLOAT, &pixel);
 

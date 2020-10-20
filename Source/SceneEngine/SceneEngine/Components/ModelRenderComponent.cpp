@@ -1,5 +1,6 @@
 #include "ModelRenderComponent.h"
 #include "../Core/Scene.h"
+#include "../EngineLibrary.h"
 
 
 ModelRenderComponent::ModelRenderComponent(StringId& name, Entity* owner)
@@ -27,6 +28,29 @@ ModelRenderComponent::ModelRenderComponent(StringId& name, Entity* owner)
 	shader->CreateFromFile(fragPath, GL_FRAGMENT_SHADER);
 	shader->Link();
 	shader->Use();
+
+
+	char* pickVertexSource;
+#ifdef _WINDLL
+	std::string pickVertexPath("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\picking.vert");
+#else
+	std::string pickVertexPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\picking.vert");
+#endif
+
+	char* pickFragSource;
+#ifdef _WINDLL
+	std::string pickFragPath("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\picking.frag");
+#else
+	std::string pickFragPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\picking.frag");
+#endif
+
+
+	StringId pickName = "PickShader";
+	pickShader = new Shader(pickName);
+	pickShader->CreateFromFile(pickVertexPath, GL_VERTEX_SHADER);
+	pickShader->CreateFromFile(pickFragPath, GL_FRAGMENT_SHADER);
+	pickShader->Link();
+	pickShader->Use();
 }
 
 void ModelRenderComponent::Update()
@@ -34,20 +58,34 @@ void ModelRenderComponent::Update()
 	Transform* trans = owner->GetComponent<Transform>();
 	Scene* scene = owner->GetScene();
 
-	//Camera* cam = scene->GetMainCamera();
-	Camera* cam = owner->GetComponent<Camera>();
+	Camera* cam = scene->GetMainCamera();
+	//Camera* cam = owner->GetComponent<Camera>();
 
 	glm::mat4 modelViewMatrix = cam->viewMatrix * trans->GetMatrix();
-	glm::mat4 mvpMatrix = cam->projectionMatrix * modelViewMatrix;
+	glm::mat4 mvpMatrix = cam->projectionMatrix * cam->viewMatrix * trans->GetMatrix();
 
-	shader->SetUniform("model", trans->GetMatrix());
-	shader->SetUniform("view", cam->viewMatrix);
-	shader->SetUniform("projection", cam->projectionMatrix);
+	shader->Use();
+	shader->SetUniform("mvp", mvpMatrix);
+
+	pickShader->Use();
+	pickShader->SetUniform("mvp", mvpMatrix);
 }
 
 void ModelRenderComponent::Draw()
 {
 	//use shader
 	shader->Use();
+	if (!owner->selected)
+	{
+		model->Draw();
+	}
+}
+
+void ModelRenderComponent::DrawPick()
+{
+	//use shader
+	pickShader->Use();
+	//PrintDebugMessage(std::to_string(owner->GetName().GetFloatId()));
+	pickShader->SetUniform("objectID", owner->GetName().GetFloatId());
 	model->Draw();
 }

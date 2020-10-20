@@ -32,6 +32,20 @@ void Entity::Draw()
 
 }
 
+void Entity::DrawPick()
+{
+	RenderComponent* renderComponent = GetComponent<RenderComponent>();
+	if (renderComponent)
+	{
+		renderComponent->DrawPick();
+	}
+
+	for (Entity* child : children)
+	{
+		child->DrawPick();
+	}
+}
+
 void Entity::AddComponent(Component* component)
 {
 	if (component != nullptr)

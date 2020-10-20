@@ -4,6 +4,20 @@
 class PickTexture
 {
 public:
+	struct PickInfo
+	{
+		float objectID;
+		float drawID;
+		float primitiveID;
+
+		PickInfo()
+		{
+			objectID = 0.0f;
+			drawID = 0.0f;
+			primitiveID = 0.0f;
+		}
+	};
+
 	PickTexture();
 	~PickTexture();
 
@@ -12,8 +26,9 @@ public:
 	void EnableWriting();
 
 	void DisableWriting();
+	
+	PickInfo ReadPixel(int x, int y);
 
-	float ReadPixel(int x, int y);
 
 private:
 	GLuint fbo;

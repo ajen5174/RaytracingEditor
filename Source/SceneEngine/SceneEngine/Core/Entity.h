@@ -31,6 +31,7 @@ public:
 
 	void Update();
 	void Draw();
+	void DrawPick();
 	void AddComponent(Component* component);
 	void RemoveComponent(Component* component);
 	std::vector<Entity*> GetChildren();
@@ -53,8 +54,6 @@ public:
 	//Transform transform;
 	//Transform localTransform;
 	bool selected = false;
-
-protected:
 	Scene* scene;
 
 private:

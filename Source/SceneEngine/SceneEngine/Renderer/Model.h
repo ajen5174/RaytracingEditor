@@ -17,7 +17,7 @@ public:
 
 
 
-private:
+public:
 	//texture
 	//material
 	Mesh* mesh;

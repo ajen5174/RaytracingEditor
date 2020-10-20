@@ -8,6 +8,7 @@ public:
 	RenderComponent(StringId& name, Entity* owner) : Component(name, owner) { }
 
 	virtual void Draw() = 0;
+	virtual void DrawPick() = 0;
 
 };
 #endif
