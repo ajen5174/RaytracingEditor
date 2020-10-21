@@ -101,49 +101,38 @@ void ModelRenderComponent::Update()
 
 void ModelRenderComponent::Draw()
 {
-	//use shader
-	//if (!owner->selected)
-	{
-	}
+	
 
 	if (owner->selected)
 	{
+		//stencil set up
 		glEnable(GL_STENCIL_TEST);
 		glEnable(GL_DEPTH_TEST);
 		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-		//glClearStencil(0);
-		//glClear();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
 		glStencilMask(0x00);
 
 		// Render the mesh into the stencil buffer.
-
-		
-
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glStencilMask(0xFF);
-
+		//use the normal shader. This renders to the normal AND stencil buffer.
 		shader->Use();
 		model->Draw();
 
-		// Render the thick wireframe version.
-
+		// Render the same mesh with a shader that will scale it out
+			//use the stencil here to prevent writing to any pixel that has the model we drew in it.
 		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 		glStencilMask(0x00);
 		glDisable(GL_DEPTH_TEST);
-		//glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-		//glLineWidth(3);
-		//glPolygonMode(GL_FRONT, GL_LINE);
+		//use the outline shader
 		outlineShader->Use();
 		Scene* scene = owner->GetScene();
-
 		Camera* cam = scene->GetMainCamera();
-		Transform* outline = owner->GetComponent<Transform>()->Clone();
-		outline->scale *= glm::vec3(1.1f);
-		glm::mat4 mvpMatrix = cam->projectionMatrix * cam->viewMatrix * outline->GetMatrix();
+		glm::mat4 mvpMatrix = cam->projectionMatrix * cam->viewMatrix * owner->GetComponent<Transform>()->GetMatrix();
 		outlineShader->SetUniform("mvp", mvpMatrix);
+		//draw
 		model->Draw();
+		//reset stencil nonsense
 		glStencilMask(0xFF);
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);
 		glEnable(GL_DEPTH_TEST);
