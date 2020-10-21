@@ -47,14 +47,15 @@ ENGINE_DLL void SetFloatData(float entityID, int component, float* data, int siz
 		break;
 
 	case ComponentType::TRANSFORM:
-		Transform* t = entity->GetComponent<Transform>();
-
-		t->translation = glm::vec3(data[0], data[1], data[2]);
-		PrintDebugMessage("translation set");
 		if (size < 9)
 			return;
 
-		t->rotation = glm::vec3(data[3], data[4], data[5]);
+		Transform* t = entity->GetComponent<Transform>();
+
+		t->translation = glm::vec3(data[0], data[1], data[2]);
+		//PrintDebugMessage("translation set");
+
+		t->rotation = glm::vec3(glm::radians(data[3]), glm::radians(data[4]), glm::radians(data[5]));
 
 		t->scale = glm::vec3(data[6], data[7], data[8]);
 
@@ -86,7 +87,7 @@ ENGINE_DLL void GetFloatData(float entityID, int component, float* data, int siz
 		data[4] = rotation.y;
 		data[5] = rotation.z;
 
-		PrintDebugMessage(std::to_string(rotation.z));
+		//PrintDebugMessage(std::to_string(rotation.z));
 
 		data[6] = t->scale.x;
 		data[7] = t->scale.y;
@@ -204,6 +205,7 @@ bool InitializeGraphics()
 	}
 
 	//
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -217,9 +219,13 @@ bool InitializeGraphics()
 	}
 	
 
+	//glEnable(GL_DEPTH_TEST);
+	//glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 	//glEnable(GL_CULL_FACE);
 	//glFrontFace(GL_CCW);
@@ -290,13 +296,13 @@ void RunEngine()
 
 		//render picking stuff
 		pick->EnableWriting();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		scene->DrawPick();
 		pick->DisableWriting();
 
 		//draw
 		glClearColor(color1[0], color1[1], color1[2], 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		scene->Draw();
 

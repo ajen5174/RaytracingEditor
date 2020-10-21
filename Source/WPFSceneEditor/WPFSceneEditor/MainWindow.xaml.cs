@@ -127,6 +127,13 @@ namespace WPFSceneEditor
 			TranslationBoxY.Text = "" + data[1];
 			TranslationBoxZ.Text = "" + data[2];
 
+			RotationBoxX.Text = "" + data[3];
+			RotationBoxY.Text = "" + data[4];
+			RotationBoxZ.Text = "" + data[5];
+
+			ScaleBoxX.Text = "" + data[6];
+			ScaleBoxY.Text = "" + data[7];
+			ScaleBoxZ.Text = "" + data[8];
 
 			//DebugOutput.Text += "DATA: " + data[5] + "\n";
 
@@ -139,8 +146,20 @@ namespace WPFSceneEditor
 			float translationX = float.Parse(TranslationBoxX.Text);
 			float translationY = float.Parse(TranslationBoxY.Text);
 			float translationZ = float.Parse(TranslationBoxZ.Text);
-			float[] data = { translationX, translationY, translationZ};
-			Engine.SetFloatData(selectedEntityID, 1, data, 3);
+
+			float rotationX = float.Parse(RotationBoxX.Text);
+			float rotationY = float.Parse(RotationBoxY.Text);
+			float rotationZ = float.Parse(RotationBoxZ.Text);
+
+			float scaleX = float.Parse(ScaleBoxX.Text);
+			float scaleY = float.Parse(ScaleBoxY.Text);
+			float scaleZ = float.Parse(ScaleBoxZ.Text);
+
+
+			float[] data = { translationX, translationY, translationZ,
+							 rotationX, rotationY, rotationZ,
+							 scaleX, scaleY, scaleZ };
+			Engine.SetFloatData(selectedEntityID, 1, data, 9);
 		}
 	}
 }

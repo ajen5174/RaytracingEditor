@@ -17,6 +17,7 @@ private:
 	Model* model;
 	Shader* shader;
 	Shader* pickShader;
+	Shader* outlineShader;
 };
 
 

@@ -36,6 +36,10 @@ bool Mesh::Load(const aiMesh* mesh)
     vertexArray.Bind();
     vertexArray.SetAttribute(VertexArray::eAttrib::POSITION, 3, 3 * sizeof(float), 0);
 
+    vertexArray.CreateBuffer(VertexArray::eAttrib::NORMAL, (sizeof(float) * 3) * mesh->mNumVertices, mesh->mNumVertices, &mesh->mNormals[0].x);
+    vertexArray.Bind();
+    vertexArray.SetAttribute(VertexArray::eAttrib::NORMAL, 3, 3 * sizeof(float), 0);
+
 
 
     return false;

@@ -199,12 +199,12 @@
     <ClCompile Include="Renderer\VertexIndexArray.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\fragment.frag" />
+    <None Include="Shaders\outline.frag" />
     <None Include="Shaders\matrix_fragment.frag" />
     <None Include="Shaders\matrix_vertex.vert" />
     <None Include="Shaders\picking.frag" />
     <None Include="Shaders\picking.vert" />
-    <None Include="Shaders\vertex.vert" />
+    <None Include="Shaders\outline.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

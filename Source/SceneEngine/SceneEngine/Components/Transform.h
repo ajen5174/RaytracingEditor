@@ -33,6 +33,11 @@ public:
 		return *this;
 	};
 
+	inline Transform* Clone()
+	{
+		return new Transform(name, owner, translation, rotation, scale);
+	}
+
 	std::string ToString();
 
 	// Inherited via Component

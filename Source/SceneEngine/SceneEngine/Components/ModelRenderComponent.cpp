@@ -53,6 +53,29 @@ ModelRenderComponent::ModelRenderComponent(StringId& name, Entity* owner)
 	pickShader->Use();
 	pickShader->SetUniform("objectID", owner->GetName().GetFloatId());
 
+
+	char* outlineVertexSource;
+#ifdef _WINDLL
+	std::string outlineVertexPath("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\outline.vert");
+#else
+	std::string outlineVertexPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\outline.vert");
+#endif
+
+	char* outlineFragSource;
+#ifdef _WINDLL
+	std::string outlineFragPath("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\outline.frag");
+#else
+	std::string outlineFragPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\outline.frag");
+#endif
+
+
+	StringId outlineName = "OutlineShader";
+	outlineShader = new Shader(outlineName);
+	outlineShader->CreateFromFile(outlineVertexPath, GL_VERTEX_SHADER);
+	outlineShader->CreateFromFile(outlineFragPath, GL_FRAGMENT_SHADER);
+	outlineShader->Link();
+	outlineShader->Use();
+
 }
 
 void ModelRenderComponent::Update()
@@ -68,19 +91,71 @@ void ModelRenderComponent::Update()
 
 	shader->Use();
 	shader->SetUniform("mvp", mvpMatrix);
+	shader->SetUniform("mv", modelViewMatrix);
+	shader->SetUniform("lightPosition", glm::vec3(2.0f, 2.0f, 2.0f));
 
 	pickShader->Use();
 	pickShader->SetUniform("mvp", mvpMatrix);
+	pickShader->SetUniform("mv", modelViewMatrix);
 }
 
 void ModelRenderComponent::Draw()
 {
 	//use shader
-	shader->Use();
 	//if (!owner->selected)
 	{
+	}
+
+	if (owner->selected)
+	{
+		glEnable(GL_STENCIL_TEST);
+		glEnable(GL_DEPTH_TEST);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+		//glClearStencil(0);
+		//glClear();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
+		glStencilMask(0x00);
+
+		// Render the mesh into the stencil buffer.
+
+		
+
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glStencilMask(0xFF);
+
+		shader->Use();
+		model->Draw();
+
+		// Render the thick wireframe version.
+
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		glStencilMask(0x00);
+		glDisable(GL_DEPTH_TEST);
+		//glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+		//glLineWidth(3);
+		//glPolygonMode(GL_FRONT, GL_LINE);
+		outlineShader->Use();
+		Scene* scene = owner->GetScene();
+
+		Camera* cam = scene->GetMainCamera();
+		Transform* outline = owner->GetComponent<Transform>()->Clone();
+		outline->scale *= glm::vec3(1.1f);
+		glm::mat4 mvpMatrix = cam->projectionMatrix * cam->viewMatrix * outline->GetMatrix();
+		outlineShader->SetUniform("mvp", mvpMatrix);
+		model->Draw();
+		glStencilMask(0xFF);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glEnable(GL_DEPTH_TEST);
+
+
+	}
+	else
+	{
+		shader->Use();
 		model->Draw();
 	}
+	
 }
 
 void ModelRenderComponent::DrawPick()

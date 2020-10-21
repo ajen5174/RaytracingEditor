@@ -130,12 +130,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\fragment.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\vertex.vert">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="Shaders\matrix_fragment.frag">
       <Filter>Shaders</Filter>
     </None>
@@ -146,6 +140,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\picking.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\outline.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\outline.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
