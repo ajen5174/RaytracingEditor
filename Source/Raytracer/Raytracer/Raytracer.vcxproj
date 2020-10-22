@@ -55,6 +55,8 @@
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
+      <PtxAsOptionV>false</PtxAsOptionV>
+      <GenerateRelocatableDeviceCode>false</GenerateRelocatableDeviceCode>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -86,13 +88,11 @@
     <ClInclude Include="Math\Sphere.h" />
     <ClInclude Include="Math\vec3.h" />
     <ClInclude Include="Raytracer.h" />
+    <ClInclude Include="Renderer\Camera.h" />
     <ClInclude Include="Renderer\Hittable.h" />
     <ClInclude Include="Renderer\Material.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Math\Ray.cpp" />
-    <ClCompile Include="Math\Sphere.cpp" />
-    <ClCompile Include="Math\vec3.cpp" />
     <CudaCompile Include="Raytracer.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

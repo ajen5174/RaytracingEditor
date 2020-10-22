@@ -6,11 +6,13 @@
 #include <time.h>
 #include <iostream>
 #include <fstream>
+#include "Math/vec3.h"
+#include "Renderer/Camera.h"
+
 
 #define CheckCudaErrors(val) CheckCuda( (val), #val, __FILE__, __LINE__ )
 void CheckCuda(cudaError_t result, char const* const func, const char* const file, int const line);
 
-__global__ void Render(float* frameBuffer, int width, int height);
 class Raytracer
 {
 public:
@@ -26,7 +28,7 @@ private:
 public:
 	int width;
 	int height;
-	float* frameBuffer;
+	vec3* frameBuffer;
 
 private:
 	std::string renderPath;

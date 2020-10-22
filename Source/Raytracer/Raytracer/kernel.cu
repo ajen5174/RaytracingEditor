@@ -1,13 +1,9 @@
 
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
 
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
 #include <time.h>
-#include "Math/vec3.h"
-#include "Math/Ray.h"
 #include "Raytracer.h"
 
 

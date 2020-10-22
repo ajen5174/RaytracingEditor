@@ -28,13 +28,11 @@
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="Raytracer.h" />
+    <ClInclude Include="Renderer\Camera.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Math\Sphere.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
     <ClCompile Include="Raytracer.cpp" />
-    <ClCompile Include="Math\Ray.cpp" />
-    <ClCompile Include="Math\vec3.cpp" />
   </ItemGroup>
 </Project>

@@ -1,10 +1,10 @@
 #pragma once
 #include "../Renderer/Hittable.h"
 
-class Sphere : Hittable
+class Sphere : public Hittable
 {
 public:
-	Sphere(vec3& center, float radius) : center(center), radius(radius) {}
+	__device__ Sphere(vec3& center, float radius) : center(center), radius(radius) {}
 
 
 public:
@@ -12,7 +12,10 @@ public:
 	float radius;
 
 	// Inherited via Hittable
-	virtual bool Hit(Ray& ray, float minDist, float maxDist, HitInfo& hitInfo) override;
+	__device__ virtual bool Hit(const Ray& ray, float minDist, float maxDist, HitInfo& hitInfo) override
+	{
+		return false;
+	}
 	//Texture* texture;
 	//Material* material;
 };
