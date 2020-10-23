@@ -8,10 +8,11 @@ struct HitInfo
 	vec3 point;
 	vec3 normal;
 	Material* material;
+	float u = -1.0f, v = -1.0f, w = -1.0f; //for triangle barycentric coordinates
 };
 
 class Hittable
 {
 public:
-	__device__ virtual bool Hit(const Ray& ray, float minDist, float maxDist, HitInfo& hitInfo) = 0;
+	__host__ __device__ virtual bool Hit(const Ray& ray, float minDist, float maxDist, HitInfo& hitInfo) = 0;
 };

@@ -1,33 +1,57 @@
 #include "Raytracer.h"
 #include "Math/Sphere.h"
+#include "Math/Triangle.h"
 
 
 
-__global__ void CreateWorld(Hittable** object, Camera** cam, int width, int height)
+__global__ void CreateWorld(Hittable** object, Hittable** object2, Camera** cam, int width, int height)
 {
     *cam = new Camera(vec3(0.0f), vec3(0.0f), vec3(0.0f), 45.0f, (float)width / (float)height);
-    *object = new Sphere(vec3(0.0f, 0.0f, -1.0f), 0.5f);
+    //*object = new Sphere(vec3(0.0f, 0.0f, -1.0f), 0.5f);
+    *object = new Triangle(vec3(-0.5f, -0.5f, -1.0f), vec3(0.5f, -0.5f, -1.0f), vec3(0.0f, 0.5f, -1.0f));
+    *object2 = new Triangle(vec3(-0.5f, -0.5f, -1.0f), vec3(-1.75f, 0.0f, -3.0f), vec3(0.0f, 0.5f, -1.0f));
+
 }
 
 
-__device__ vec3 GetColor(Hittable** object, const Ray& r)
+__device__ vec3 GetColor(Hittable** object, Hittable** object2, const Ray& r)
 {
     HitInfo info;
-    if((*object)->Hit(r, 0.0f, 100.0f, info))
-        return vec3(1.0f, 0.0f, 0.0f);
+    if ((*object)->Hit(r, 0.0f, 100.0f, info))
+    {
+        if (info.u >= 0.0f)
+        {
+            return (info.normal + vec3(1.0f)) / 2.0f;
+            return vec3(1.0f * info.u, 1.0f * info.v, 1.0f * info.w);
+        }
+    }
+    else
+    {
+        if ((*object2)->Hit(r, 0.0f, 100.0f, info))
+        {
+
+            if (info.u >= 0.0f)
+            {
+                return (info.normal + vec3(1.0f)) / 2.0f;
+                return vec3(1.0f * info.u, 1.0f * info.v, 1.0f * info.w);
+            }
+        }
+    }
+    
     vec3 unitDir = Normalize(r.direction);
     float t = 0.5f * (unitDir.y + 1.0f);//based on how high it is, change the weight of the color from white to light blue
     return (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);
 }
 
-__global__ void Render(vec3* frameBuffer, int width, int height, Camera** cam, Hittable** object) {
+__global__ void Render(vec3* frameBuffer, int width, int height, Camera** cam, Hittable** object, Hittable** object2) {
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     int j = threadIdx.y + blockIdx.y * blockDim.y;
     if ((i >= width) || (j >= height)) return;
     int pixel_index = j * width + i;
     float u = (float)i / (float)width;
     float v = (float)j / (float)height;
-    frameBuffer[pixel_index] = GetColor(object, (*cam)->GetRay(u, v));
+    frameBuffer[pixel_index] = GetColor(object, object2, (*cam)->GetRay(u, v));
+
 }
 
 
@@ -59,7 +83,6 @@ Raytracer::Raytracer(std::string sceneToLoad, std::string renderPath)
 
 bool Raytracer::StartRender()
 {
-
     width = 800;
     height = 600;
     int numPixels = width * height;
@@ -76,15 +99,18 @@ bool Raytracer::StartRender()
     Camera** cam;
     CheckCudaErrors(cudaMalloc((void**)&cam, sizeof(Camera*)));
 
-    Hittable** sphere;
-    CheckCudaErrors(cudaMalloc((void**)&sphere, sizeof(Hittable*)));
+    Hittable** object;
+    CheckCudaErrors(cudaMalloc((void**)&object, sizeof(Hittable*)));
+    
+    Hittable** object2;
+    CheckCudaErrors(cudaMalloc((void**)&object2, sizeof(Hittable*)));
 
-    CreateWorld<<<1, 1>>>(sphere, cam, width, height);
+    CreateWorld<<<1, 1>>>(object, object2, cam, width, height);
 
     dim3 blocks(width / threadX + 1, height / threadY + 1);
     dim3 threads(threadX, threadY);
 
-    Render <<<blocks, threads>>> (frameBuffer, width, height, cam, sphere);
+    Render <<<blocks, threads>>> (frameBuffer, width, height, cam, object, object2);
     CheckCudaErrors(cudaGetLastError());
     CheckCudaErrors(cudaDeviceSynchronize());
     stop = clock();

@@ -86,6 +86,7 @@
   <ItemGroup>
     <ClInclude Include="Math\Ray.h" />
     <ClInclude Include="Math\Sphere.h" />
+    <ClInclude Include="Math\Triangle.h" />
     <ClInclude Include="Math\vec3.h" />
     <ClInclude Include="Raytracer.h" />
     <ClInclude Include="Renderer\Camera.h" />

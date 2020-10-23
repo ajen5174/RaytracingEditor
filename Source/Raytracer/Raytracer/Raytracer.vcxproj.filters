@@ -31,6 +31,9 @@
     <ClInclude Include="Renderer\Camera.h">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Math\Triangle.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Raytracer.cpp" />

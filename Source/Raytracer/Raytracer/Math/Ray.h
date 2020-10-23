@@ -23,10 +23,10 @@ __device__ inline vec3 reflect(const vec3& direction, const vec3& normal)
 class Ray
 {
 public:
-	__device__ Ray() : origin(vec3(0.0f)), direction(vec3(0.0f)) {}
-	__device__ Ray(vec3& origin, vec3& direction) : origin(origin), direction(direction) {}
+	__host__ __device__ Ray() : origin(vec3(0.0f)), direction(vec3(0.0f)) {}
+	__host__ __device__ Ray(vec3& origin, vec3& direction) : origin(origin), direction(direction) {}
 
-	__device__ vec3 PointAt(float t)
+	__host__ __device__ vec3 PointAt(float t) const
 	{
 		return origin + (direction * t);
 	}
