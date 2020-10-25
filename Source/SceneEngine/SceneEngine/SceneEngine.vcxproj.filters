@@ -126,7 +126,7 @@
       <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Core\PickTexture.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

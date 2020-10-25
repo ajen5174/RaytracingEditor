@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <CudaCompile Include="kernel.cu" />
+    <CudaCompile Include="Raytracer.cu" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Math">
@@ -34,8 +35,8 @@
     <ClInclude Include="Math\Triangle.h">
       <Filter>Math</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Raytracer.cpp" />
+    <ClInclude Include="Renderer\Mesh.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

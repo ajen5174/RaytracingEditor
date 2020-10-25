@@ -5,13 +5,14 @@
 class Triangle : public Hittable
 {
 public:
-	__host__ __device__ Triangle() {}
+	__host__ __device__ Triangle() : Hittable() {}
 	__host__ __device__ Triangle(vec3 v1, vec3 v2, vec3 v3) 
+		: Hittable()
 	{
 		vertices[0] = v1;
 		vertices[1] = v2;
 		vertices[2] = v3;
-		normal = Cross(v1, v2).UnitVector();
+		normal = Cross(v2 - v1, v3 - v1).UnitVector();
 	}
 	__host__ __device__ Triangle(vec3 v1, vec3 v2, vec3 v3, vec3 normal)
 	{
@@ -47,6 +48,12 @@ public:
 		float scalar = 1.0f / determinant;
 
 		float t = scalar * Dot(Q, E2);
+
+		if (t > maxDist || t < minDist)
+		{
+			return false;
+		}
+
 		float u = scalar * Dot(P, T);
 		float v = scalar * Dot(Q, D);
 		float w = 1.0f - u - v;
@@ -69,7 +76,7 @@ public:
 		hitInfo.v = v;
 		hitInfo.w = w;
 		hitInfo.point = intersectionPoint;
-		hitInfo.material = material;
+		//hitInfo.material = material;
 		hitInfo.normal = normal;
 		return true;
 	}
@@ -78,7 +85,7 @@ public:
 	vec3 vertices[3];
 
 	//not sure if this is strictly needed, or if it can be replaced with a method call.
-	vec3 averagePosition;
-	Material* material;
+	//vec3 averagePosition;
+	//Material* material;
 	vec3 normal;
 };
