@@ -7,80 +7,100 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-__global__ void FreeWorld(Triangle** triangles, int numVertices, vec3* vertices, Camera** cam)
+__global__ void FreeWorld(Mesh* mesh, Camera** cam)
 {
-    for (int i = 0; i < numVertices; i++)
+    for (int i = 0; i < mesh->numTriangles; i++)
     {
-        delete triangles[i];
+        delete mesh->triangles[i];
     }
 
     delete* cam;
 }
-__global__ void CreateWorld(Triangle** triangles, int numVertices, vec3* vertices, Camera** cam, int width, int height)
+__global__ void CreateWorld(Mesh* mesh, Camera** cam, int width, int height)
 {
     *cam = new Camera(vec3(0.0f), vec3(0.0f), vec3(0.0f), 45.0f, (float)width / (float)height);
-    //*object = new Sphere(vec3(0.0f, 0.0f, -1.0f), 0.5f);
-    //*object = new Triangle(vec3(-0.5f, -0.5f, -1.0f), vec3(0.5f, -0.5f, -1.0f), vec3(0.0f, 0.5f, -1.0f));
-    //*object2 = new Triangle(vec3(-0.5f, -0.5f, -1.0f), vec3(-1.75f, 0.0f, -3.0f), vec3(0.0f, 0.5f, -1.0f));
+    
+    mesh = new Mesh();
     
 
-    for (int i = 0; i < numVertices; i++)
+}
+
+__global__ void CreateMeshTriangles(Mesh* mesh)
+{
+
+    //transform the vertices lmao
+    for (int i = 0; i < mesh->numTriangles * 3; i++)
     {
-        if (i % 3 == 0)
+        mesh->vertices[i].z -= 6.0f;
+    }
+
+    for (int i = 0; i < mesh->numTriangles; i++)
+    {
+        //if (i % 3 == 0)
         {
-            triangles[i / 3] = new Triangle(vertices[i + 0], vertices[i + 1], vertices[i + 2]);
+            mesh->triangles[i] = new Triangle(mesh->vertices[(i * 3) + 0], mesh->vertices[(i * 3) + 1], mesh->vertices[(i * 3) + 2]);
         }
 
 
-        //int triIndex = i / 3;
-        //triangles[triIndex]->vertices[i % 3] = vertices[i];
-        //int x;
     }
 
-    //transform the triangles lmao
-    for (int i = 0; i < numVertices / 3; i++)
+    
+
+    vec3 averagePosition;
+    averagePosition = vec3();
+    for (int i = 0; i < mesh->numTriangles * 3; i++)
     {
-        for (int j = 0; j < 3; j++)
-        {
-            triangles[i]->vertices[j].z -= 4.0f;
-        }
+        averagePosition = averagePosition + mesh->vertices[i];
     }
-
+    averagePosition = averagePosition / (mesh->numTriangles  *3);
+    float boundingRadius = 0.0f;//arbitrarily large number, should be float max, but Im not sure what the macro for that is.
+    for (int i = 0; i < mesh->numTriangles * 3; i++)
+    {
+        float tempRadius = (averagePosition - mesh->vertices[i]).Magnitude();
+        if (tempRadius > boundingRadius)
+            boundingRadius = tempRadius;
+    }
+    mesh->boundingSphere = new Sphere(averagePosition, boundingRadius);
 
 }
 
 
-__device__ vec3 GetColor(Triangle** triangles, int numTriangles, const Ray& r)
+
+__device__ vec3 GetColor(Mesh* mesh, const Ray& r)
 {
     HitInfo info;
     float closestSoFar = 100.0f;
-    for (int i = 0; i < numTriangles; i++)
+    if (mesh->boundingSphere->Hit(r, 0.0f, 100.0f, info))
     {
-        if (triangles[i]->Hit(r, 0.0f, closestSoFar, info))
+        for (int i = 0; i < mesh->numTriangles; i++)
         {
-            closestSoFar = info.distance;
+            if (mesh->triangles[i]->Hit(r, 0.0f, closestSoFar, info))
+            {
+                closestSoFar = info.distance;
+            }
+        }
+
+        if (info.u >= 0.0f)
+        {
+            return (info.normal + vec3(1.0f)) / 2.0f;
+            return vec3(1.0f * info.u, 1.0f * info.v, 1.0f * info.w);
         }
     }
-
-    if (info.u >= 0.0f)
-    {
-        return (info.normal + vec3(1.0f)) / 2.0f;
-        return vec3(1.0f * info.u, 1.0f * info.v, 1.0f * info.w);
-    }
+    
     
     vec3 unitDir = Normalize(r.direction);
     float t = 0.5f * (unitDir.y + 1.0f);//based on how high it is, change the weight of the color from white to light blue
     return (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);
 }
 
-__global__ void Render(vec3* frameBuffer, int width, int height, Camera** cam, Triangle** triangles, int numTriangles) {
+__global__ void Render(vec3* frameBuffer, int width, int height, Camera** cam, Mesh* mesh) {
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     int j = threadIdx.y + blockIdx.y * blockDim.y;
     if ((i >= width) || (j >= height)) return;
     int pixel_index = j * width + i;
     float u = (float)i / (float)width;
     float v = (float)j / (float)height;
-    frameBuffer[pixel_index] = GetColor(triangles, numTriangles, (*cam)->GetRay(u, v));
+    frameBuffer[pixel_index] = GetColor(mesh, (*cam)->GetRay(u, v));
 
 }
 
@@ -125,69 +145,42 @@ bool Raytracer::StartRender()
     clock_t start, stop;
     start = clock();
 
-    
+    //Allocate GPU memory blocks
     Camera** cam;
     CheckCudaErrors(cudaMalloc((void**)&cam, sizeof(Camera*)));
 
-    //model loading?
+    Mesh* mesh;
+    CheckCudaErrors(cudaMallocManaged(&mesh, sizeof(Mesh))); 
 
-    //Mesh** mesh;
-    //CheckCudaErrors(cudaMalloc((void**)&mesh, sizeof(Mesh*)));
+    CreateWorld<<<1, 1>>>(mesh, cam, width, height); //"new up" GPU memory (necessary for vtable access on GPU)
+    CheckCudaErrors(cudaDeviceSynchronize());
 
-
+    //read in memory
     std::string modelPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Content\\Meshes\\suzanne.obj");
-    Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
-    
-    int numVertices = scene->mMeshes[0]->mNumVertices;
-    //vec3* vertices = new vec3[numVertices];
-    vec3* vertices;// = new Triangle[numVertices / 3];
-    CheckCudaErrors(cudaMallocManaged(&vertices, (numVertices) * sizeof(vec3)));
+    CreateMesh(modelPath, mesh);//assign CPU/read-in memory to GPU allocated memory
+    CreateMeshTriangles << <1, 1 >> > (mesh);//use CPU/read-in memory to create C++ objects on the GPU
 
-    for (int i = 0; i < scene->mMeshes[0]->mNumVertices; i++)
-    {
-        aiVector3D temp = scene->mMeshes[0]->mVertices[i];
-        vertices[i].x = temp.x;
-        vertices[i].y = temp.y;
-        vertices[i].z = temp.z;
-    }
+    std::cout << "Mesh loaded.\n";
 
-    //float* floatVertices = new float[numVertices * 3];
-
-
-
-    Triangle** triangles;// = new Triangle[numVertices / 3];
-    CheckCudaErrors(cudaMallocManaged(&triangles, (numVertices / 3) * sizeof(Triangle*)));
-
-
-    
-
-
-    //Hittable** object;
-    //CheckCudaErrors(cudaMalloc((void**)&object, sizeof(Hittable*)));
-    //
-    //Hittable** object2;
-    //CheckCudaErrors(cudaMalloc((void**)&object2, sizeof(Hittable*)));
-
-    CreateWorld<<<1, 1>>>(triangles, numVertices, vertices, cam, width, height);
 
     dim3 blocks(width / threadX + 1, height / threadY + 1);
     dim3 threads(threadX, threadY);
-
-    Render <<<blocks, threads>>> (frameBuffer, width, height, cam, triangles, numVertices / 3);
+    std::cout << "Rendering...\n";
+    Render <<<blocks, threads>>> (frameBuffer, width, height, cam, mesh);
     CheckCudaErrors(cudaGetLastError());
     CheckCudaErrors(cudaDeviceSynchronize());
     stop = clock();
     double seconds = ((double)(stop - start)) / CLOCKS_PER_SEC;
     std::cerr << "Render took " << seconds << " seconds.\n";
 
-    FreeWorld << <1, 1 >> > (triangles, numVertices, vertices, cam);
+    FreeWorld << <1, 1 >> > (mesh, cam);
     CheckCudaErrors(cudaGetLastError());
     CheckCudaErrors(cudaDeviceSynchronize());
 
     //CheckCudaErrors(cudaFree(triangles));
-    CheckCudaErrors(cudaFree(vertices));
+    //CheckCudaErrors(cudaFree(vertices));
     //CheckCudaErrors(cudaFree(cam));
+    CheckCudaErrors(cudaFree(mesh));
     
 
     return false;
