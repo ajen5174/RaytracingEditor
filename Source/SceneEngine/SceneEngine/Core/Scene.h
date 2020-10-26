@@ -12,6 +12,8 @@ public:
 	void Draw();
 	void DrawPick();
 	void Add(Entity* entity);
+	void Deselect();
+	void Load(rapidjson::Value& value);
 	Entity* Remove(Entity* entity, bool destroy = true);
 	Entity* GetEntityByName(uint32_t name);
 	Entity* GetEntityByName(StringId& name);

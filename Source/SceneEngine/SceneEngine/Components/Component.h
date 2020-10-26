@@ -28,11 +28,11 @@ public:
 	ComponentType GetComponentType() { return componentType; }
 
 	// Inherited via Object
-	virtual void Destroy() override;
+	//virtual void Destroy() override;
 
-	virtual bool Load(const rapidjson::Value&) override;
+	//virtual bool Load(const rapidjson::Value&) override;
 
-	virtual void Initialize() override;
+	//virtual void Initialize() override;
 
 private:
 	ComponentType componentType = ComponentType::NONE;

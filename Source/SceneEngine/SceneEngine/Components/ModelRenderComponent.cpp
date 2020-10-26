@@ -6,7 +6,7 @@
 ModelRenderComponent::ModelRenderComponent(StringId& name, Entity* owner)
 	: RenderComponent(name, owner)
 {
-	model = new Model(name.cStr());
+	model = new Model("Model");
 
 	StringId programName = "BasicShader";
 	shader = new Shader(programName);
@@ -157,4 +157,17 @@ void ModelRenderComponent::DrawPick()
 		model->Draw();
 	}
 
+}
+
+bool ModelRenderComponent::Load(const rapidjson::Value&)
+{
+	return true;
+}
+
+void ModelRenderComponent::Destroy()
+{
+}
+
+void ModelRenderComponent::Initialize()
+{
 }

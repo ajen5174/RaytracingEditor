@@ -1,0 +1,17 @@
+{
+	"entities": [
+	{
+		"name": "testEntity",
+
+		"components": [
+			{
+			"type": "Transform",
+			"translation": [1.0, 1.0, 0.0]
+			},
+			{
+			"type": "ModelRender"
+			}
+		]
+	}
+	]
+}

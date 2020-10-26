@@ -1,4 +1,5 @@
 #include "Transform.h"
+#include "../Core/Json.h"
 
 std::string Transform::ToString()
 {
@@ -11,9 +12,14 @@ void Transform::Destroy()
 {
 }
 
-bool Transform::Load(const rapidjson::Value&)
+bool Transform::Load(const rapidjson::Value& value)
 {
-	return false;
+	glm::vec3 translation;
+	json::GetVec3(value, "translation", translation);
+
+	this->translation = translation;
+	rotation = glm::vec3(0.0f, 0.0f, glm::radians(90.0f));
+	return true;
 }
 
 void Transform::Initialize()

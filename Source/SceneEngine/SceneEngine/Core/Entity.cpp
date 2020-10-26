@@ -1,4 +1,6 @@
 #include "Entity.h"
+#include "../Components/ModelRenderComponent.h"
+#include "Json.h"
 
 
 void Entity::Update()
@@ -89,8 +91,15 @@ void Entity::Destroy()
 	components.clear();
 }
 
-bool Entity::Load(const rapidjson::Value&)
+bool Entity::Load(const rapidjson::Value& value)
 {
+
+	const rapidjson::Value& componentValue = value["components"];
+	if (componentValue.IsArray())
+	{
+		return LoadComponents(componentValue);
+	}
+
 	return false;
 }
 
@@ -99,7 +108,33 @@ void Entity::Initialize()
 
 }
 
-bool Entity::LoadComponents(rapidjson::Value& value)
+bool Entity::LoadComponents(const rapidjson::Value& value)
 {
-	return false;
+	for (int i = 0; i < value.Size(); i++)
+	{
+		const rapidjson::Value& componentValue = value[i];
+		std::string componentType;
+
+		json::GetString(componentValue, "type", componentType);
+
+		if (componentType == "Transform")
+		{
+			std::string temp = name.cStr();
+			StringId transformName = (temp + "Transform");
+			Transform* transform = new Transform(transformName, this);
+
+			if(transform->Load(componentValue))
+				AddComponent(transform);
+		}
+		else if (componentType == "ModelRender")
+		{
+			StringId rcName = (name.ToString() + "ModelRender");
+			ModelRenderComponent* rc = new ModelRenderComponent(rcName, this);
+			if(rc->Load(componentValue))
+				AddComponent(rc);
+		}
+	}
+	
+
+	return true;
 }

@@ -119,6 +119,8 @@ namespace WPFSceneEditor
 		private void EntitySelect(float entityID)
 		{
 			selectedEntityID = entityID;
+			if (entityID == 0)
+				return;
 
 			float[] data = new float[9];
 			Engine.GetFloatData(selectedEntityID, 1, data, 9);
@@ -143,17 +145,35 @@ namespace WPFSceneEditor
 
 		private void TranslationBox_KeyUp(object sender, KeyEventArgs e)
 		{
-			float translationX = float.Parse(TranslationBoxX.Text);
-			float translationY = float.Parse(TranslationBoxY.Text);
-			float translationZ = float.Parse(TranslationBoxZ.Text);
+			float translationX;
+			if (!float.TryParse(TranslationBoxX.Text, out translationX))
+				return;
+			float translationY;
+			if (!float.TryParse(TranslationBoxY.Text, out translationY))
+				return;
+			float translationZ;
+			if (!float.TryParse(TranslationBoxZ.Text, out translationZ))
+				return;
 
-			float rotationX = float.Parse(RotationBoxX.Text);
-			float rotationY = float.Parse(RotationBoxY.Text);
-			float rotationZ = float.Parse(RotationBoxZ.Text);
+			float rotationX;
+			if (!float.TryParse(RotationBoxX.Text, out rotationX))
+				return;
+			float rotationY;
+			if (!float.TryParse(RotationBoxY.Text, out rotationY))
+				return;
+			float rotationZ;
+			if (!float.TryParse(RotationBoxZ.Text, out rotationZ))
+				return;
 
-			float scaleX = float.Parse(ScaleBoxX.Text);
-			float scaleY = float.Parse(ScaleBoxY.Text);
-			float scaleZ = float.Parse(ScaleBoxZ.Text);
+			float scaleX;
+			if (!float.TryParse(ScaleBoxX.Text, out scaleX))
+				return;
+			float scaleY;
+			if (!float.TryParse(ScaleBoxY.Text, out scaleY))
+				return;
+			float scaleZ;
+			if (!float.TryParse(ScaleBoxZ.Text, out scaleZ))
+				return;
 
 
 			float[] data = { translationX, translationY, translationZ,

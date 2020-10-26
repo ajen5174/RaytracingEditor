@@ -48,7 +48,7 @@ public:
 	virtual void Initialize() override;
 
 private:
-	bool LoadComponents(rapidjson::Value& value);
+	bool LoadComponents(const rapidjson::Value& value);
 
 public:
 	//Transform transform;

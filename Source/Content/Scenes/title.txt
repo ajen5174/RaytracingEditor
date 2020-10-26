@@ -1,0 +1,93 @@
+{
+	"entities": [
+	{
+		"name": "title",
+		"type": "entity",
+		"tag": "ui",
+		"spawner": false,
+		"state": "active|visible",
+		"transform": {
+		"position": [400.0, 300.0],
+		"rotation": 0.0,
+		"scale": [0.6, 0.6]
+		},
+		"components": [
+			{
+			"type": "text_component",
+			"font_name": "fonts/emulogic.ttf",
+			"texture_name_base": "text_texture",
+			"text": "SPACE BLASTER",
+			"origin": [0.5, 0.5],
+			"color": [1.0, 1.0, 1.0],
+			"z": 100
+			}
+		]
+	},
+	{
+		"name": "start_message",
+		"type": "entity",
+		"tag": "ui",
+		"spawner": false,
+		"state": "active|visible",
+		"transform": {
+		"position": [400.0, 450.0],
+		"rotation": 0.0,
+		"scale": [0.6, 0.6]
+		},
+		"components": [
+			{
+			"type": "text_component",
+			"font_name": "fonts/emulogic.ttf",
+			"texture_name_base": "text_texture",
+			"text": "PRESS 'B' TO BEGIN",
+			"origin": [0.5, 0.5],
+			"color": [1.0, 1.0, 1.0],
+			"z":100
+			}
+		]
+	},
+	{
+		"name": "start_message2",
+		"type": "entity",
+		"tag": "ui",
+		"spawner": false,
+		"state": "active|visible",
+		"transform": {
+		"position": [400.0, 500.0],
+		"rotation": 0.0,
+		"scale": [0.6, 0.6]
+		},
+		"components": [
+			{
+			"type": "text_component",
+			"font_name": "fonts/emulogic.ttf",
+			"texture_name_base": "text_texture",
+			"text": "PRESS 'ESC' TO QUIT ANYTIME",
+			"origin": [0.5, 0.5],
+			"color": [1.0, 1.0, 1.0],
+			"z": 100
+			}
+		]
+	},
+	{
+		"name": "background",
+		"type": "entity",
+		"tag": "background",
+		"spawner": false,
+		"state": "active|visible",
+		"transform": {
+		"position": [400.0, 300.0],
+		"rotation": 0.0,
+		"scale": [1.0, 1.0]
+		},
+		"components": [
+			{
+			"type": "sprite_component",
+			"texture_name": "textures/space02.jpg",
+			"origin": [0.5, 0.5],
+			"z": 0
+			}
+		]
+	}
+	]
+}

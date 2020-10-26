@@ -14,6 +14,10 @@
 #include "Core/PickTexture.h"
 #include "Core/scene.h"
 
+#include "rapidjson/istreamwrapper.h"
+
+#include "Core/Json.h"
+
 float color1[] = { 0.2f, 0.3f, 0.3f };
 
 static SDL_Window* engineWindow = nullptr;
@@ -236,27 +240,25 @@ bool InitializeGraphics()
 
 void RunEngine()
 {
+	
 	StringId::AllocNames();
 
 	scene = new Scene();
-	
+
+	std::string path = "C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Content\\Scenes\\scene.txt";
+	rapidjson::Document doc;
+	if (json::LoadFromFile(path, doc))
+	{
+		scene->Load(doc);
+	}
+	else
+	{
+		PrintDebugMessage("Error reading scene file");
+	}
 
 
-	StringId entityName = "TestingEntity";
-	Entity* testEntity = new Entity(entityName);
 	StringId transformName = "TestingTransform";
-	Transform* testTransform = new Transform(transformName, testEntity);
-	testTransform->translation = glm::vec3(0.0f, 0.0f, -2.0f);
-	testTransform->rotation = glm::vec3(0.0f, 0.0f, glm::radians(90.0f));
-	testEntity->AddComponent(testTransform);
 
-	PrintDebugMessage(testEntity->GetComponent<Transform>()->ToString());
-
-
-	//Model* model = new Model(modelPath);
-	StringId rcName = "RenderComponent";
-	ModelRenderComponent* rc = new ModelRenderComponent(rcName, testEntity);
-	testEntity->AddComponent(rc);
 
 	StringId camEntityName = "CamEntity";
 	Entity* camEntity = new Entity(camEntityName);
@@ -276,7 +278,7 @@ void RunEngine()
 	//glm::mat4 trans = glm::mat4(1.0f);
 	//trans = glm::rotate(trans, glm::radians(0.05f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-	scene->Add(testEntity);
+	//scene->Add(testEntity);
 	scene->Add(camEntity);
 	scene->mainCamera = cam;
 
@@ -321,8 +323,6 @@ void RunEngine()
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 		{
-
-
 			//color1[1] = 1.0f;
 			//loop through entities to deselect, then check for selection
 			//testEntity->selected = false;
@@ -337,11 +337,14 @@ void RunEngine()
 			//PrintDebugMessage("ID of suzanne: " + std::to_string(testEntity->GetName().GetId()));
 			if (selected)
 			{
+				PrintDebugMessage("Selected ID: " +std::to_string(idRead));
 				EntitySelect(idRead);
 				selected->selected = true;
 			}
 			else
 			{
+				scene->Deselect();
+				EntitySelect(0);
 				PrintDebugMessage("failed to find ID: " + std::to_string(idRead));
 			}
 		}

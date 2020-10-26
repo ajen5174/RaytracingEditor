@@ -1,4 +1,6 @@
 #include "Scene.h"
+#include "../EngineLibrary.h"
+#include "Json.h"
 
 void Scene::Update()
 {
@@ -31,6 +33,56 @@ void Scene::Add(Entity* entity)
 		entity->scene = this;
 		entities.push_back(entity);
 	}
+}
+
+void Scene::Deselect()
+{
+	for (Entity* e : entities)
+	{
+		e->selected = false;
+	}
+}
+
+void Scene::Load(rapidjson::Value& value)
+{
+	PrintDebugMessage("Loading file...");
+	const rapidjson::Value& enititiesArray = value["entities"];
+	if (enititiesArray.IsArray())
+	{
+		for (rapidjson::SizeType i = 0; i < enititiesArray.Size(); i++)
+		{
+			const rapidjson::Value& entityValue = enititiesArray[i];
+			if (entityValue.IsObject())
+			{
+				StringId entityName;
+				json::GetName(entityValue, "name", entityName);
+
+				//StringId testing = "thisshouldwork";
+				Entity* entity = new Entity(entityName);
+				entity->scene = this;
+				if (entity->Load(entityValue))
+				{
+					PrintDebugMessage("Entity Added");
+					Add(entity);
+				}
+				else
+				{
+					PrintDebugMessage("Failed to add entity");
+					delete entity;
+				}
+			}
+			else
+			{
+				PrintDebugMessage("File is not an object" + std::to_string(i));
+			}
+		}
+	}
+	else
+	{
+		PrintDebugMessage("no entities");
+	}
+	PrintDebugMessage("File loaded!");
+
 }
 
 Entity* Scene::Remove(Entity* entity, bool destroy)

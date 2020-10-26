@@ -13,11 +13,18 @@ public:
 	virtual void Draw() override;
 	virtual void DrawPick() override;
 
+	virtual void Destroy() override;
+	virtual void Initialize() override;
+	virtual bool Load(const rapidjson::Value&) override;
+
+
 private:
 	Model* model;
 	Shader* shader;
 	Shader* pickShader;
 	Shader* outlineShader;
+
+
 };
 
 

@@ -78,6 +78,9 @@
     <ClInclude Include="Core\PickTexture.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Json.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -102,9 +105,6 @@
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="Components\Transform.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Components\Component.cpp">
       <Filter>Components</Filter>
     </ClCompile>
     <ClCompile Include="Core\Scene.cpp">
