@@ -10,6 +10,7 @@ public:
 	Object(const StringId& name) : name(name) {}
 	virtual void Destroy() = 0;
 	virtual bool Load(const rapidjson::Value&) = 0;
+	virtual void BuildJSON(rapidjson::Value& v, rapidjson::MemoryPoolAllocator<>& mem) = 0;
 	virtual void Initialize() = 0;
 	
 	StringId& GetName() { return name; };

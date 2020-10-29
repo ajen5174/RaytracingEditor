@@ -49,6 +49,8 @@ public:
 
 	virtual void Update() override;
 
+	virtual void BuildJSON(rapidjson::Value& v, rapidjson::MemoryPoolAllocator<>& mem) override;
+
 public:
 	glm::vec3 translation;
 	glm::quat rotation;

@@ -13,6 +13,7 @@ public:
 	virtual bool Load(const rapidjson::Value&) override;
 	virtual void Destroy() override;
 	virtual void Initialize() override;
+	virtual void BuildJSON(rapidjson::Value& v, rapidjson::MemoryPoolAllocator<>& mem) override;
 
 public:
 	glm::mat4 viewMatrix;

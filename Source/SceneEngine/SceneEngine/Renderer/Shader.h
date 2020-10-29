@@ -13,6 +13,7 @@ public:
 	// Inherited via Object
 	virtual void Destroy() override;
 	virtual bool Load(const rapidjson::Value&) override;
+	virtual void BuildJSON(rapidjson::Value&, rapidjson::MemoryPoolAllocator<>&) override;
 	virtual void Initialize() override;
 
 	void CreateFromFile(const std::string& filename, GLenum shaderType);

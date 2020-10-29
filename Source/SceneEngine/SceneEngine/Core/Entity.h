@@ -44,6 +44,7 @@ public:
 	virtual void Destroy() override;
 
 	virtual bool Load(const rapidjson::Value&) override;
+	virtual void BuildJSON(rapidjson::Value&, rapidjson::MemoryPoolAllocator<>&) override;
 
 	virtual void Initialize() override;
 

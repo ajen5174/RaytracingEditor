@@ -6,7 +6,8 @@
 ModelRenderComponent::ModelRenderComponent(StringId& name, Entity* owner)
 	: RenderComponent(name, owner)
 {
-	model = new Model("Model");
+	StringId modelName = (name.ToString() + "Model");
+	model = new Model(modelName);
 
 	StringId programName = "BasicShader";
 	shader = new Shader(programName);
@@ -159,9 +160,15 @@ void ModelRenderComponent::DrawPick()
 
 }
 
-bool ModelRenderComponent::Load(const rapidjson::Value&)
+bool ModelRenderComponent::Load(const rapidjson::Value& value)
 {
-	return true;
+	return model->Load(value);
+}
+
+void ModelRenderComponent::BuildJSON(rapidjson::Value& v, rapidjson::MemoryPoolAllocator<>& mem)
+{
+	json::BuildCString(v, "type", "ModelRender", mem);
+	model->BuildJSON(v, mem);
 }
 
 void ModelRenderComponent::Destroy()

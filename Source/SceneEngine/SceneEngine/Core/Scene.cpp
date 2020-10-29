@@ -43,6 +43,25 @@ void Scene::Deselect()
 	}
 }
 
+void Scene::BuildJSON(rapidjson::Document& doc)
+{
+
+	rapidjson::Value entityArray;
+	entityArray.SetArray();
+	rapidjson::Value name;
+	name.SetString("entities");
+
+	for (Entity* e : entities)
+	{
+		rapidjson::Value entityValue;
+		entityValue.SetObject();
+		e->BuildJSON(entityValue, doc.GetAllocator());
+		entityArray.PushBack(entityValue, doc.GetAllocator());
+	}
+	doc.AddMember(name, entityArray, doc.GetAllocator());
+}
+
+
 void Scene::Load(rapidjson::Value& value)
 {
 	PrintDebugMessage("Loading file...");

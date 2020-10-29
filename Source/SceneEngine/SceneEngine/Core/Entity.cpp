@@ -1,6 +1,7 @@
 #include "Entity.h"
 #include "../Components/ModelRenderComponent.h"
 #include "Json.h"
+#include "../Renderer/Camera.h"
 
 
 void Entity::Update()
@@ -103,6 +104,28 @@ bool Entity::Load(const rapidjson::Value& value)
 	return false;
 }
 
+void Entity::BuildJSON(rapidjson::Value& v, rapidjson::MemoryPoolAllocator<>& mem)
+{
+	json::BuildName(v, "name", name, mem);
+	//rapidjson::Value nameKey("name");
+	//rapidjson::Value nameValue;
+	//nameValue.SetString(name.cStr(), strlen(name.cStr()));
+	//v.AddMember(nameKey, nameValue, mem);
+	rapidjson::Value componentsValue;
+	componentsValue.SetArray();
+	
+	for (Component* c : components)
+	{
+		rapidjson::Value tempComponent;
+		tempComponent.SetObject();
+		c->BuildJSON(tempComponent, mem);
+		componentsValue.PushBack(tempComponent, mem);
+	}
+	rapidjson::Value componentsKey("components");
+	v.AddMember(componentsKey, componentsValue, mem);
+}
+
+
 void Entity::Initialize()
 {
 
@@ -119,9 +142,8 @@ bool Entity::LoadComponents(const rapidjson::Value& value)
 
 		if (componentType == "Transform")
 		{
-			std::string temp = name.cStr();
-			StringId transformName = (temp + "Transform");
-			Transform* transform = new Transform(transformName, this);
+			StringId temp = name.ToString() + "Transform";
+			Transform* transform = new Transform(temp, this);
 
 			if(transform->Load(componentValue))
 				AddComponent(transform);
@@ -132,6 +154,13 @@ bool Entity::LoadComponents(const rapidjson::Value& value)
 			ModelRenderComponent* rc = new ModelRenderComponent(rcName, this);
 			if(rc->Load(componentValue))
 				AddComponent(rc);
+		}
+		else if (componentType == "Camera")
+		{
+			StringId camName = name.ToString() + "Camera";
+			Camera* cam = new Camera(camName, this);
+			if (cam->Load(componentValue))
+				AddComponent(cam);
 		}
 	}
 	

@@ -25,6 +25,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 int main(int argc, char** argv)
 {
     InitializeWindow();
+    ReloadScene("C:/Users/Student/OneDrive - Neumont College of Computer Science/Q9 FALL 2020/Capstone Project/CapstoneWork/Source/Content/Scenes/scene.txt");
     StartEngine();
     return 0;
 }

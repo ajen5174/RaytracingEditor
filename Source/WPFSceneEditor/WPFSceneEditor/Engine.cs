@@ -9,6 +9,7 @@ namespace WPFSceneEditor
 	{
 		public delegate void DebugCallback(string message);
 		public delegate void SelectionCallback(float entityID);
+		public delegate void SceneLoadedCallback();
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr SetWindowPos(
@@ -39,10 +40,28 @@ namespace WPFSceneEditor
 		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
 		public static extern void RegisterSelectionCallback(SelectionCallback callback);
 		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void RegisterSceneLoadedCallback(SceneLoadedCallback callback);
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
 		public static extern void GetFloatData(float entityID, int component, [In, Out] float[] data, int size);
 
 		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
 		public static extern void SetFloatData(float entityID, int component, [In] float[] data, int size);
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void ReloadScene(string path);
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void SaveScene(string path);
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void GetEntityName(float entityID, StringBuilder name);
+
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void GetAllEntityIDs([In, Out] float[] data);
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern int GetEntityCount();
+
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void EntitySelect(float entityID);
+
+		
 
 	}
 }

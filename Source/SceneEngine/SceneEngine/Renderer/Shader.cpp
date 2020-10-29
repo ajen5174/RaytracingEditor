@@ -201,6 +201,10 @@ bool Shader::Load(const rapidjson::Value&)
 	return false;
 }
 
+void Shader::BuildJSON(rapidjson::Value&, rapidjson::MemoryPoolAllocator<>&)
+{
+}
+
 void Shader::Initialize()
 {
 }

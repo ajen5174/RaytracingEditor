@@ -4,6 +4,7 @@
 Mesh::Mesh(std::string filename)
     : Object(filename.c_str())
 {
+    directory = filename;
 }
 
 Mesh::~Mesh()
@@ -28,6 +29,16 @@ void Mesh::Initialize()
 {
 }
 
+void Mesh::BuildJSON(rapidjson::Value& v, rapidjson::MemoryPoolAllocator<>& mem)
+{
+    json::BuildString(v, "path", directory, mem);
+    //rapidjson::Value pathKey;
+    //pathKey.SetString("path");
+
+    //v.AddMember(pathKey, directory, mem);
+
+}
+
 bool Mesh::Load(const aiMesh* mesh)
 {
     
@@ -40,7 +51,5 @@ bool Mesh::Load(const aiMesh* mesh)
     vertexArray.Bind();
     vertexArray.SetAttribute(VertexArray::eAttrib::NORMAL, 3, 3 * sizeof(float), 0);
 
-
-
-    return false;
+    return true;
 }

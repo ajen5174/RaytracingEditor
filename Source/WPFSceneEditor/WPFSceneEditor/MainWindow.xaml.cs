@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -18,6 +19,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using WPFSceneEditor.Controls;
 
 namespace WPFSceneEditor
 {
@@ -59,8 +61,11 @@ namespace WPFSceneEditor
 
 					Engine.RegisterDebugCallback(new Engine.DebugCallback(PrintDebugMessage));
 					Engine.RegisterSelectionCallback(new Engine.SelectionCallback(EntitySelect));
+					Engine.RegisterSceneLoadedCallback(new Engine.SceneLoadedCallback(SceneLoaded));
 
 					ResizeSceneWindow();
+
+					Trace.WriteLine("Ready to start");
 
 					Engine.StartEngine();
 
@@ -110,13 +115,35 @@ namespace WPFSceneEditor
 			Engine.ShowWindow(SceneHandle, 1);
 		}
 
+		private void SceneLoaded()
+		{
+			//get all id's of entitys as a float array
+			int numEntities = Engine.GetEntityCount();
+			float[] ids = new float[numEntities];
+			Engine.GetAllEntityIDs(ids);
+			
+			//loop through that array creating the user controls as we go
+			for(int i = 0; i < ids.Count(); i++)
+			{
+				HierarchyEntity e = new HierarchyEntity();
+				e.entityID = ids[i];//assign the id
+
+				//use the id to grab the string name from the engine
+				StringBuilder sb = new StringBuilder(256);
+				Engine.GetEntityName(e.entityID, sb);
+				e.EntityName.Content = sb.ToString().Trim();
+				SceneHierarchy.Children.Add(e);
+			}
+			
+		}
+
 		private void PrintDebugMessage(string message)
 		{
 			Trace.WriteLine(message, "ENGINE_DEBUG");
 			DebugOutput.Text += "ENGINE_DEBUG: " + message + "\n";
 		}
 
-		private void EntitySelect(float entityID)
+		public void EntitySelect(float entityID)
 		{
 			selectedEntityID = entityID;
 			if (entityID == 0)
@@ -136,10 +163,6 @@ namespace WPFSceneEditor
 			ScaleBoxX.Text = "" + data[6];
 			ScaleBoxY.Text = "" + data[7];
 			ScaleBoxZ.Text = "" + data[8];
-
-			//DebugOutput.Text += "DATA: " + data[5] + "\n";
-
-			//DebugOutput.Text += "ENGINE_SELECT: " + entityID + "\n";
 
 		}
 
@@ -180,6 +203,31 @@ namespace WPFSceneEditor
 							 rotationX, rotationY, rotationZ,
 							 scaleX, scaleY, scaleZ };
 			Engine.SetFloatData(selectedEntityID, 1, data, 9);
+		}
+
+		private void Open_Click(object sender, RoutedEventArgs e)
+		{
+			OpenFileDialog openFile = new OpenFileDialog();
+			openFile.Filter = "JSON text files (*.txt;*.json)|*.txt;*.json";
+			if(openFile.ShowDialog() == true)
+			{
+				SceneHierarchy.Children.Clear();
+				string path = openFile.FileName;
+				Engine.ReloadScene(path);
+
+			}
+
+
+		}
+
+		private void Save_Click(object sender, RoutedEventArgs e)
+		{
+			SaveFileDialog save = new SaveFileDialog();
+			if(save.ShowDialog() == true)
+			{
+				//call engine function here, passing the path to save?
+				Engine.SaveScene(save.FileName);
+			}
 		}
 	}
 }

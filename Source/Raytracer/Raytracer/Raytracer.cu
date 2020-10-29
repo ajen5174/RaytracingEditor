@@ -156,7 +156,7 @@ bool Raytracer::StartRender()
     CheckCudaErrors(cudaDeviceSynchronize());
 
     //read in memory
-    std::string modelPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Content\\Meshes\\suzanne.obj");
+    std::string modelPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Content\\Meshes\\teapot.obj");
     CreateMesh(modelPath, mesh);//assign CPU/read-in memory to GPU allocated memory
     CreateMeshTriangles << <1, 1 >> > (mesh);//use CPU/read-in memory to create C++ objects on the GPU
 

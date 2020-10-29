@@ -24,9 +24,14 @@ static SDL_Window* engineWindow = nullptr;
 static SDL_GLContext engineContext = nullptr;
 static bool isRunning = false;
 
+
 int windowWidth = 800;
 int windowHeight = 600;
+
 bool sizeChanged = false;
+
+std::string gPath = "C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Content\\Scenes\\default.txt";
+bool reloadScene = false;
 
 bool quit = false;
 
@@ -34,7 +39,62 @@ Scene* scene;
 
 DebugCallback gDebugCallback;
 SelectionCallback gSelectionCallback;
+SceneLoadedCallback gSceneLoadedCallback;
 
+ENGINE_DLL int GetEntityCount()
+{
+	return scene->GetEntities().size();
+}
+
+
+ENGINE_DLL void GetAllEntityIDs(float* data)
+{
+	auto entities = scene->GetEntities();
+	//data = new float[entities.size()];
+	for (int i = 0; i < entities.size(); i++)
+	{
+		data[i] = entities[i]->GetName().GetFloatId();
+	}
+}
+
+
+ENGINE_DLL void GetEntityName(float entityID, char* name)
+{
+	Entity* e = scene->GetEntityByFloatId(entityID);
+	if (!e)
+	{
+		return;
+	}
+	StringId id = e->GetName();
+	memcpy(name, id.cStr(), strlen(id.cStr()) + 1);//add 1 because strlen does NOT include the /0 to terminate the string.
+}
+
+ENGINE_DLL void ReloadScene(const char* inPath)
+{
+	reloadScene = true;
+	gPath = inPath;
+}
+
+ENGINE_DLL void SaveScene(const char* outPath)
+{
+	//save scene here?
+	PrintDebugMessage("Saving File...");
+	rapidjson::Document json;
+	json.SetObject();
+	scene->BuildJSON(json);
+	auto temp = json.FindMember("entities");
+
+	std::ofstream fstream(outPath);
+	rapidjson::OStreamWrapper osw(fstream);
+	//FILE* fp = fopen(outPath, "wb");
+	char writeBuffer[65536];
+
+	rapidjson::Writer<rapidjson::OStreamWrapper> writer(osw);
+	json.Accept(writer);
+	//fclose_s(fp);
+	fstream.close();
+	PrintDebugMessage("File Saved!");
+}
 
 ENGINE_DLL void SetFloatData(float entityID, int component, float* data, int size)
 {
@@ -72,7 +132,8 @@ ENGINE_DLL void GetFloatData(float entityID, int component, float* data, int siz
 {
 	Entity* entity = scene->GetEntityByFloatId(entityID);
 	ComponentType type = (ComponentType)component;
-
+	if (!entity)
+		return;
 	switch (type)
 	{
 	case ComponentType::NONE:
@@ -97,6 +158,14 @@ ENGINE_DLL void GetFloatData(float entityID, int component, float* data, int siz
 		data[7] = t->scale.y;
 		data[8] = t->scale.z;
 		break;
+	}
+}
+
+ENGINE_DLL void RegisterSceneLoadedCallback(SceneLoadedCallback callback)
+{
+	if (callback)
+	{
+		gSceneLoadedCallback = callback;
 	}
 }
 
@@ -134,7 +203,6 @@ ENGINE_DLL bool StartEngine()
     if (isRunning)
         return false;
     isRunning = true;
-
     RunEngine();
 
     isRunning = false;
@@ -174,17 +242,32 @@ void PrintDebugMessage(std::string message)
 	}
 }
 
-void EntitySelect(float entityID)
+ENGINE_DLL void EntitySelect(float entityID)
 {
 	if (gSelectionCallback)
 	{
+		scene->Deselect();
+		if (entityID != 0)
+		{
+			scene->GetEntityByFloatId(entityID)->selected = true;
+		}
 		gSelectionCallback(entityID);
+		
 	}
 	else
 	{
 
 	}
 }
+
+void SceneLoaded()
+{
+	if (gSceneLoadedCallback)
+	{
+		gSceneLoadedCallback();
+	}
+}
+
 
 bool InitializeGraphics()
 {
@@ -244,44 +327,17 @@ void RunEngine()
 	StringId::AllocNames();
 
 	scene = new Scene();
-
-	std::string path = "C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Content\\Scenes\\scene.txt";
+	
 	rapidjson::Document doc;
-	if (json::LoadFromFile(path, doc))
+	if (json::LoadFromFile(gPath, doc))
 	{
 		scene->Load(doc);
+		SceneLoaded();
 	}
 	else
 	{
 		PrintDebugMessage("Error reading scene file");
 	}
-
-
-	StringId transformName = "TestingTransform";
-
-
-	StringId camEntityName = "CamEntity";
-	Entity* camEntity = new Entity(camEntityName);
-	Transform* camTransform = new Transform(transformName, camEntity);
-	camTransform->translation = glm::vec3(0.0f, 0.0f, 5.0f);
-	camTransform->rotation = glm::vec3(0.0f, glm::radians(180.0f), 0.0f);
-	camEntity->AddComponent(camTransform);
-
-	Camera* cam;
-	StringId cameraName = "testCamera";
-	cam = new Camera(cameraName, camEntity);
-
-	cam->SetProjection(45.0f, (float)windowWidth / (float)windowHeight, 0.01f, 100.0f);
-	PrintDebugMessage(std::to_string(windowWidth) + " " + std::to_string(windowHeight));
-	camEntity->AddComponent(cam);
-
-	//glm::mat4 trans = glm::mat4(1.0f);
-	//trans = glm::rotate(trans, glm::radians(0.05f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-	//scene->Add(testEntity);
-	scene->Add(camEntity);
-	scene->mainCamera = cam;
-
 
 
 	PickTexture* pick = new PickTexture();
@@ -292,9 +348,25 @@ void RunEngine()
 	SDL_Event sdlEvent;
 	while (!quit)
 	{
+		if (reloadScene)
+		{
+			reloadScene = false;
+			scene = new Scene();
+
+			rapidjson::Document doc;
+			if (json::LoadFromFile(gPath, doc))
+			{
+				scene->Load(doc);
+				SceneLoaded();
+			}
+			else
+			{
+				PrintDebugMessage("Error reading scene file");
+			}
+
+		}
 		//update
 		scene->Update();
-		//trans = cam->projectionMatrix * glm::rotate(trans, glm::radians(0.05f), glm::vec3(0.0, 0.0, 1.0));
 
 		//render picking stuff
 		pick->EnableWriting();
@@ -323,29 +395,25 @@ void RunEngine()
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 		{
-			//color1[1] = 1.0f;
-			//loop through entities to deselect, then check for selection
-			//testEntity->selected = false;
-			//viewport space
 			int mouseX, mouseY;
 			SDL_GetMouseState(&mouseX, &mouseY);
-			//PrintDebugMessage("Mouse at: " + std::to_string(mouseX) + ", " + std::to_string(mouseY));
 			PickTexture::PickInfo info = pick->ReadPixel(mouseX, windowHeight - mouseY - 1);
-			//PrintDebugMessage("ID read: " + std::to_string(info.objectID) + ", " + std::to_string(info.primitiveID));
 			float idRead = info.objectID;
 			Entity* selected = scene->GetEntityByFloatId(idRead);
+			const char* name;
+			//GetEntityName(idRead, name);
 			//PrintDebugMessage("ID of suzanne: " + std::to_string(testEntity->GetName().GetId()));
 			if (selected)
 			{
 				PrintDebugMessage("Selected ID: " +std::to_string(idRead));
 				EntitySelect(idRead);
-				selected->selected = true;
+				//selected->selected = true;
 			}
 			else
 			{
-				scene->Deselect();
 				EntitySelect(0);
 				PrintDebugMessage("failed to find ID: " + std::to_string(idRead));
+				//SaveScene("C:/Users/Student/OneDrive - Neumont College of Computer Science/Q9 FALL 2020/Capstone Project/CapstoneWork/Source/Content/Scenes/save.txt");
 			}
 		}
 			break;
@@ -369,7 +437,5 @@ void RunEngine()
 	}
 
 	delete scene;
-	//delete camEntity;
-	//delete testEntity;
 	StringId::FreeNames();
 }

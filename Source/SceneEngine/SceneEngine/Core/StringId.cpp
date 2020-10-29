@@ -26,8 +26,8 @@ StringId::StringId(const char* string, bool unique)
 }
 
 StringId::StringId(const std::string& string, bool unique)
+	: StringId(string.c_str(), unique)
 {
-	StringId(string.c_str(), unique);
 }
 
 bool StringId::operator==(const StringId& other) const

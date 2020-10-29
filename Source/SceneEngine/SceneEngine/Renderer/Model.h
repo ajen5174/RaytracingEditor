@@ -6,7 +6,7 @@
 class Model : Object
 {
 public:
-	Model(std::string name);
+	Model(StringId name);
 	~Model();
 	void Draw();
 
@@ -14,6 +14,7 @@ public:
 	virtual void Destroy() override;
 	virtual bool Load(const rapidjson::Value&) override;
 	virtual void Initialize() override;
+	virtual void BuildJSON(rapidjson::Value& v, rapidjson::MemoryPoolAllocator<>& mem) override;
 
 
 
@@ -21,6 +22,5 @@ public:
 	//texture
 	//material
 	Mesh* mesh;
-
 	
 };

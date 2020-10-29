@@ -6,10 +6,31 @@
 		"components": [
 			{
 			"type": "Transform",
-			"translation": [1.0, 1.0, 0.0]
+			"translation": [1.0, -1.0, 0.0],
+			"rotation": [0.0, 0.0, 90.0],
+			"scale": [1.0, 2.0, 1.0]
 			},
 			{
-			"type": "ModelRender"
+			"type": "ModelRender",
+			"path": "C:/Users/Student/OneDrive - Neumont College of Computer Science/Q9 FALL 2020/Capstone Project/CapstoneWork/Source/Content/Meshes/suzanne.obj"
+			}
+		]
+	},
+	{
+		"name": "mainCamera",
+
+		"components": [
+			{
+			"type": "Transform",
+			"translation": [0.0, 0.0, 5.0],
+			"rotation": [0.0, 180.0, 0.0],
+			"scale": [1.0, 1.0, 1.0]
+			},
+			{
+			"type": "Camera",
+			"main" : true,
+			"fov": 45.0,
+			"aspect" : 1.7777777777
 			}
 		]
 	}

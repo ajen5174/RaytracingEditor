@@ -14,10 +14,13 @@ public:
 	void Add(Entity* entity);
 	void Deselect();
 	void Load(rapidjson::Value& value);
+	void BuildJSON(rapidjson::Document& doc);
+
 	Entity* Remove(Entity* entity, bool destroy = true);
 	Entity* GetEntityByName(uint32_t name);
 	Entity* GetEntityByName(StringId& name);
 	Entity* GetEntityByFloatId(float id);
+	std::vector<Entity*> GetEntities() { return entities; }
 
 	Camera* GetMainCamera() { return mainCamera; }
 

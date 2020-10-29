@@ -17,6 +17,8 @@ public:
 	virtual void Initialize() override;
 	virtual bool Load(const rapidjson::Value&) override;
 
+	virtual void BuildJSON(rapidjson::Value& v, rapidjson::MemoryPoolAllocator<>& mem) override;
+
 
 private:
 	Model* model;
