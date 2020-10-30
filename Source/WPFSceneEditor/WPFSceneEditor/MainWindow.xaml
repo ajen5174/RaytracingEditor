@@ -25,7 +25,7 @@
 				<MenuItem Header="_New"/>
 				<MenuItem Header="_Open" Click="Open_Click"/>
 				<MenuItem Header="_Save" Click="Save_Click"/>
-				<MenuItem Header="_SaveAs"/>
+				<MenuItem Header="_SaveAs" Click="SaveAs_Click"/>
 				<Separator />
 				<MenuItem Header="_Exit"/>
 			</MenuItem>
@@ -69,38 +69,10 @@
 		
 		<Border Grid.Column="3" Grid.Row="1"
 				BorderBrush="Black" BorderThickness="4">
-			<StackPanel>
-				<Grid>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition/>
-						<ColumnDefinition/>
-						<ColumnDefinition/>
-						<ColumnDefinition/>
-					</Grid.ColumnDefinitions>
-					<Grid.RowDefinitions>
-						<RowDefinition/>
-						<RowDefinition/>
-						<RowDefinition/>
-					</Grid.RowDefinitions>
+			<StackPanel Name="ComponentEditor">
 
-					<Label Grid.Row="0" Grid.Column="0">Translation</Label>
-					<TextBox Grid.Row="0" Grid.Column="1" Name="TranslationBoxX" KeyUp="TranslationBox_KeyUp">0</TextBox>
-					<TextBox Grid.Row="0" Grid.Column="2" Name="TranslationBoxY" KeyUp="TranslationBox_KeyUp">0</TextBox>
-					<TextBox Grid.Row="0" Grid.Column="3" Name="TranslationBoxZ" KeyUp="TranslationBox_KeyUp">0</TextBox>
-
-					<Label Grid.Row="1" Grid.Column="0">Rotation</Label>
-					<TextBox Grid.Row="1" Grid.Column="1" Name="RotationBoxX" KeyUp="TranslationBox_KeyUp">0</TextBox>
-					<TextBox Grid.Row="1" Grid.Column="2" Name="RotationBoxY" KeyUp="TranslationBox_KeyUp">0</TextBox>
-					<TextBox Grid.Row="1" Grid.Column="3" Name="RotationBoxZ" KeyUp="TranslationBox_KeyUp">0</TextBox>
-
-					<Label Grid.Row="2" Grid.Column="0">Scale</Label>
-					<TextBox Grid.Row="2" Grid.Column="1" Name="ScaleBoxX" KeyUp="TranslationBox_KeyUp">0</TextBox>
-					<TextBox Grid.Row="2" Grid.Column="2" Name="ScaleBoxY" KeyUp="TranslationBox_KeyUp">0</TextBox>
-					<TextBox Grid.Row="2" Grid.Column="3" Name="ScaleBoxZ" KeyUp="TranslationBox_KeyUp">0</TextBox>
-
-				</Grid>
 			</StackPanel>
-			
+
 		</Border>
 	</Grid>
 	

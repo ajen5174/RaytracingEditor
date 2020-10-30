@@ -25,6 +25,8 @@ __global__ void CreateWorld(Mesh* mesh, Camera** cam, int width, int height)
 
 }
 
+//This method uses data read in from disk and stored in vertices to create our device only Triangles for collision. W
+    //We need this method because the Triangle MUST be "new'd" on the DEVICE, or the vtable (hittable) won't be accessible by the device later.
 __global__ void CreateMeshTriangles(Mesh* mesh)
 {
 

@@ -33,6 +33,7 @@ namespace WPFSceneEditor
 		private IntPtr SceneHandle;
 		private float EngineAspectRatio = 16f / 9f;
 		private float selectedEntityID = 0.0f;
+		private string currentFilePath = "";
 
 		public MainWindow()
 		{
@@ -145,65 +146,29 @@ namespace WPFSceneEditor
 
 		public void EntitySelect(float entityID)
 		{
+			if (selectedEntityID == entityID)
+				return;
+
 			selectedEntityID = entityID;
+			ComponentEditor.Children.Clear();
 			if (entityID == 0)
+			{
 				return;
+			}
 
-			float[] data = new float[9];
-			Engine.GetFloatData(selectedEntityID, 1, data, 9);
+			//first we grab the list of components (probably as bitflags)
 
-			TranslationBoxX.Text = "" + data[0];
-			TranslationBoxY.Text = "" + data[1];
-			TranslationBoxZ.Text = "" + data[2];
+			//then for each component we add section to add that type of component editing to the window.
 
-			RotationBoxX.Text = "" + data[3];
-			RotationBoxY.Text = "" + data[4];
-			RotationBoxZ.Text = "" + data[5];
 
-			ScaleBoxX.Text = "" + data[6];
-			ScaleBoxY.Text = "" + data[7];
-			ScaleBoxZ.Text = "" + data[8];
+			//transform
+			TransformEdit te = new TransformEdit();
+			te.LoadData(selectedEntityID);
+			ComponentEditor.Children.Add(te);
 
 		}
 
-		private void TranslationBox_KeyUp(object sender, KeyEventArgs e)
-		{
-			float translationX;
-			if (!float.TryParse(TranslationBoxX.Text, out translationX))
-				return;
-			float translationY;
-			if (!float.TryParse(TranslationBoxY.Text, out translationY))
-				return;
-			float translationZ;
-			if (!float.TryParse(TranslationBoxZ.Text, out translationZ))
-				return;
-
-			float rotationX;
-			if (!float.TryParse(RotationBoxX.Text, out rotationX))
-				return;
-			float rotationY;
-			if (!float.TryParse(RotationBoxY.Text, out rotationY))
-				return;
-			float rotationZ;
-			if (!float.TryParse(RotationBoxZ.Text, out rotationZ))
-				return;
-
-			float scaleX;
-			if (!float.TryParse(ScaleBoxX.Text, out scaleX))
-				return;
-			float scaleY;
-			if (!float.TryParse(ScaleBoxY.Text, out scaleY))
-				return;
-			float scaleZ;
-			if (!float.TryParse(ScaleBoxZ.Text, out scaleZ))
-				return;
-
-
-			float[] data = { translationX, translationY, translationZ,
-							 rotationX, rotationY, rotationZ,
-							 scaleX, scaleY, scaleZ };
-			Engine.SetFloatData(selectedEntityID, 1, data, 9);
-		}
+		
 
 		private void Open_Click(object sender, RoutedEventArgs e)
 		{
@@ -213,7 +178,8 @@ namespace WPFSceneEditor
 			{
 				SceneHierarchy.Children.Clear();
 				string path = openFile.FileName;
-				Engine.ReloadScene(path);
+				currentFilePath = path;
+				Engine.ReloadScene(currentFilePath);
 
 			}
 
@@ -222,11 +188,25 @@ namespace WPFSceneEditor
 
 		private void Save_Click(object sender, RoutedEventArgs e)
 		{
+			if(currentFilePath.Length > 1)
+			{
+				Engine.SaveScene(currentFilePath);
+			}
+			else
+			{
+				SaveAs_Click(sender, e);
+			}
+			
+		}
+
+		private void SaveAs_Click(object sender, RoutedEventArgs e)
+		{
 			SaveFileDialog save = new SaveFileDialog();
-			if(save.ShowDialog() == true)
+			if (save.ShowDialog() == true)
 			{
 				//call engine function here, passing the path to save?
 				Engine.SaveScene(save.FileName);
+				currentFilePath = save.FileName;
 			}
 		}
 	}

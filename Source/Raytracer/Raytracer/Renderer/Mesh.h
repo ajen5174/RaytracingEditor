@@ -15,6 +15,7 @@
 class Mesh
 {
 public:
+    //this is a device only call, because we need the space allocated in device memory for our members, not host
 	__device__ Mesh()
 	{
 		
@@ -25,9 +26,10 @@ public:
     vec3* vertices;
 	Triangle** triangles;
 	int numTriangles;
+    //temporary render speed up, surrounds all triangles in the mesh
     Sphere* boundingSphere;
 };
-
+//this method load in whatever data we need from disk and slaps it into device accessible memory.
 inline void CreateMesh(std::string path, Mesh* mesh)
 {
     Assimp::Importer importer;
