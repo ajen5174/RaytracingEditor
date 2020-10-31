@@ -41,7 +41,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)external/assimp/include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)external/assimp/include;$(SolutionDir)external/;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -88,13 +88,17 @@
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
-      <Include>$(SolutionDir)external\glad\include;$(SolutionDir)external\SDL2-2.0.10\include;$(SolutionDir)external\glm;$(SolutionDir)external;$(SolutionDir)external\assimp\include;%(AdditionalIncludeDirectories)</Include>
+      <Include>$(SolutionDir)external\assimp\include\assimp;%(AdditionalIncludeDirectories)</Include>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <CudaCompile Include="kernel.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\cuda.h" />
+    <ClInclude Include="Core\Entity.h" />
+    <ClInclude Include="Core\Json.h" />
+    <ClInclude Include="Core\Transform.h" />
     <ClInclude Include="Math\Ray.h" />
     <ClInclude Include="Math\Sphere.h" />
     <ClInclude Include="Math\Triangle.h" />

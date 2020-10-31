@@ -1,6 +1,5 @@
 #pragma once
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
+#include "Core/cuda.h"
 #include <vector>
 #include "Renderer/Hittable.h"
 #include <time.h>
@@ -8,7 +7,7 @@
 #include <fstream>
 #include "Math/vec3.h"
 #include "Renderer/Camera.h"
-
+#include "Core/Entity.h"
 
 #define CheckCudaErrors(val) CheckCuda( (val), #val, __FILE__, __LINE__ )
 void CheckCuda(cudaError_t result, char const* const func, const char* const file, int const line);
@@ -31,7 +30,10 @@ public:
 	vec3* frameBuffer;
 
 private:
+	//std::string scenePath;
 	std::string renderPath;
-	std::vector<Hittable*> hittables;
+	Entity** entityList;
+	int numEntities = 0;
+	//std::vector<Hittable*> hittables;
 	//std::vector<Light*> lights;
 };

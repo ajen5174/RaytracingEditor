@@ -45,11 +45,13 @@ void Scene::Deselect()
 
 void Scene::BuildJSON(rapidjson::Document& doc)
 {
-
+	json::BuildInt(doc, "EntityCount", entities.size(), doc.GetAllocator());
 	rapidjson::Value entityArray;
 	entityArray.SetArray();
 	rapidjson::Value name;
 	name.SetString("entities");
+
+
 
 	for (Entity* e : entities)
 	{

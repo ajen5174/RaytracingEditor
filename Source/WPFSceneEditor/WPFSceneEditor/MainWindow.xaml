@@ -37,6 +37,7 @@
 				<MenuItem Header="_Copy"/>
 				<MenuItem Header="_Paste"/>
 			</MenuItem>
+			<MenuItem Header="_Render" Click="Render_Click"/>
 		</Menu>
 		<Button
 			Click="Button_Click" Width="70" Height="35"

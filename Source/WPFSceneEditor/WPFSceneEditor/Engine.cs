@@ -11,6 +11,11 @@ namespace WPFSceneEditor
 		public delegate void SelectionCallback(float entityID);
 		public delegate void SceneLoadedCallback();
 
+		public static string currentFilePath = "";
+		public static string outputFilePath = "";
+
+
+
 		[DllImport("user32.dll")]
 		public static extern IntPtr SetWindowPos(
 									IntPtr handle,

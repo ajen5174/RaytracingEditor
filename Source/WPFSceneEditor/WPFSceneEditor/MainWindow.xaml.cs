@@ -33,7 +33,6 @@ namespace WPFSceneEditor
 		private IntPtr SceneHandle;
 		private float EngineAspectRatio = 16f / 9f;
 		private float selectedEntityID = 0.0f;
-		private string currentFilePath = "";
 
 		public MainWindow()
 		{
@@ -178,8 +177,8 @@ namespace WPFSceneEditor
 			{
 				SceneHierarchy.Children.Clear();
 				string path = openFile.FileName;
-				currentFilePath = path;
-				Engine.ReloadScene(currentFilePath);
+				Engine.currentFilePath= path;
+				Engine.ReloadScene(Engine.currentFilePath);
 
 			}
 
@@ -188,9 +187,9 @@ namespace WPFSceneEditor
 
 		private void Save_Click(object sender, RoutedEventArgs e)
 		{
-			if(currentFilePath.Length > 1)
+			if(Engine.currentFilePath.Length > 1)
 			{
-				Engine.SaveScene(currentFilePath);
+				Engine.SaveScene(Engine.currentFilePath);
 			}
 			else
 			{
@@ -202,12 +201,20 @@ namespace WPFSceneEditor
 		private void SaveAs_Click(object sender, RoutedEventArgs e)
 		{
 			SaveFileDialog save = new SaveFileDialog();
+			save.Filter = "JSON text files (*.txt;*.json)|*.txt;*.json";
 			if (save.ShowDialog() == true)
 			{
 				//call engine function here, passing the path to save?
+				Engine.currentFilePath = save.FileName;
 				Engine.SaveScene(save.FileName);
-				currentFilePath = save.FileName;
 			}
+		}
+
+		private void Render_Click(object sender, RoutedEventArgs e)
+		{
+			RenderWindow rw = new RenderWindow();
+
+			rw.ShowDialog();
 		}
 	}
 }

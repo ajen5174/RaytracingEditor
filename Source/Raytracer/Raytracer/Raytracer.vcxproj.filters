@@ -38,5 +38,9 @@
     <ClInclude Include="Renderer\Mesh.h">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Json.h" />
+    <ClInclude Include="Core\Entity.h" />
+    <ClInclude Include="Core\Transform.h" />
+    <ClInclude Include="Core\cuda.h" />
   </ItemGroup>
 </Project>

@@ -186,6 +186,12 @@ namespace json
 		value.AddMember(key, b, mem);
 	}
 
+	inline void BuildInt(rapidjson::Value& value, const char* property, int i, rapidjson::MemoryPoolAllocator<>& mem)
+	{
+		rapidjson::Value key(property, strlen(property), mem);
+		value.AddMember(key, i, mem);
+	}
+
 	inline void BuildFloat(rapidjson::Value& value, const char* property, float f, rapidjson::MemoryPoolAllocator<>& mem)
 	{
 		rapidjson::Value key(property, strlen(property), mem);
