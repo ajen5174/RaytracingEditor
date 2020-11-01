@@ -1,5 +1,5 @@
 #pragma once
-#include "../Math/vec3.h"
+#include "../Math/mat4.h"
 #include "Json.h"
 
 class Entity;
@@ -12,16 +12,12 @@ public:
 	__device__ Transform(const vec3& translation, const vec3& rotation = vec3(0.0f), const vec3& scale = vec3(1.0f))
 		:translation(translation), rotation(rotation), scale(scale) {}
 
-	//inline glm::mat4 GetMatrix() const { return *this; };
+	inline mat4 __device__ GetMatrix() const { return *this; };
 
-	//inline operator glm::mat4() const
-	//{
-	//	glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
-	//	glm::mat4 rotationMatrix = glm::mat4_cast(rotation);
-	//	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), translation);
-
-	//	return translationMatrix * rotationMatrix * scaleMatrix;
-	//};
+	__device__ inline operator mat4() const
+	{
+		return mat4(translation, rotation, scale);
+	};
 
 	//inline Transform& operator=(const glm::mat4& matrix)
 	//{

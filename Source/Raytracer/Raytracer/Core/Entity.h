@@ -21,9 +21,11 @@ inline __global__ void CreateMesh(Mesh* mesh)
 inline __global__ void CreateMeshTriangles(Mesh* mesh, Transform* transform)
 {
 	//transform the vertices lmao
+	mat4 t = transform->GetMatrix();
+
 	for (int i = 0; i < mesh->numTriangles * 3; i++)
 	{
-		mesh->vertices[i] = mesh->vertices[i] + transform->translation;
+		mesh->vertices[i] = t * mesh->vertices[i];
 	}
 
 	for (int i = 0; i < mesh->numTriangles; i++)

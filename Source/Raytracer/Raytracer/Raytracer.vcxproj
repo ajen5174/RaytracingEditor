@@ -99,6 +99,7 @@
     <ClInclude Include="Core\Entity.h" />
     <ClInclude Include="Core\Json.h" />
     <ClInclude Include="Core\Transform.h" />
+    <ClInclude Include="Math\mat4.h" />
     <ClInclude Include="Math\Ray.h" />
     <ClInclude Include="Math\Sphere.h" />
     <ClInclude Include="Math\Triangle.h" />
