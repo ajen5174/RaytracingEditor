@@ -31,7 +31,7 @@ void Mesh::Initialize()
 
 void Mesh::BuildJSON(rapidjson::Value& v, rapidjson::MemoryPoolAllocator<>& mem)
 {
-    json::BuildString(v, "path", directory, mem);
+    json::BuildString(v, "meshPath", directory, mem);
     //rapidjson::Value pathKey;
     //pathKey.SetString("path");
 

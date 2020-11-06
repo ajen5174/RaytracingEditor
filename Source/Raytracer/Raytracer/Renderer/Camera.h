@@ -3,18 +3,30 @@
 #include "../Math/Ray.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
+
+#include "../Core/Json.h"
 class Camera
 {
 public:
-	__device__ Camera::Camera(vec3 origin, vec3 lookat, vec3 up, float fov, float aspectRatio)
+	__device__ Camera::Camera()
 	{
-		float viewportHeight = 2.0f * tanf(fov * M_PI / 180.0f);//measured in arbitrary units?
+		
+	}
+
+	__host__ __device__ void SetView(vec3 lookFrom, vec3 lookAt, vec3 up)
+	{
+		float viewportHeight = 2.0f * tanf((fov * M_PI / 180.0f) / 2.0f);//measured in arbitrary units?
 		float viewportWidth = aspectRatio * viewportHeight;
-		this->aspectRatio = aspectRatio;
-		origin = origin;
-		horizontal = vec3(viewportWidth, 0.0f, 0.0f);
-		vertical = vec3(0.0f, viewportHeight, 0.0f);
-		lowerLeft = vec3(origin - horizontal / 2 - vertical / 2 - vec3(0.0f, 0.0f, 1.0f)); //aims the camera down the z axis.
+		
+		vec3 w = Normalize(lookFrom - lookAt);
+		vec3 u = Normalize(Cross(up, w));
+		vec3 v = Cross(w, u);
+		
+		
+		origin = lookFrom;
+		horizontal = viewportWidth * u;
+		vertical = viewportHeight * v;
+		lowerLeft = origin - horizontal / 2 - vertical / 2 - w; //aims the camera down the z axis.
 	}
 
 	__device__ Ray Camera::GetRay(float u, float v)// u and v because they are normalized (0.0 - 1.0)
@@ -22,13 +34,26 @@ public:
 		return Ray(origin, (lowerLeft + u * horizontal + v * vertical) - origin);
 	}
 
+	bool Load(rapidjson::Value& value)
+	{
+		json::GetBool(value, "main", isMainCam);
+		json::GetFloat(value, "fov", fov);
+		json::GetFloat(value, "aspect", aspectRatio);
+
+
+		return true;
+	}
+
 	
 
 private:
 	float aspectRatio;
-	float nearClip;
-	float farClip;
-
+	//float nearClip;
+	//float farClip;
+	float fov;
+public:
+	bool isMainCam;
+private:
 	vec3 origin;
 	vec3 lowerLeft;
 	vec3 vertical;

@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -33,6 +34,8 @@ namespace WPFSceneEditor
 		private IntPtr SceneHandle;
 		private float EngineAspectRatio = 16f / 9f;
 		private float selectedEntityID = 0.0f;
+
+		private Popup popup;
 
 		public MainWindow()
 		{
@@ -117,6 +120,7 @@ namespace WPFSceneEditor
 
 		private void SceneLoaded()
 		{
+			SceneHierarchy.Children.Clear();
 			//get all id's of entitys as a float array
 			int numEntities = Engine.GetEntityCount();
 			float[] ids = new float[numEntities];
@@ -165,6 +169,11 @@ namespace WPFSceneEditor
 			te.LoadData(selectedEntityID);
 			ComponentEditor.Children.Add(te);
 
+			MaterialEdit me = new MaterialEdit();
+			if (me.LoadData(selectedEntityID))
+				ComponentEditor.Children.Add(me);
+
+
 		}
 
 		
@@ -175,7 +184,6 @@ namespace WPFSceneEditor
 			openFile.Filter = "JSON text files (*.txt;*.json)|*.txt;*.json";
 			if(openFile.ShowDialog() == true)
 			{
-				SceneHierarchy.Children.Clear();
 				string path = openFile.FileName;
 				Engine.currentFilePath= path;
 				Engine.ReloadScene(Engine.currentFilePath);
@@ -215,6 +223,20 @@ namespace WPFSceneEditor
 			RenderWindow rw = new RenderWindow();
 
 			rw.ShowDialog();
+		}
+
+		private void AddEntity_Click(object sender, RoutedEventArgs e)
+		{
+			Engine.AddNewEntity();
+		}
+
+		private void AddModelRender_Click(object sender, RoutedEventArgs e)
+		{
+			Engine.AddComponent(selectedEntityID, (int)Engine.ComponentType.MODEL_RENDER);
+
+			float temp = selectedEntityID;
+			EntitySelect(0);
+			EntitySelect(temp);//reselect to show new component
 		}
 	}
 }

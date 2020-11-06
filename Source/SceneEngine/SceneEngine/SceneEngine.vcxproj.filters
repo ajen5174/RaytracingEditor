@@ -28,6 +28,9 @@
     <Filter Include="Components">
       <UniqueIdentifier>{901dc845-ef51-4826-8366-79d5def68837}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Renderer\Materials">
+      <UniqueIdentifier>{6270689f-84b6-4dd2-9604-8b24e52f3ce1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EngineLibrary.h">
@@ -81,6 +84,9 @@
     <ClInclude Include="Core\Json.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Renderer\Material.h">
+      <Filter>Renderer\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -127,6 +133,9 @@
     </ClCompile>
     <ClCompile Include="Core\PickTexture.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Material.cpp">
+      <Filter>Renderer\Materials</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

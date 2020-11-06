@@ -143,6 +143,11 @@ bool Entity::LoadComponents(const rapidjson::Value& value)
 		if (componentType == "Transform")
 		{
 			StringId temp = name.ToString() + "Transform";
+			Transform* existing = GetComponent<Transform>();
+			if (existing)
+			{
+				RemoveComponent(existing);
+			}
 			Transform* transform = new Transform(temp, this);
 
 			if(transform->Load(componentValue))

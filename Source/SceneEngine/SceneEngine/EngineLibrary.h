@@ -25,11 +25,15 @@ extern "C" ENGINE_DLL void StopEngine();
 extern "C" ENGINE_DLL void RegisterDebugCallback(DebugCallback callback);
 extern "C" ENGINE_DLL void RegisterSelectionCallback(SelectionCallback callback);
 extern "C" ENGINE_DLL void RegisterSceneLoadedCallback(SceneLoadedCallback callback);
-extern "C" ENGINE_DLL void GetFloatData(float entityID, int component, float* data, int size);
+extern "C" ENGINE_DLL bool GetFloatData(float entityID, int component, float* data, int size);
 extern "C" ENGINE_DLL void SetFloatData(float entityID, int component, float* data, int size);
+extern "C" ENGINE_DLL bool GetStringData(float entityID, int component, char* data[], int size, int count);
+extern "C" ENGINE_DLL void SetStringData(float entityID, int component, char* data[], int size, int count);
+extern "C" ENGINE_DLL void AddComponent(float entityID, int component);
 extern "C" ENGINE_DLL void GetAllEntityIDs(float* data);
 extern "C" ENGINE_DLL int GetEntityCount();
 extern "C" ENGINE_DLL void EntitySelect(float entityID);
+extern "C" ENGINE_DLL void AddNewEntity();
 
 
 bool InitializeGraphics();

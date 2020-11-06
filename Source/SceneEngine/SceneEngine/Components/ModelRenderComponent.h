@@ -19,9 +19,9 @@ public:
 
 	virtual void BuildJSON(rapidjson::Value& v, rapidjson::MemoryPoolAllocator<>& mem) override;
 
-
-private:
+public:
 	Model* model;
+private:
 	Shader* shader;
 	Shader* pickShader;
 	Shader* outlineShader;

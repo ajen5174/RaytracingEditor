@@ -2,6 +2,7 @@
 #include <string>
 #include "..\\Core\Object.h"
 #include "Mesh.h"
+#include "Material.h"
 
 class Model : Object
 {
@@ -13,14 +14,14 @@ public:
 	// Inherited via Object
 	virtual void Destroy() override;
 	virtual bool Load(const rapidjson::Value&) override;
+	bool ReloadMesh(std::string path);
 	virtual void Initialize() override;
 	virtual void BuildJSON(rapidjson::Value& v, rapidjson::MemoryPoolAllocator<>& mem) override;
 
 
-
 public:
 	//texture
-	//material
+	Material* material;
 	Mesh* mesh;
 	
 };

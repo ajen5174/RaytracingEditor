@@ -7,6 +7,15 @@ namespace WPFSceneEditor
 {
 	public static class Engine
 	{
+		public enum ComponentType
+		{
+			NONE = 0,
+			TRANSFORM,
+			LIGHT,
+			MODEL_RENDER,
+			CAMERA
+		}
+
 		public delegate void DebugCallback(string message);
 		public delegate void SelectionCallback(float entityID);
 		public delegate void SceneLoadedCallback();
@@ -47,10 +56,16 @@ namespace WPFSceneEditor
 		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
 		public static extern void RegisterSceneLoadedCallback(SceneLoadedCallback callback);
 		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
-		public static extern void GetFloatData(float entityID, int component, [In, Out] float[] data, int size);
+		public static extern bool GetFloatData(float entityID, int component, [In, Out] float[] data, int size);
 
 		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
 		public static extern void SetFloatData(float entityID, int component, [In] float[] data, int size);
+
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern bool GetStringData(float entityID, int component, [In][Out][MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)]string[] data, int size, int count);
+
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void SetStringData(float entityID, int component, [In][Out][MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)]string[] data, int size, int count);
 		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
 		public static extern void ReloadScene(string path);
 		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
@@ -66,7 +81,11 @@ namespace WPFSceneEditor
 		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
 		public static extern void EntitySelect(float entityID);
 
-		
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void AddNewEntity();
+
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void AddComponent(float entityID, int componentType);
 
 	}
 }

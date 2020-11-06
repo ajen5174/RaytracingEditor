@@ -31,7 +31,7 @@ namespace WPFSceneEditor.Controls
 		{
 			selectedEntityID = entityID;
 			float[] data = new float[9];
-			Engine.GetFloatData(selectedEntityID, 1, data, 9);//1 means transform
+			Engine.GetFloatData(selectedEntityID, (int)Engine.ComponentType.TRANSFORM, data, 9);//1 means transform
 
 			TranslationBoxX.Text = "" + data[0];
 			TranslationBoxY.Text = "" + data[1];
@@ -81,7 +81,7 @@ namespace WPFSceneEditor.Controls
 			float[] data = { translationX, translationY, translationZ,
 							 rotationX, rotationY, rotationZ,
 							 scaleX, scaleY, scaleZ };
-			Engine.SetFloatData(selectedEntityID, 1, data, 9);
+			Engine.SetFloatData(selectedEntityID, (int)Engine.ComponentType.TRANSFORM, data, 9);
 		}
 	}
 }

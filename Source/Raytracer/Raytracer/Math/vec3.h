@@ -65,6 +65,11 @@ __host__ __device__ inline vec3 operator*(const vec3& v2, float t)
 	return vec3(t * v2.x, t * v2.y, t * v2.z);
 }
 
+__host__ __device__ inline vec3 operator*(const vec3& v1, const vec3& v2)
+{
+	return vec3(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
+}
+
 __host__ __device__ inline vec3 operator/(const vec3& v2, float t)
 {
 	float k = 1 / t;
@@ -87,3 +92,5 @@ __host__ __device__ inline vec3 Normalize(vec3 v)
 {
 	return v / v.Magnitude();
 }
+
+#define RANDVEC3 vec3(curand_uniform(localRandState),curand_uniform(localRandState),curand_uniform(localRandState))

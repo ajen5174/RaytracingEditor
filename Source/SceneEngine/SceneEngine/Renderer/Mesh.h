@@ -23,11 +23,11 @@ public:
 
 public:
 	int drawIndex;
+	std::string directory;
 
 
 private:
 	VertexArray vertexArray;
-	std::string directory;
 
 	
 };

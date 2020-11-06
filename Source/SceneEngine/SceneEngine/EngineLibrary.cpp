@@ -5,6 +5,7 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <chrono>
 #include "Core/Entity.h"
 #include "Renderer/Shader.h"
 #include "Renderer/VertexArray.h"
@@ -40,6 +41,9 @@ Scene* scene;
 DebugCallback gDebugCallback;
 SelectionCallback gSelectionCallback;
 SceneLoadedCallback gSceneLoadedCallback;
+
+
+
 
 ENGINE_DLL int GetEntityCount()
 {
@@ -111,10 +115,11 @@ ENGINE_DLL void SetFloatData(float entityID, int component, float* data, int siz
 		break;
 
 	case ComponentType::TRANSFORM:
-		if (size < 9)
+	{
+		Transform* t = entity->GetComponent<Transform>();
+		if (size < 9 || !t)
 			return;
 
-		Transform* t = entity->GetComponent<Transform>();
 
 		t->translation = glm::vec3(data[0], data[1], data[2]);
 		//PrintDebugMessage("translation set");
@@ -125,10 +130,61 @@ ENGINE_DLL void SetFloatData(float entityID, int component, float* data, int siz
 
 		break;
 	}
+	{
+	case ComponentType::MODEL_RENDER:
+		ModelRenderComponent* render = entity->GetComponent<ModelRenderComponent>();
+		if (size < 5 || !render)
+			return;
+
+		render->model->material->albedo = glm::vec3(data[0], data[1], data[2]);
+
+		render->model->material->fuzz = data[3];
+		render->model->material->refractionIndex = data[4];
+
+		break;
+	}
+	}
 }
 
+ENGINE_DLL bool GetStringData(float entityID, int component, char* data[], int size, int count)
+{
+	Entity* entity = scene->GetEntityByFloatId(entityID);
+	ComponentType type = (ComponentType)component;
+	if (!entity)
+		return false;
 
-ENGINE_DLL void GetFloatData(float entityID, int component, float* data, int size)
+	switch (type)
+	{
+	case ComponentType::NONE:
+		break;
+
+	case ComponentType::TRANSFORM:
+	{
+		break;
+	}
+	case ComponentType::MODEL_RENDER:
+	{
+		ModelRenderComponent* render = entity->GetComponent<ModelRenderComponent>();
+		if (!render)
+			return false;
+		if (count < 2 || count > 2)
+			return false;
+		int filePathSize = render->model->mesh->directory.length() + 1;
+		if (filePathSize > size)
+			return false;
+		data[0] = new char[size];
+		data[1] = new char[size];
+
+		memcpy(data[0], render->model->mesh->directory.c_str(), filePathSize);
+		memcpy(data[1], render->model->material->materialType.c_str(), render->model->material->materialType.length() + 1);
+		break;
+	}
+	}
+
+	return true;
+}
+
+ENGINE_DLL void SetStringData(float entityID, int component, char* data[], int size, int count)
 {
 	Entity* entity = scene->GetEntityByFloatId(entityID);
 	ComponentType type = (ComponentType)component;
@@ -140,9 +196,55 @@ ENGINE_DLL void GetFloatData(float entityID, int component, float* data, int siz
 		break;
 
 	case ComponentType::TRANSFORM:
-		Transform* t = entity->GetComponent<Transform>();
-		if (size < 9)
+	{
+		break;
+	}
+	case ComponentType::MODEL_RENDER:
+	{
+		ModelRenderComponent* render = entity->GetComponent<ModelRenderComponent>();
+		if (!render)
 			return;
+		if (count < 2 || count > 2)
+			return;
+
+		PrintDebugMessage("Setting STring Data...");
+		if (data[0] != render->model->mesh->directory)
+		{
+			render->model->ReloadMesh(data[0]);
+			PrintDebugMessage("Model reloaded");
+
+		}
+		else
+		{
+			render->model->mesh->directory = data[0];
+			PrintDebugMessage("Model not reloaded");
+		}
+		render->model->material->materialType = data[1];
+		
+		break;
+	}
+	}
+
+	
+}
+
+
+ENGINE_DLL bool GetFloatData(float entityID, int component, float* data, int size)
+{
+	Entity* entity = scene->GetEntityByFloatId(entityID);
+	ComponentType type = (ComponentType)component;
+	if (!entity)
+		return false;
+	switch (type)
+	{
+	case ComponentType::NONE:
+		break;
+
+	case ComponentType::TRANSFORM:
+	{
+		Transform* t = entity->GetComponent<Transform>();
+		if (size < 9 || !t)
+			return false;
 		data[0] = t->translation.x;
 		data[1] = t->translation.y;
 		data[2] = t->translation.z;
@@ -159,6 +261,23 @@ ENGINE_DLL void GetFloatData(float entityID, int component, float* data, int siz
 		data[8] = t->scale.z;
 		break;
 	}
+	case ComponentType::MODEL_RENDER:
+	{
+		ModelRenderComponent* render = entity->GetComponent<ModelRenderComponent>();
+		if (!render || size < 5)
+			return false;
+
+		data[0] = render->model->material->albedo.x;//r
+		data[1] = render->model->material->albedo.y;//g
+		data[2] = render->model->material->albedo.z;//b
+
+		data[3] = render->model->material->fuzz;//fuzz
+		data[4] = render->model->material->refractionIndex;//refraction index
+		break;
+	}
+	}
+
+	return true;
 }
 
 ENGINE_DLL void RegisterSceneLoadedCallback(SceneLoadedCallback callback)
@@ -268,6 +387,40 @@ void SceneLoaded()
 	}
 }
 
+ENGINE_DLL void AddNewEntity()
+{
+	StringId newName = StringId("newEntity", true);
+	Entity* entity = new Entity(newName);
+	scene->Add(entity);
+	SceneLoaded();
+}
+
+
+ENGINE_DLL void AddComponent(float entityID, int component)
+{
+	Entity* e = scene->GetEntityByFloatId(entityID);
+	if (!e) return;
+	ComponentType type = (ComponentType)component;
+	PrintDebugMessage("Trying to add");
+	if (type == ComponentType::MODEL_RENDER)
+	{
+		ModelRenderComponent* mrc = e->GetComponent<ModelRenderComponent>();
+		if (mrc)
+		{
+			PrintDebugMessage("Already has component");
+
+			return;
+		}
+		mrc = new ModelRenderComponent(e->GetName(), e);
+		e->AddComponent(mrc);
+		PrintDebugMessage("Component Added");
+		SceneLoaded();
+	}
+
+}
+
+
+
 
 bool InitializeGraphics()
 {
@@ -343,11 +496,23 @@ void RunEngine()
 	PickTexture* pick = new PickTexture();
 	pick->Initialize(windowHeight, windowWidth);
 	
-	
-
+	uint32_t timeA = 0;
 	SDL_Event sdlEvent;
 	while (!quit)
 	{
+		uint32_t timeB = SDL_GetTicks();
+
+		uint32_t millisecondsBetween = timeB - timeA;
+
+		if (millisecondsBetween < 16) //60fps for now is fine
+		{
+			continue;
+		}
+		else 
+		{
+			timeA = timeB;
+		}
+
 		if (reloadScene)
 		{
 			reloadScene = false;

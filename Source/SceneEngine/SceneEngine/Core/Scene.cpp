@@ -12,9 +12,16 @@ void Scene::Update()
 
 void Scene::Draw()
 {
+
 	for (Entity* e : entities)
 	{
-		e->Draw();
+		if(!e->selected)
+			e->Draw();
+	}
+	for (Entity* e : entities)
+	{
+		if (e->selected)
+			e->Draw();
 	}
 }
 

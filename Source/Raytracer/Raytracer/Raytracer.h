@@ -27,6 +27,7 @@ private:
 public:
 	int width;
 	int height;
+	int samplesPerPixel;
 	vec3* frameBuffer;
 
 private:
@@ -34,6 +35,7 @@ private:
 	std::string renderPath;
 	Entity** entityList;
 	int numEntities = 0;
+	Camera* mainCamera;
 	//std::vector<Hittable*> hittables;
 	//std::vector<Light*> lights;
 };

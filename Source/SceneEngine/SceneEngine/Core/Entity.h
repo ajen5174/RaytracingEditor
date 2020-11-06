@@ -12,7 +12,14 @@ class Entity : public Object
 	
 public:
 	Entity(StringId& name) 
-		: parent(nullptr), scene(nullptr), selected(false), Object(name) {}
+		: parent(nullptr), scene(nullptr), selected(false), Object(name) 
+	{
+		if (!GetComponent<Transform>())
+		{
+			Transform* transform = new Transform(name, this);
+			AddComponent(transform);
+		}
+	}
 
 	template <typename T>
 	T* GetComponent()

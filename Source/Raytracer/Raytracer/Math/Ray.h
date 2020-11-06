@@ -1,22 +1,49 @@
 #pragma once
 #include "device_launch_parameters.h"
 #include "vec3.h"
+#include <curand_kernel.h>
 
-__device__ inline float schlick(float cosine, float index)
+
+
+__device__ inline float Schlick(float cosine, float index)
 {
-	return 0.0f;
+	float r0 = (1 - index) / (1 + index);
+	r0 = r0 * r0;
+	return r0 + (1 - r0) * powf((1 - cosine), 5);
 }
 
-__device__ inline bool refract(const vec3& direction, const vec3& normal, float niOverNt, vec3& refracted)
+__device__ inline vec3 Refract(const vec3& direction, const vec3& normal, float niOverNt/*, vec3& refracted*/)
 {
-	return false;
+	//using snells law
+	auto cosTheta = fmin(Dot(-direction, normal), 1.0f);
+	vec3 rOutPerp = niOverNt * (direction + cosTheta * normal);
+	vec3 rOutParallel = -sqrtf(fabs(1.0f - rOutPerp.SqrMagnitude())) * normal;
+	return rOutPerp + rOutParallel;
 }
 
-__device__ inline vec3 reflect(const vec3& direction, const vec3& normal)
+__device__ inline vec3 Reflect(const vec3& direction, const vec3& normal)
 {
 	return direction - 2.0f * Dot(direction, normal) * normal;
 }
 
+__device__ inline vec3 RandomInUnitSphere(curandState* localRandState)
+{
+	vec3 p;
+	do 
+	{
+		p = (2.0f * (RANDVEC3)) - vec3(1.0f);
+	} while (p.SqrMagnitude() >= 1.0f);
+	return p;
+}
+
+__device__ inline vec3 RandomInHemisphere(curandState* localRandState, const vec3& normal)
+{
+	vec3 p = RandomInUnitSphere(localRandState);
+	if (Dot(p, normal) > 0.0f)
+		return p;
+	else
+		return -p;
+}
 
 
 

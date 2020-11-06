@@ -10,7 +10,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "../Core/Json.h"
-
+#include "Material.h"
 
 
 
@@ -27,8 +27,7 @@ public:
 	bool Load(rapidjson::Value& value)
 	{
 		std::string path;
-		json::GetString(value, "path", path);
-
+		json::GetString(value, "meshPath", path);
 		LoadFromFile(path);
 		return true;
 	}
@@ -62,4 +61,5 @@ public:
 	int numTriangles;
     //temporary render speed up, surrounds all triangles in the mesh
     Sphere* boundingSphere;
+	Material* material;
 };

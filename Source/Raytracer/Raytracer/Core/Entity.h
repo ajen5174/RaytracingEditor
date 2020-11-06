@@ -11,9 +11,20 @@ inline __global__ void CreateTransform(Transform* transform)
 }
 
 
+inline __global__ void CreateCamera(Camera* cam)
+{
+	cam = new Camera();
+}
+
 inline __global__ void CreateMesh(Mesh* mesh)
 {
 	mesh = new Mesh();
+	
+}
+
+inline __global__ void CreateMaterial(Material* material, char materialType)
+{
+	material = new Material();
 }
 
 //This method uses data read in from disk and stored in vertices to create our device only Triangles for collision. W
@@ -33,6 +44,7 @@ inline __global__ void CreateMeshTriangles(Mesh* mesh, Transform* transform)
 		//if (i % 3 == 0)
 		{
 			mesh->triangles[i] = new Triangle(mesh->vertices[(i * 3) + 0], mesh->vertices[(i * 3) + 1], mesh->vertices[(i * 3) + 2]);
+			mesh->triangles[i]->material = mesh->material;
 		}
 	}
 
@@ -43,7 +55,7 @@ inline __global__ void CreateMeshTriangles(Mesh* mesh, Transform* transform)
 		averagePosition = averagePosition + mesh->vertices[i];
 	}
 	averagePosition = averagePosition / (mesh->numTriangles * 3);
-	float boundingRadius = 0.0f;//arbitrarily large number, should be float max, but Im not sure what the macro for that is.
+	float boundingRadius = 0.0f;
 	for (int i = 0; i < mesh->numTriangles * 3; i++)
 	{
 		float tempRadius = (averagePosition - mesh->vertices[i]).Magnitude();
@@ -96,18 +108,53 @@ public:
 				else if (componentType == "ModelRender")
 				{
 					Mesh* mesh;
-					CheckCudaErrors(cudaMallocManaged(&mesh, sizeof(Transform)));
+					CheckCudaErrors(cudaMallocManaged(&mesh, sizeof(Mesh)));
 					CreateMesh << <1, 1 >> > (mesh);
 					CheckCudaErrors(cudaDeviceSynchronize());
+
+					std::string materialType;
+					json::GetString(componentValue, "materialType", materialType);
+
+					Material* material;
+					CheckCudaErrors(cudaMallocManaged(&material, sizeof(Material)));
+					CreateMaterial << <1, 1 >> > (material, materialType.c_str()[0]);
+					CheckCudaErrors(cudaDeviceSynchronize());
+
+					if (materialType == "lambert")
+					{
+						json::GetVec3(componentValue, "albedo", material->albedo);
+						material->materialType = 'l';
+					}
+					else if (materialType == "metal")
+					{
+						json::GetVec3(componentValue, "albedo", material->albedo);
+						json::GetFloat(componentValue, "fuzz", material->fuzz);
+						material->materialType = 'm';
+					}
+					else if (materialType == "dielectric")
+					{
+						json::GetFloat(componentValue, "refractionIndex", material->refractionIndex);
+						material->materialType = 'd';
+					}
+
 					if (mesh->Load(componentValue))
 					{
-						
+						mesh->material = material;
 						this->mesh = mesh;
+
 					}
 				}
 				else if (componentType == "Camera")
 				{
-					
+					Camera* cam;
+					CheckCudaErrors(cudaMallocManaged(&cam, sizeof(Camera)));
+					CreateCamera << <1, 1 >> > (cam);
+					CheckCudaErrors(cudaDeviceSynchronize());
+					if (cam->Load(componentValue))
+					{
+						this->cam = cam;
+						this->cam->SetView(this->transform->translation, this->transform->translation + vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f)); //matches opengl
+					}
 				}
 			}
 
@@ -124,7 +171,7 @@ public:
 
 public:
 	Transform* transform;
-	//Camera cam;
+	Camera* cam;
 	Mesh* mesh;
 
 };

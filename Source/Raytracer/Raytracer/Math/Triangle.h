@@ -76,7 +76,7 @@ public:
 		hitInfo.v = v;
 		hitInfo.w = w;
 		hitInfo.point = intersectionPoint;
-		//hitInfo.material = material;
+		hitInfo.material = material;
 		hitInfo.normal = normal;
 		return true;
 	}
@@ -86,6 +86,6 @@ public:
 
 	//not sure if this is strictly needed, or if it can be replaced with a method call.
 	//vec3 averagePosition;
-	//Material* material;
+	Material* material = nullptr;
 	vec3 normal;
 };
