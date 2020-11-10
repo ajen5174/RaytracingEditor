@@ -15,6 +15,7 @@ void CheckCuda(cudaError_t result, char const* const func, const char* const fil
 class Raytracer
 {
 public:
+	Raytracer(char** args);
 	Raytracer(std::string sceneToLoad, std::string renderPath);
 
 	bool StartRender();
@@ -28,6 +29,7 @@ public:
 	int width;
 	int height;
 	int samplesPerPixel;
+	int maxRecursion;
 	vec3* frameBuffer;
 
 private:

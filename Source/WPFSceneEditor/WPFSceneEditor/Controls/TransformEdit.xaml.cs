@@ -83,5 +83,12 @@ namespace WPFSceneEditor.Controls
 							 scaleX, scaleY, scaleZ };
 			Engine.SetFloatData(selectedEntityID, (int)Engine.ComponentType.TRANSFORM, data, 9);
 		}
+
+		private void Reset_Click(object sender, RoutedEventArgs e)
+		{
+			float[] data = { 0, 0, 0, 0, 0, 0, 1, 1, 1};
+			Engine.SetFloatData(selectedEntityID, (int)Engine.ComponentType.TRANSFORM, data, 9);
+			LoadData(selectedEntityID);
+		}
 	}
 }

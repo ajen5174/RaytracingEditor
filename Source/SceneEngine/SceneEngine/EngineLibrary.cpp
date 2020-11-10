@@ -31,7 +31,9 @@ int windowHeight = 600;
 
 bool sizeChanged = false;
 
-std::string gPath = "C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Content\\Scenes\\default.txt";
+const std::string defaultPath = "C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Content\\Scenes\\default.txt";
+
+std::string gPath = defaultPath;
 bool reloadScene = false;
 
 bool quit = false;
@@ -76,6 +78,11 @@ ENGINE_DLL void GetEntityName(float entityID, char* name)
 ENGINE_DLL void ReloadScene(const char* inPath)
 {
 	reloadScene = true;
+	if(std::strlen(inPath) == 0)
+	{
+		gPath = defaultPath;
+		return;
+	}
 	gPath = inPath;
 }
 
@@ -395,6 +402,29 @@ ENGINE_DLL void AddNewEntity()
 	SceneLoaded();
 }
 
+ENGINE_DLL void DeleteEntity(float entityID)
+{
+	Entity* e = scene->GetEntityByFloatId(entityID);
+	if (!e) return;
+	scene->Remove(e);
+	SceneLoaded();
+}
+
+ENGINE_DLL float RenameEntity(float entityID, char* newName)
+{
+	Entity* e = scene->GetEntityByFloatId(entityID);
+	if (!e) return -1.0f;
+	StringId newId = newName;
+	if (scene->GetEntityByName(newId))
+	{
+		PrintDebugMessage("Cannot use duplicate names!");
+		return -1.0f;
+	}
+	e->SetName(newName);
+	SceneLoaded();
+	return e->GetName().GetFloatId();
+}
+
 
 ENGINE_DLL void AddComponent(float entityID, int component)
 {
@@ -417,6 +447,24 @@ ENGINE_DLL void AddComponent(float entityID, int component)
 		SceneLoaded();
 	}
 
+}
+
+ENGINE_DLL void RemoveComponent(float entityID, int component)
+{
+	Entity* e = scene->GetEntityByFloatId(entityID);
+	if (!e) return;
+	ComponentType type = (ComponentType)component;
+	PrintDebugMessage("Removing");
+	if (type == ComponentType::MODEL_RENDER)
+	{
+		ModelRenderComponent* mrc = e->GetComponent<ModelRenderComponent>();
+		if (mrc)
+		{
+			e->RemoveComponent(mrc);
+			PrintDebugMessage("Component Removed");
+		}
+		SceneLoaded();
+	}
 }
 
 
@@ -516,6 +564,7 @@ void RunEngine()
 		if (reloadScene)
 		{
 			reloadScene = false;
+			delete scene;
 			scene = new Scene();
 
 			rapidjson::Document doc;

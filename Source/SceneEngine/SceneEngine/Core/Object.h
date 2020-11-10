@@ -14,7 +14,10 @@ public:
 	virtual void Initialize() = 0;
 	
 	StringId& GetName() { return name; };
-
+	void SetName(char* newName)
+	{
+		name = newName;
+	}
 
 protected:
 	StringId name;

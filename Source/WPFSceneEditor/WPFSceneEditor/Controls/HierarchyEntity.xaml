@@ -6,8 +6,17 @@
              xmlns:local="clr-namespace:WPFSceneEditor.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="100">
-    <Grid>
+
+	<Grid x:Name="ContainerGrid">
 		<Button Name="EntityName" Click="EntityName_Click" 
-				HorizontalContentAlignment="Left" Padding="5"></Button>
+				HorizontalContentAlignment="Left" Padding="5"
+				></Button>
+		<Grid.ContextMenu>
+			<ContextMenu>
+				<MenuItem Header="_Delete" Click="Delete_Click"></MenuItem>
+				<MenuItem Header="_Rename" Click="Rename_Click"></MenuItem>
+			</ContextMenu>
+		</Grid.ContextMenu>
+		
     </Grid>
 </UserControl>

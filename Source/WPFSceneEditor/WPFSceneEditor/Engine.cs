@@ -23,7 +23,8 @@ namespace WPFSceneEditor
 		public static string currentFilePath = "";
 		public static string outputFilePath = "";
 
-
+		public static int renderWidth = 266;
+		public static int renderHeight = 150;
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr SetWindowPos(
@@ -85,7 +86,15 @@ namespace WPFSceneEditor
 		public static extern void AddNewEntity();
 
 		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void DeleteEntity(float entityID);
+
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
 		public static extern void AddComponent(float entityID, int componentType);
 
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void RemoveComponent(float entityID, int componentType);
+
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern float RenameEntity(float entityID, string newName);
 	}
 }

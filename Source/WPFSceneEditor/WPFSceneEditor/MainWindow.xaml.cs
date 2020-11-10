@@ -158,10 +158,21 @@ namespace WPFSceneEditor
 			{
 				return;
 			}
-
-			//first we grab the list of components (probably as bitflags)
-
-			//then for each component we add section to add that type of component editing to the window.
+			for(int i = 0; i < SceneHierarchy.Children.Count; i++)
+			{
+				HierarchyEntity he = SceneHierarchy.Children[i] as HierarchyEntity;
+				if(he != null)
+				{
+					if (he.entityID == selectedEntityID)
+					{
+						he.EntityName.Background = new SolidColorBrush(Color.FromRgb(0x99, 0x99, 0x99));
+					}
+					else
+					{
+						he.EntityName.Background = he.defaultBrush;
+					}
+				}
+			}
 
 
 			//transform
@@ -185,7 +196,7 @@ namespace WPFSceneEditor
 			if(openFile.ShowDialog() == true)
 			{
 				string path = openFile.FileName;
-				Engine.currentFilePath= path;
+				Engine.currentFilePath = path;
 				Engine.ReloadScene(Engine.currentFilePath);
 
 			}
@@ -221,7 +232,7 @@ namespace WPFSceneEditor
 		private void Render_Click(object sender, RoutedEventArgs e)
 		{
 			RenderWindow rw = new RenderWindow();
-
+			rw.Owner = this;
 			rw.ShowDialog();
 		}
 
@@ -238,5 +249,18 @@ namespace WPFSceneEditor
 			EntitySelect(0);
 			EntitySelect(temp);//reselect to show new component
 		}
+
+		private void New_Click(object sender, RoutedEventArgs e)
+		{
+			Engine.currentFilePath = "";
+			Engine.ReloadScene("");
+		}
+
+		private void Exit_Click(object sender, RoutedEventArgs e)
+		{
+			Application.Current.Shutdown();
+		}
+
+		
 	}
 }

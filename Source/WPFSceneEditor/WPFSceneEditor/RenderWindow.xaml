@@ -9,12 +9,15 @@
     <Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition/>
-			<ColumnDefinition/>
+			<ColumnDefinition Width="2*"/>
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
+			<RowDefinition Height="3*"/>
 			<RowDefinition/>
 			<RowDefinition/>
 			<RowDefinition/>
+			<RowDefinition/>
+			<RowDefinition Height="1.5*"/>
 		</Grid.RowDefinitions>
 		<Label HorizontalAlignment="Right" VerticalAlignment="Center"
 			   Margin="10">Output File: </Label>
@@ -25,9 +28,43 @@
 			</Grid.RowDefinitions>
 			<TextBox HorizontalAlignment="Left" VerticalAlignment="Center"
 				 Width="200" Height="20"
-				 Name="OutputPathBox" Margin="10"></TextBox>
+				 Name="OutputPathBox" Margin="10 0"></TextBox>
 			<Button Grid.Row="1" Click="OutputFile_Click"> Select file</Button>
 		</Grid>
-		<Button Grid.Column="1" Grid.Row="1" Click="Render_Click">Render</Button>
+
+
+		<Label Grid.Row="1" HorizontalAlignment="Right" 
+			   VerticalAlignment="Center" Margin="10 0">Samples Per Pixel</Label>
+
+		<TextBox Grid.Row="1" Grid.Column="1"
+				 HorizontalAlignment="Left" VerticalAlignment="Center"
+				 Width="200" Height="20"
+				 Name="SamplesPerPixelBox" Margin="10 0">10</TextBox>
+
+		<Label Grid.Row="2" HorizontalAlignment="Right" 
+			   VerticalAlignment="Center" Margin="10 0">Max Recursion Depth</Label>
+
+		<TextBox Grid.Row="2" Grid.Column="1"
+				 HorizontalAlignment="Left" VerticalAlignment="Center"
+				 Width="200" Height="20"
+				 Name="RecursionDepthBox" Margin="10 0">50</TextBox>
+
+		<Label Grid.Row="3" HorizontalAlignment="Right" 
+			   VerticalAlignment="Center" Margin="10 0">Output Image Width</Label>
+
+		<TextBox Grid.Row="3" Grid.Column="1"
+				 HorizontalAlignment="Left" VerticalAlignment="Center"
+				 Width="200" Height="20"
+				 Name="OutputImageWidthBox" Margin="10 0"></TextBox>
+
+		<Label Grid.Row="4" HorizontalAlignment="Right" 
+			   VerticalAlignment="Center" Margin="10 0">Output Image Height</Label>
+
+		<TextBox Grid.Row="4" Grid.Column="1"
+				 HorizontalAlignment="Left" VerticalAlignment="Center"
+				 Width="200" Height="20"
+				 Name="OutputImageHeightBox" Margin="10 0"></TextBox>
+
+		<Button Grid.Column="1" Grid.Row="5" Click="Render_Click">Render</Button>
     </Grid>
 </Window>

@@ -57,13 +57,13 @@ __device__ bool HitWorld(Entity** list, int count, const Ray& r, HitInfo& info)
 }
 
 
-__device__ vec3 GetColor(Entity** list, int count,  const Ray& r, curandState* localRandState)
+__device__ vec3 GetColor(Entity** list, int count,  const Ray& r, int maxRecursion, curandState* localRandState)
 {
     Ray currentRay = r;
     vec3 currentAttenuation = vec3(1.0f);
     float tempAtt = 1.0f;
 
-    for (int k = 0; k < 50; k++)
+    for (int k = 0; k < maxRecursion; k++)
     {
         HitInfo info;
         if (HitWorld(list, count, currentRay, info))
@@ -114,7 +114,7 @@ __global__ void RenderInit(int width, int height, curandState* randState)
     curand_init(1984, pixel_index, 0, &randState[pixel_index]);
 }
 
-__global__ void Render(vec3* frameBuffer, int width, int height, int samples, Camera* cam, Entity** list, int numEntities, curandState* randState) {
+__global__ void Render(vec3* frameBuffer, int width, int height, int samples, int maxRecursion, Camera* cam, Entity** list, int numEntities, curandState* randState) {
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     int j = threadIdx.y + blockIdx.y * blockDim.y;
     if ((i >= width) || (j >= height)) return;
@@ -129,7 +129,7 @@ __global__ void Render(vec3* frameBuffer, int width, int height, int samples, Ca
         float u = (i + curand_uniform(&localRandState)) / (float)width;
         float v = (j + curand_uniform(&localRandState)) / (float)height;
         Ray r = cam->GetRay(u, v);
-        color = color + GetColor(list, numEntities, r, &localRandState);
+        color = color + GetColor(list, numEntities, r, maxRecursion, &localRandState);
     }
 
     color = color / (float)samples;
@@ -210,19 +210,32 @@ bool Raytracer::LoadScene(std::string sceneToLoad)
 
 
 
+Raytracer::Raytracer(char** args)
+    :renderPath(args[2])
+{
+    //std::cout << "Argument settings used...\n";
+    LoadScene(args[1]);
+    samplesPerPixel = std::stoi(args[3]);
+    maxRecursion = std::stoi(args[4]);
+    width = std::stoi(args[5]);
+    height = std::stoi(args[6]);
+}
+
 Raytracer::Raytracer(std::string sceneToLoad, std::string renderPath)
     :renderPath(renderPath)
 {
+    //std::cout << "Default settings used...\n";
     LoadScene(sceneToLoad);
-
+    samplesPerPixel = 10;
+    maxRecursion = 50;
+    width = 266.66666666f;
+    height = 150.0f;
 }
 
 bool Raytracer::StartRender()
 {
     std::cout << "Initializing Render...\n";
-    width = 1066.66666666f;
-    height = 600.0f;
-    samplesPerPixel = 20;
+    
     int numPixels = width * height;
 
     curandState* randState;
@@ -245,7 +258,7 @@ bool Raytracer::StartRender()
     CheckCudaErrors(cudaDeviceSynchronize());
     std::cout << "Initialized!\n";
     std::cout << "Rendering...\n";
-    Render <<<blocks, threads>>> (frameBuffer, width, height, samplesPerPixel, mainCamera, entityList, numEntities, randState);
+    Render <<<blocks, threads>>> (frameBuffer, width, height, samplesPerPixel, maxRecursion, mainCamera, entityList, numEntities, randState);
     CheckCudaErrors(cudaGetLastError());
     CheckCudaErrors(cudaDeviceSynchronize());
     stop = clock();

@@ -62,8 +62,22 @@ namespace WPFSceneEditor.Controls
 
 		private void AlbedoBox_KeyUp(object sender, KeyEventArgs e)
 		{
-			//need to set the string as well
+			SetMaterialFloatData();
+		}
 
+		private void SelectMesh_Click(object sender, RoutedEventArgs e)
+		{
+			OpenFileDialog open = new OpenFileDialog();
+			if(open.ShowDialog() == true)
+			{
+				meshFilePath = open.FileName;
+				SetModelStringData();
+
+			}
+		}
+
+		private void SetMaterialFloatData()
+		{
 			float albedoR;
 			if (!float.TryParse(AlbedoBoxR.Text, out albedoR))
 				return;
@@ -82,23 +96,8 @@ namespace WPFSceneEditor.Controls
 			if (!float.TryParse(RefractionIndex.Text, out index))
 				return;
 
-			//string materialType = MaterialTypeBox.Text;
-			//materialType = materialType.ToLower();
-			//Engine.SetStringData(selectedEntityID, (int)Engine.ComponentType.MODEL_RENDER, materialType);
-
 			float[] data = { albedoR, albedoG, albedoB, fuzz, index };
 			Engine.SetFloatData(selectedEntityID, (int)Engine.ComponentType.MODEL_RENDER, data, 5);
-		}
-
-		private void SelectMesh_Click(object sender, RoutedEventArgs e)
-		{
-			OpenFileDialog open = new OpenFileDialog();
-			if(open.ShowDialog() == true)
-			{
-				meshFilePath = open.FileName;
-				SetModelStringData();
-
-			}
 		}
 
 		private void SetModelStringData()
@@ -115,6 +114,27 @@ namespace WPFSceneEditor.Controls
 		{
 			SetModelStringData();
 
+		}
+
+		private void Delete_Click(object sender, RoutedEventArgs e)
+		{
+			Engine.RemoveComponent(selectedEntityID, (int)Engine.ComponentType.MODEL_RENDER);
+
+			float temp = selectedEntityID;
+			Engine.EntitySelect(0);
+			Engine.EntitySelect(temp);
+		}
+
+		private void Reset_Click(object sender, RoutedEventArgs e)
+		{
+			MaterialTypeBox.Text = "Lambert";
+			AlbedoBoxR.Text = "" + 0.8f;
+			AlbedoBoxG.Text = "" + 0.8f;
+			AlbedoBoxB.Text = "" + 0.8f;
+			FuzzBox.Text = "" + 0.0f;
+			RefractionIndex.Text = "" + 0.0f;
+			SetModelStringData();
+			SetMaterialFloatData();
 		}
 	}
 }
