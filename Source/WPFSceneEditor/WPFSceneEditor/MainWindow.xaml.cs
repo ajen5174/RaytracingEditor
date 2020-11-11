@@ -188,6 +188,10 @@ namespace WPFSceneEditor
 			if (ce.LoadData(selectedEntityID))
 				ComponentEditor.Children.Add(ce);
 
+			LightEdit le = new LightEdit();
+			if (le.LoadData(selectedEntityID))
+				ComponentEditor.Children.Add(le);
+
 		}
 
 		
@@ -264,6 +268,13 @@ namespace WPFSceneEditor
 			Application.Current.Shutdown();
 		}
 
-		
+		private void AddLight_Click(object sender, RoutedEventArgs e)
+		{
+			Engine.AddComponent(selectedEntityID, (int)Engine.ComponentType.LIGHT);
+
+			float temp = selectedEntityID;
+			EntitySelect(0);
+			EntitySelect(temp);//reselect to show new component
+		}
 	}
 }

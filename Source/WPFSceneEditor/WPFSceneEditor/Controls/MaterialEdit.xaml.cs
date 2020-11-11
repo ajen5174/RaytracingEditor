@@ -21,7 +21,6 @@ namespace WPFSceneEditor.Controls
 	{
 		private float selectedEntityID;
 		private string meshFilePath;
-		private int maxStringSize = 512;
 
 		public MaterialEdit()
 		{
@@ -34,7 +33,7 @@ namespace WPFSceneEditor.Controls
 			//we need one string, and 5 floats
 			string[] stringData = new string[2];
 
-			if (Engine.GetStringData(selectedEntityID, (int)Engine.ComponentType.MODEL_RENDER, stringData, maxStringSize, 2))
+			if (Engine.GetStringData(selectedEntityID, (int)Engine.ComponentType.MODEL_RENDER, stringData, Engine.maxStringSize, 2))
 			{
 				MeshPathBox.Text = stringData[0];
 				meshFilePath = stringData[0];
@@ -107,7 +106,7 @@ namespace WPFSceneEditor.Controls
 			sb[0] = char.ToLower(sb[0]);
 			data[0] = meshFilePath;
 			data[1] = sb.ToString();
-			Engine.SetStringData(selectedEntityID, (int)Engine.ComponentType.MODEL_RENDER, data, maxStringSize, 2);
+			Engine.SetStringData(selectedEntityID, (int)Engine.ComponentType.MODEL_RENDER, data, Engine.maxStringSize, 2);
 		}
 
 		private void MaterialTypeBox_DropDownClosed(object sender, EventArgs e)

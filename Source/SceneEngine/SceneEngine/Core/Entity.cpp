@@ -2,6 +2,7 @@
 #include "../Components/ModelRenderComponent.h"
 #include "Json.h"
 #include "../Renderer/Camera.h"
+#include "../Light.h"
 
 
 void Entity::Update()
@@ -166,6 +167,13 @@ bool Entity::LoadComponents(const rapidjson::Value& value)
 			Camera* cam = new Camera(camName, this);
 			if (cam->Load(componentValue))
 				AddComponent(cam);
+		}
+		else if (componentType == "Light")
+		{
+			StringId lightName = name.ToString() + "Light";
+			Light* light = new Light(lightName, this);
+			if (light->Load(componentValue))
+				AddComponent(light);
 		}
 	}
 	

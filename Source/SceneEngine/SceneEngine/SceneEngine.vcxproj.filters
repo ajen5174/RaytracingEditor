@@ -87,6 +87,9 @@
     <ClInclude Include="Renderer\Material.h">
       <Filter>Renderer\Materials</Filter>
     </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -136,6 +139,9 @@
     </ClCompile>
     <ClCompile Include="Renderer\Material.cpp">
       <Filter>Renderer\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

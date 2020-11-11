@@ -1,6 +1,7 @@
 #include "ModelRenderComponent.h"
 #include "../Core/Scene.h"
 #include "../EngineLibrary.h"
+#include "../Light.h"
 
 
 ModelRenderComponent::ModelRenderComponent(StringId& name, Entity* owner)
@@ -93,6 +94,13 @@ void ModelRenderComponent::Update()
 	shader->Use();
 	shader->SetUniform("mvp", mvpMatrix);
 	shader->SetUniform("mv", modelViewMatrix);
+
+	auto lights = scene->Get<Light>();
+	for (int i = 0; i < (*lights).size(); i++)
+	{
+		(*lights)[i]->SetShader("lights[" + std::to_string(i) + "]", shader);
+	}
+
 	shader->SetUniform("lightPosition", glm::vec3(2.0f, 2.0f, 2.0f));
 
 	pickShader->Use();

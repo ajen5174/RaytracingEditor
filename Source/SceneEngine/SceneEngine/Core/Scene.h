@@ -21,6 +21,8 @@ public:
 	Entity* GetEntityByName(StringId& name);
 	Entity* GetEntityByFloatId(float id);
 	std::vector<Entity*> GetEntities() { return entities; }
+	template <typename T>
+	std::vector<T*>* Get();
 
 	Camera* GetMainCamera() { return mainCamera; }
 
@@ -32,3 +34,16 @@ private:
 
 };
 #endif
+
+template<typename T>
+inline std::vector<T*>* Scene::Get()
+{
+	std::vector<T*>* components = new std::vector<T*>();
+	for (Entity* e : entities)
+	{
+		T* temp = e->GetComponent<T>();
+		if (temp)
+			components->push_back(temp);
+	}
+	return components;
+}

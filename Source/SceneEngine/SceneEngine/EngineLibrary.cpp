@@ -18,6 +18,7 @@
 #include "rapidjson/istreamwrapper.h"
 
 #include "Core/Json.h"
+#include "Light.h"
 
 float color1[] = { 0.2f, 0.3f, 0.3f };
 
@@ -137,8 +138,8 @@ ENGINE_DLL void SetFloatData(float entityID, int component, float* data, int siz
 
 		break;
 	}
-	{
 	case ComponentType::MODEL_RENDER:
+	{
 		ModelRenderComponent* render = entity->GetComponent<ModelRenderComponent>();
 		if (size < 5 || !render)
 			return;
@@ -151,6 +152,7 @@ ENGINE_DLL void SetFloatData(float entityID, int component, float* data, int siz
 		break;
 	}
 	case ComponentType::CAMERA:
+	{
 		Camera* cam = entity->GetComponent<Camera>();
 		if (size < 1 || !cam)
 			return;
@@ -158,7 +160,17 @@ ENGINE_DLL void SetFloatData(float entityID, int component, float* data, int siz
 		cam->fov = data[0];
 		cam->SetProjection(cam->fov, cam->aspectRatio, cam->nearClip, cam->farClip);
 		break;
+	}
+	case ComponentType::LIGHT:
+	{
+		Light* light = entity->GetComponent<Light>();
+		if (!light || size < 4)
+			return;
 
+		light->color = glm::vec3(data[0], data[1], data[2]);
+		light->intensity = data[3];
+		break;
+	}
 	}
 }
 
@@ -292,6 +304,7 @@ ENGINE_DLL bool GetFloatData(float entityID, int component, float* data, int siz
 		break;
 	}
 	case ComponentType::CAMERA:
+	{
 		Camera* cam = entity->GetComponent<Camera>();
 		if (!cam || size < 1)
 			return false;
@@ -299,6 +312,20 @@ ENGINE_DLL bool GetFloatData(float entityID, int component, float* data, int siz
 		data[0] = cam->fov;
 		break;
 	}
+	case ComponentType::LIGHT:
+	{
+		Light* light = entity->GetComponent<Light>();
+		if (!light || size < 4)
+			return false;
+
+		data[0] = light->color.r;
+		data[1] = light->color.g;
+		data[2] = light->color.b;
+		data[3] = light->intensity;
+		break;
+	}
+	}
+
 
 	return true;
 }
@@ -462,6 +489,19 @@ ENGINE_DLL void AddComponent(float entityID, int component)
 		PrintDebugMessage("Component Added");
 		SceneLoaded();
 	}
+	else if (type == ComponentType::LIGHT)
+	{
+		Light* light = e->GetComponent<Light>();
+		if (light)
+		{
+			PrintDebugMessage("Already has component");
+			return;
+		}
+		light = new Light(e->GetName(), e);
+		e->AddComponent(light);
+		PrintDebugMessage("Component Added");
+		SceneLoaded();
+	}
 
 }
 
@@ -478,9 +518,20 @@ ENGINE_DLL void RemoveComponent(float entityID, int component)
 		{
 			e->RemoveComponent(mrc);
 			PrintDebugMessage("Component Removed");
+			SceneLoaded();
 		}
-		SceneLoaded();
 	}
+	else if (type == ComponentType::LIGHT)
+	{
+		Light* light = e->GetComponent<Light>();
+		if (light)
+		{
+			e->RemoveComponent(light);
+			PrintDebugMessage("Component Removed");
+			SceneLoaded();
+		}
+	}
+
 }
 
 

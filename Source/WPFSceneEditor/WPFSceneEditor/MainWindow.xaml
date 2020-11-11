@@ -83,7 +83,8 @@
 				<StackPanel.ContextMenu>
 					<ContextMenu>
 						<MenuItem Header="_Add">
-							<MenuItem Header="_ModelRender" Click="AddModelRender_Click"></MenuItem>
+							<MenuItem Header="_Model" Click="AddModelRender_Click"></MenuItem>
+							<MenuItem Header="_Light" Click="AddLight_Click"></MenuItem>
 						</MenuItem>
 					</ContextMenu>
 				</StackPanel.ContextMenu>

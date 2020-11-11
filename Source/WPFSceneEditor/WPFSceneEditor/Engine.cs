@@ -25,6 +25,8 @@ namespace WPFSceneEditor
 
 		public static int renderWidth = 266;
 		public static int renderHeight = 150;
+		public static int maxStringSize = 512;
+
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr SetWindowPos(

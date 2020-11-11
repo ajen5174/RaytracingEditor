@@ -1,6 +1,6 @@
 #pragma once
 #include "StringId.h"
-#include "../external/rapidjson/document.h"
+#include "Json.h"
 
 #ifndef OBJECT_H
 #define OBJECT_H

@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include "../EngineLibrary.h"
 #include "Json.h"
+#include "../Components/ModelRenderComponent.h"
 
 void Scene::Update()
 {
