@@ -19,7 +19,7 @@ public:
 	glm::mat4 viewMatrix;
 	glm::mat4 projectionMatrix;
 
-private:
+
 	float fov;
 	float aspectRatio;
 	float nearClip;

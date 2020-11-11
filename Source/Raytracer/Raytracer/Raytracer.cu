@@ -61,7 +61,6 @@ __device__ vec3 GetColor(Entity** list, int count,  const Ray& r, int maxRecursi
 {
     Ray currentRay = r;
     vec3 currentAttenuation = vec3(1.0f);
-    float tempAtt = 1.0f;
 
     for (int k = 0; k < maxRecursion; k++)
     {
@@ -70,18 +69,11 @@ __device__ vec3 GetColor(Entity** list, int count,  const Ray& r, int maxRecursi
         {
             Ray scattered;
             vec3 attenuation;
-             //Material* l = info.material;
-             //return info.material->albedo;
-
-            //vec3 target = info.point + info.normal + RandomInUnitSphere(localRandState);
-            //tempAtt *= 0.5f;
-            //currentRay = Ray(info.point, target - info.point);
 
             if (info.material->Scatter(currentRay, info, attenuation, scattered, localRandState))
             {
                 currentAttenuation = currentAttenuation * attenuation; //color multiplication
                 currentRay = scattered;
-                tempAtt *= 0.5f;
             }
             else
             {
@@ -90,7 +82,8 @@ __device__ vec3 GetColor(Entity** list, int count,  const Ray& r, int maxRecursi
         }
         else
         {
-            int temp = k;
+            //this seems like the time to use shadow rays for light calculations
+
             vec3 unitDir = Normalize(currentRay.direction);
             float t = 0.5f * (unitDir.y + 1.0f);//based on how high it is, change the weight of the color from white to light blue
             vec3 backgroundColor = (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);

@@ -184,6 +184,9 @@ namespace WPFSceneEditor
 			if (me.LoadData(selectedEntityID))
 				ComponentEditor.Children.Add(me);
 
+			CameraEdit ce = new CameraEdit();
+			if (ce.LoadData(selectedEntityID))
+				ComponentEditor.Children.Add(ce);
 
 		}
 

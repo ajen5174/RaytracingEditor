@@ -150,6 +150,15 @@ ENGINE_DLL void SetFloatData(float entityID, int component, float* data, int siz
 
 		break;
 	}
+	case ComponentType::CAMERA:
+		Camera* cam = entity->GetComponent<Camera>();
+		if (size < 1 || !cam)
+			return;
+
+		cam->fov = data[0];
+		cam->SetProjection(cam->fov, cam->aspectRatio, cam->nearClip, cam->farClip);
+		break;
+
 	}
 }
 
@@ -282,6 +291,13 @@ ENGINE_DLL bool GetFloatData(float entityID, int component, float* data, int siz
 		data[4] = render->model->material->refractionIndex;//refraction index
 		break;
 	}
+	case ComponentType::CAMERA:
+		Camera* cam = entity->GetComponent<Camera>();
+		if (!cam || size < 1)
+			return false;
+
+		data[0] = cam->fov;
+		break;
 	}
 
 	return true;
