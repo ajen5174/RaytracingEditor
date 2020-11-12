@@ -4,12 +4,17 @@
 #include "Json.h"
 #include "../Renderer/Mesh.h"
 #include "../Math/Sphere.h"
+#include "../Renderer/Light.h"
 
 inline __global__ void CreateTransform(Transform* transform)
 {
 	transform = new Transform();
 }
 
+inline __global__ void CreateLight(Light* light)
+{
+	light = new Light();
+}
 
 inline __global__ void CreateCamera(Camera* cam)
 {
@@ -156,6 +161,18 @@ public:
 						this->cam->SetView(this->transform->translation, this->transform->translation + vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f)); //matches opengl
 					}
 				}
+				else if (componentType == "Light")
+				{
+					Light* light;
+					CheckCudaErrors(cudaMallocManaged(&light, sizeof(Light)));
+					CreateLight<<<1, 1>>>(light);
+					CheckCudaErrors(cudaDeviceSynchronize());
+					if (light->Load(componentValue))
+					{
+						this->light = light;
+						this->light->owner = this;
+					}
+				}
 			}
 
 			if (mesh)
@@ -173,5 +190,6 @@ public:
 	Transform* transform;
 	Camera* cam;
 	Mesh* mesh;
+	Light* light;
 
 };

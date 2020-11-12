@@ -1,8 +1,6 @@
 #include "Raytracer.h"
 #include "Math/Sphere.h"
 #include "Math/Triangle.h"
-//#include "Renderer/Mesh.h"
-//#include "Core/Entity.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -11,16 +9,6 @@
 #include "Core/Json.h"
 
 
-//
-//__global__ void FreeWorld(Camera** cam)
-//{
-//    //for (int i = 0; i < mesh->numTriangles; i++)
-//    //{
-//    //    delete mesh->triangles[i];
-//    //}
-//
-//    delete* cam;
-//}
 
 __global__ void CreateEntity(Entity* entity)
 {
@@ -29,9 +17,9 @@ __global__ void CreateEntity(Entity* entity)
 }
 
 
-__device__ bool HitWorld(Entity** list, int count, const Ray& r, HitInfo& info)
+__device__ bool HitWorld(Entity** list, int count, float maxDist, const Ray& r, HitInfo& info)
 {
-    float closestSoFar = 100.0f;
+    float closestSoFar = maxDist;
     bool hit = false;
     HitInfo tempInfo;
     for (int j = 0; j < count; j++)
@@ -55,25 +43,30 @@ __device__ bool HitWorld(Entity** list, int count, const Ray& r, HitInfo& info)
     }
     return hit;
 }
+__device__ vec3 GetShadows(Entity** list, int numEntities, Light** lights, int numLights, const Ray& r, int maxRecursion, curandState* localRandState)
+{
+
+}
 
 
-__device__ vec3 GetColor(Entity** list, int count,  const Ray& r, int maxRecursion, curandState* localRandState)
+__device__ vec3 GetColor(Entity** list, int numEntities,  Light** lights, int numLights, const Ray& r, int maxRecursion, curandState* localRandState)
 {
     Ray currentRay = r;
-    vec3 currentAttenuation = vec3(1.0f);
-
+    vec3 currentAttenuation = vec3(0.0f);
+    bool hitOnce = false;
+    HitInfo info;
     for (int k = 0; k < maxRecursion; k++)
     {
-        HitInfo info;
-        if (HitWorld(list, count, currentRay, info))
+        if (HitWorld(list, numEntities, 100.0f, currentRay, info))
         {
             Ray scattered;
             vec3 attenuation;
-
+            hitOnce = true;
             if (info.material->Scatter(currentRay, info, attenuation, scattered, localRandState))
             {
-                currentAttenuation = currentAttenuation * attenuation; //color multiplication
+                currentAttenuation = currentAttenuation + attenuation; //color multiplication
                 currentRay = scattered;
+
             }
             else
             {
@@ -83,11 +76,41 @@ __device__ vec3 GetColor(Entity** list, int count,  const Ray& r, int maxRecursi
         else
         {
             //this seems like the time to use shadow rays for light calculations
+                //grab current hit position
+                    //if it didn't hit anything at all fill with background color?
+            if (!hitOnce)
+            {
+                vec3 unitDir = Normalize(currentRay.direction);
+                float t = 0.5f * (unitDir.y + 1.0f);//based on how high it is, change the weight of the color from white to light blue
+                vec3 backgroundColor = (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);
+                return backgroundColor;
+            }
+            //if it did hit something, and this is just the final bounce, then we cast a ray to each light to calculate whether we are in shadow.
+            else
+            {
+                for (int i = 0; i < numLights; i++)
+                {
+                    vec3 pointToLight = lights[i]->owner->transform->translation - info.point;
+                    float distance = pointToLight.Magnitude();
+                    HitInfo shadowInfo;
+                    //if we cast a ray, and hit nothing until the light, then the light affects this material
+                     //so we multiply the attenuation by the light color instead of the background color
+                    if (!HitWorld(list, numEntities, distance, Ray(info.point, pointToLight), shadowInfo))
+                    {
+                        float tempDot = Dot(Normalize(pointToLight), Normalize(info.normal));
+                        float lDotN = tempDot > 0.0f ? tempDot : 0.0f;
 
-            vec3 unitDir = Normalize(currentRay.direction);
-            float t = 0.5f * (unitDir.y + 1.0f);//based on how high it is, change the weight of the color from white to light blue
-            vec3 backgroundColor = (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);
-            return currentAttenuation * backgroundColor;
+                        if (tempDot < 0.0f)
+                        {
+                            return vec3(0.0f);
+                        }
+                        
+                        currentAttenuation = currentAttenuation + (lights[i]->color * lights[i]->intensity) * lDotN;
+                    }
+                }
+            }
+
+            return currentAttenuation / (M_PI * k);
         }
     }
     
@@ -107,7 +130,7 @@ __global__ void RenderInit(int width, int height, curandState* randState)
     curand_init(1984, pixel_index, 0, &randState[pixel_index]);
 }
 
-__global__ void Render(vec3* frameBuffer, int width, int height, int samples, int maxRecursion, Camera* cam, Entity** list, int numEntities, curandState* randState) {
+__global__ void Render(vec3* frameBuffer, int width, int height, int samples, int maxRecursion, Camera* cam, Entity** list, int numEntities, Light** lights, int numLights, curandState* randState) {
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     int j = threadIdx.y + blockIdx.y * blockDim.y;
     if ((i >= width) || (j >= height)) return;
@@ -117,18 +140,24 @@ __global__ void Render(vec3* frameBuffer, int width, int height, int samples, in
     
 
     vec3 color(0.0f);
+    float u = (i + curand_uniform(&localRandState)) / (float)width;
+    float v = (j + curand_uniform(&localRandState)) / (float)height;
+    Ray r = cam->GetRay(u, v);
+    //color = GetShadows(list, numEntities, lights, numLights, r, maxRecursion, &localRandState);
+
+
     for (int k = 0; k < samples; k++)//number of samples
     {
-        float u = (i + curand_uniform(&localRandState)) / (float)width;
-        float v = (j + curand_uniform(&localRandState)) / (float)height;
-        Ray r = cam->GetRay(u, v);
-        color = color + GetColor(list, numEntities, r, maxRecursion, &localRandState);
+        u = (i + curand_uniform(&localRandState)) / (float)width;
+        v = (j + curand_uniform(&localRandState)) / (float)height;
+        r = cam->GetRay(u, v);
+        color = color + GetColor(list, numEntities, lights, numLights, r, maxRecursion, &localRandState);
     }
 
     color = color / (float)samples;
-    color.x = sqrt(color.x);//sqrt gives a more accurate color, this is gamma correction
-    color.y = sqrt(color.y);
-    color.z = sqrt(color.z);
+    //color.x = sqrt(color.x);//sqrt gives a more accurate color, this is gamma correction, this has been moved to the get color function when we divide by PI pretty sure
+    //color.y = sqrt(color.y);
+    //color.z = sqrt(color.z);
 
     frameBuffer[pixel_index] = color;
 
@@ -183,6 +212,34 @@ bool Raytracer::LoadScene(std::string sceneToLoad)
                     }
                 }
             }
+
+            
+
+            for (int i = 0; i < numEntities; i++)
+            {
+                if (entityList[i]->light)
+                    numLights++;
+            }
+
+            CheckCudaErrors(cudaMallocManaged(&lights, sizeof(Light*) * numLights));
+            CheckCudaErrors(cudaDeviceSynchronize());
+
+            int currentLightIndex = 0;
+            for (int i = 0; i < numEntities; i++)
+            {
+                if (entityList[i]->light)
+                {
+                    if (currentLightIndex < numLights)
+                    {
+                        lights[currentLightIndex] = entityList[i]->light;
+                        currentLightIndex++;
+                    }
+                    else
+                    {
+                        std::cout << "more lights than accounted for...";
+                    }
+                }
+            }
         }
     }
 
@@ -219,10 +276,10 @@ Raytracer::Raytracer(std::string sceneToLoad, std::string renderPath)
 {
     //std::cout << "Default settings used...\n";
     LoadScene(sceneToLoad);
-    samplesPerPixel = 10;
+    samplesPerPixel = 30;
     maxRecursion = 50;
-    width = 266.66666666f;
-    height = 150.0f;
+    width = 266.6666666f;// 533.333333f;
+    height = 150.0f;// 300.0f;
 }
 
 bool Raytracer::StartRender()
@@ -251,7 +308,7 @@ bool Raytracer::StartRender()
     CheckCudaErrors(cudaDeviceSynchronize());
     std::cout << "Initialized!\n";
     std::cout << "Rendering...\n";
-    Render <<<blocks, threads>>> (frameBuffer, width, height, samplesPerPixel, maxRecursion, mainCamera, entityList, numEntities, randState);
+    Render <<<blocks, threads>>> (frameBuffer, width, height, samplesPerPixel, maxRecursion, mainCamera, entityList, numEntities, lights, numLights, randState);
     CheckCudaErrors(cudaGetLastError());
     CheckCudaErrors(cudaDeviceSynchronize());
     stop = clock();

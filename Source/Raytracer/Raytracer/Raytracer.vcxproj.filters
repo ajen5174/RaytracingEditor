@@ -43,5 +43,6 @@
     <ClInclude Include="Core\Transform.h" />
     <ClInclude Include="Core\cuda.h" />
     <ClInclude Include="Math\mat4.h" />
+    <ClInclude Include="Renderer\Light.h" />
   </ItemGroup>
 </Project>

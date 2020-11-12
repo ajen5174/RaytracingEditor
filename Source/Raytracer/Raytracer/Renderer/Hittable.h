@@ -5,10 +5,10 @@ class Material;
 
 struct HitInfo
 {
-	float distance;
+	float distance = -1.0f;
 	vec3 point;
 	vec3 normal;
-	Material* material;
+	Material* material = nullptr;
 	float u = -1.0f, v = -1.0f, w = -1.0f; //for triangle barycentric coordinates
 };
 

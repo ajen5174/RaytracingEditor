@@ -11,6 +11,7 @@ public:
 			//lambert stuff
 			vec3 target = hitInfo.point + RandomInHemisphere(localRandState, hitInfo.normal);
 			bouncedRay = Ray(hitInfo.point, target - hitInfo.point);
+
 			color = albedo;
 			return true;
 		}

@@ -39,5 +39,6 @@ private:
 	int numEntities = 0;
 	Camera* mainCamera;
 	//std::vector<Hittable*> hittables;
-	//std::vector<Light*> lights;
+	Light** lights;
+	int numLights = 0;
 };

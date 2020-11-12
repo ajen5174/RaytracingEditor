@@ -107,6 +107,7 @@
     <ClInclude Include="Raytracer.h" />
     <ClInclude Include="Renderer\Camera.h" />
     <ClInclude Include="Renderer\Hittable.h" />
+    <ClInclude Include="Renderer\Light.h" />
     <ClInclude Include="Renderer\Material.h" />
     <ClInclude Include="Renderer\Mesh.h" />
   </ItemGroup>
