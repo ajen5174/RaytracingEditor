@@ -29,7 +29,7 @@ public:
 		int intAxis = (int)axis;
 		//sort of some kind
 		auto comparator = axis == 0 ? CompareBoxAxisX : 
-						  axis == 2 ? CompareBoxAxisY :
+						  axis == 1 ? CompareBoxAxisY :
 									  CompareBoxAxisZ;
 
 		int objectSpan = end - start;
