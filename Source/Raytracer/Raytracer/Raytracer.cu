@@ -276,7 +276,7 @@ Raytracer::Raytracer(std::string sceneToLoad, std::string renderPath)
 {
     //std::cout << "Default settings used...\n";
     LoadScene(sceneToLoad);
-    samplesPerPixel = 5;
+    samplesPerPixel = 30;
     maxRecursion = 50;
     width = 266.6666666f;// 533.333333f;
     height = 150.0f;// 300.0f;
