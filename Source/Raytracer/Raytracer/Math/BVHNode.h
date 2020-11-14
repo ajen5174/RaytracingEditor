@@ -5,8 +5,11 @@
 
 
 inline __global__ void CreateBVHNode(Hittable* node, Triangle** list, int numTriangles);
-inline bool CompareBox(Triangle* left, Triangle* right);
-inline __device__ void QuickSortTriangles(Triangle** list, int start, int end);
+inline bool CompareBox(Triangle* left, Triangle* right, int axis);
+inline __device__ void QuickSortTriangles(Triangle** list, int start, int end, bool(*comparator)(Triangle*, Triangle*));
+inline __device__ bool CompareBoxAxisX(Triangle* left, Triangle* right);
+inline __device__ bool CompareBoxAxisY(Triangle* left, Triangle* right);
+inline __device__ bool CompareBoxAxisZ(Triangle* left, Triangle* right);
 
 
 class BVHNode : public Hittable
@@ -17,13 +20,17 @@ public:
 	//__device__ BVHNode(Triangle** list, int numEntities) //right now this will only make bvh's for meshes
 	//	:BVHNode(list, 0, numEntities) {}
 
-	__device__ BVHNode(Triangle** newList, int start, int end)
+	__device__ BVHNode(Triangle** newList, int start, int end, curandState& randState)
 		: Hittable()
 	{
-		//copy array into new array? not sure if I need to
-		//Triangle** newList = list;
-		//randomly select an axis?
-		//int axis = 0;
+
+		float axis = curand_uniform(&randState);
+		axis *= 3;
+		int intAxis = (int)axis;
+		//sort of some kind
+		auto comparator = axis == 0 ? CompareBoxAxisX : 
+						  axis == 2 ? CompareBoxAxisY :
+									  CompareBoxAxisZ;
 
 		int objectSpan = end - start;
 
@@ -33,7 +40,7 @@ public:
 		}
 		else if (objectSpan == 2)
 		{
-			if (CompareBox(newList[start], newList[start + 1]))
+			if (comparator(newList[start], newList[start + 1]))
 			{
 				left = newList[start];
 				right = newList[start + 1];
@@ -46,15 +53,14 @@ public:
 		}
 		else
 		{
-			//sort of some kind
-			QuickSortTriangles(newList, start, end - 1);
-			//auto comparator = CompareBox;
+
+			QuickSortTriangles(newList, start, end - 1, comparator);
 
 
 			int midPoint = start + objectSpan / 2;
 
-			left = new BVHNode(newList, start, midPoint);
-			right = new BVHNode(newList, midPoint, end);
+			left = new BVHNode(newList, start, midPoint, randState);
+			right = new BVHNode(newList, midPoint, end, randState);
 		}
 
 		AABB leftBox, rightBox;
@@ -157,11 +163,13 @@ public:
 
 inline __global__ void CreateBVHNode(BVHNode** node, Triangle** list, int numTriangles)
 {
-	(*node) = new BVHNode(list, 0, numTriangles);
+	curandState randState;
+	curand_init(1984, 0, 0, &randState);
+	(*node) = new BVHNode(list, 0, numTriangles, randState);
 }
 
 
-inline __device__ bool CompareBox(Triangle* left, Triangle* right)
+inline __device__ bool CompareBox(Triangle* left, Triangle* right, int axis)
 {
 	AABB box1, box2;
 
@@ -169,12 +177,27 @@ inline __device__ bool CompareBox(Triangle* left, Triangle* right)
 	right->BoundingBox(box2);
 
 	//axis is 0, 1 or 2 and corresponds to x, y and z
-	return (box1.min[0] < box2.min[0]);
+	return (box1.min[axis] < box2.min[axis]);
+}
+
+inline __device__ bool CompareBoxAxisX(Triangle* left, Triangle* right)
+{
+	CompareBox(left, right, 0);
+}
+
+inline __device__ bool CompareBoxAxisY(Triangle* left, Triangle* right)
+{
+	CompareBox(left, right, 1);
+}
+
+inline __device__ bool CompareBoxAxisZ(Triangle* left, Triangle* right)
+{
+	CompareBox(left, right, 2);
 }
 
 
 
-inline __device__ void QuickSortTrianglesHelper(Triangle** list, int startIndex, int pivotIndex)
+inline __device__ void QuickSortTrianglesHelper(Triangle** list, int startIndex, int pivotIndex, bool(*comparator)(Triangle*, Triangle*))
 {
 	if (startIndex >= pivotIndex)
 		return;
@@ -183,7 +206,7 @@ inline __device__ void QuickSortTrianglesHelper(Triangle** list, int startIndex,
 		int index = startIndex;
 		for (int i = index; i < pivotIndex; i++)
 		{
-			if (CompareBox(list[i], list[pivotIndex]))
+			if (comparator(list[i], list[pivotIndex]))
 			{
 				Triangle* temp = list[i];
 				list[i] = list[index];
@@ -196,14 +219,14 @@ inline __device__ void QuickSortTrianglesHelper(Triangle** list, int startIndex,
 		list[index] = list[pivotIndex];
 		list[pivotIndex] = temp2;
 
-		QuickSortTrianglesHelper(list, startIndex, index - 1);
-		QuickSortTrianglesHelper(list, index + 1, pivotIndex);
+		QuickSortTrianglesHelper(list, startIndex, index - 1, comparator);
+		QuickSortTrianglesHelper(list, index + 1, pivotIndex, comparator);
 
 
 	}
 }
 
-inline __device__ void QuickSortTriangles(Triangle** list, int start, int end)
+inline __device__ void QuickSortTriangles(Triangle** list, int start, int end, bool(*comparator)(Triangle*, Triangle*))
 {
-	QuickSortTrianglesHelper(list, start, end);
+	QuickSortTrianglesHelper(list, start, end, comparator);
 }

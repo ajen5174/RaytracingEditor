@@ -16,10 +16,10 @@ int main(int argc, char** argv)
     //    std::cout << "Argument " << i << ": " << argv[i] << '\n';
     //}
 
-    cudaDeviceSetLimit(cudaLimit::cudaLimitStackSize, 65536);
+    cudaDeviceSetLimit(cudaLimit::cudaLimitStackSize, 165536);
 
-    //size_t limit;
-    //cudaDeviceGetLimit(&limit, cudaLimit::cudaLimitStackSize);
+    size_t limit;
+    cudaDeviceGetLimit(&limit, cudaLimit::cudaLimitStackSize);
 
     Raytracer* rt;
     if (argc == 7)
