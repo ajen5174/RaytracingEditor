@@ -30,20 +30,40 @@ private:
 	{
 		vec3 averagePosition = (vertices[0] + vertices[1] + vertices[2]) / 3;
 
-		float distances[3] = { (averagePosition - vertices[0]).Magnitude(), (averagePosition - vertices[1]).Magnitude(), (averagePosition - vertices[2]).Magnitude() };
-		int furthestIndex = 0;
-		float prevDist = 100000000000.0f;
+		vec3 min = vec3(1000000000.0f);
+
 		for (int i = 0; i < 3; i++)
 		{
-			if (distances[i] < prevDist)
-			{
-				prevDist = distances[i];
-				furthestIndex = i;
-			}
+			min.x = vertices[i].x < min.x ? vertices[i].x : min.x;
+			min.y = vertices[i].y < min.y ? vertices[i].y : min.y;
+			min.z = vertices[i].z < min.z ? vertices[i].z : min.z;
+		}
+		vec3 max = vec3(-1000000000.0f);
+
+		for (int i = 0; i < 3; i++)
+		{
+			max.x = vertices[i].x > max.x ? vertices[i].x : max.x;
+			max.y = vertices[i].y > max.y ? vertices[i].y : max.y;
+			max.z = vertices[i].z > max.z ? vertices[i].z : max.z;
 		}
 
-		vec3 furth = vec3(fabs(vertices[furthestIndex].x), fabs(vertices[furthestIndex].y), fabs(vertices[furthestIndex].z));
-		box = AABB(averagePosition - furth, averagePosition + furth);
+		box = AABB(min, max);
+
+
+		//float distances[3] = { (averagePosition - vertices[0]).Magnitude(), (averagePosition - vertices[1]).Magnitude(), (averagePosition - vertices[2]).Magnitude() };
+		//int furthestIndex = 0;
+		//float prevDist = 100000000000.0f;
+		//for (int i = 0; i < 3; i++)
+		//{
+		//	if (distances[i] < prevDist)
+		//	{
+		//		prevDist = distances[i];
+		//		furthestIndex = i;
+		//	}
+		//}
+
+		//vec3 furth = vec3(fabs(vertices[furthestIndex].x), fabs(vertices[furthestIndex].y), fabs(vertices[furthestIndex].z));
+		//box = AABB(averagePosition - furth, averagePosition + furth);
 	}
 
 

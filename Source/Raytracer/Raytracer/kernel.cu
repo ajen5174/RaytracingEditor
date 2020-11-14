@@ -16,7 +16,7 @@ int main(int argc, char** argv)
     //    std::cout << "Argument " << i << ": " << argv[i] << '\n';
     //}
 
-    cudaDeviceSetLimit(cudaLimit::cudaLimitStackSize, 165536);
+    cudaDeviceSetLimit(cudaLimit::cudaLimitStackSize, 166535);
 
     size_t limit;
     cudaDeviceGetLimit(&limit, cudaLimit::cudaLimitStackSize);

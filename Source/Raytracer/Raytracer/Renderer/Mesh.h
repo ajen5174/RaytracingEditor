@@ -115,11 +115,15 @@ public:
 
 		//instead of allocating the triangles on the GPU we allocate the BVHNode on the GPU
 		CheckCudaErrors(cudaMallocManaged((void**)&(bvh), sizeof(BVHNode*)));
+		clock_t start, stop;
+		start = clock();
 		std::cout << "Creating BVH\n";
 		CheckCudaErrors(cudaDeviceSynchronize()); 
 		CreateBVHNode<<<1, 1>>>(bvh, triangles, numTriangles);
 		CheckCudaErrors(cudaDeviceSynchronize());
-		std::cout << "BVH Complete\n";
+		stop = clock();
+		double seconds = ((double)(stop - start)) / CLOCKS_PER_SEC;
+		std::cout << "BVH Complete in " << seconds << " seconds.\n";
 
 		//std::vector<Hittable*> triangleList;
 		//for (int i = 0; i < numTriangles; i++)
