@@ -6,6 +6,7 @@
 
 inline __global__ void CreateBVHNode(Hittable* node, Triangle** list, int numTriangles);
 inline bool CompareBox(Triangle* left, Triangle* right);
+inline __device__ void QuickSortTriangles(Triangle** list, int start, int end);
 
 
 class BVHNode : public Hittable
@@ -46,6 +47,7 @@ public:
 		else
 		{
 			//sort of some kind
+			QuickSortTriangles(newList, start, end - 1);
 			//auto comparator = CompareBox;
 
 
@@ -168,4 +170,40 @@ inline __device__ bool CompareBox(Triangle* left, Triangle* right)
 
 	//axis is 0, 1 or 2 and corresponds to x, y and z
 	return (box1.min[0] < box2.min[0]);
+}
+
+
+
+inline __device__ void QuickSortTrianglesHelper(Triangle** list, int startIndex, int pivotIndex)
+{
+	if (startIndex >= pivotIndex)
+		return;
+	else
+	{
+		int index = startIndex;
+		for (int i = index; i < pivotIndex; i++)
+		{
+			if (CompareBox(list[i], list[pivotIndex]))
+			{
+				Triangle* temp = list[i];
+				list[i] = list[index];
+				list[index] = temp;
+				index++;
+			}
+		}
+
+		Triangle* temp2 = list[index];
+		list[index] = list[pivotIndex];
+		list[pivotIndex] = temp2;
+
+		QuickSortTrianglesHelper(list, startIndex, index - 1);
+		QuickSortTrianglesHelper(list, index + 1, pivotIndex);
+
+
+	}
+}
+
+inline __device__ void QuickSortTriangles(Triangle** list, int start, int end)
+{
+	QuickSortTrianglesHelper(list, start, end);
 }

@@ -213,6 +213,7 @@ bool Raytracer::LoadScene(std::string sceneToLoad)
         CheckCudaErrors(cudaMallocManaged(&entityList, sizeof(Entity*) * numEntities));
 
         rapidjson::Value& enititiesArray = doc["entities"];
+
         if (enititiesArray.IsArray())
         {
             for (rapidjson::SizeType i = 0; i < enititiesArray.Size(); i++)
