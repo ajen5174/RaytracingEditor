@@ -99,6 +99,8 @@
     <ClInclude Include="Core\Entity.h" />
     <ClInclude Include="Core\Json.h" />
     <ClInclude Include="Core\Transform.h" />
+    <ClInclude Include="Math\AABB.h" />
+    <ClInclude Include="Math\BVHNode.h" />
     <ClInclude Include="Math\mat4.h" />
     <ClInclude Include="Math\Ray.h" />
     <ClInclude Include="Math\Sphere.h" />
@@ -110,6 +112,7 @@
     <ClInclude Include="Renderer\Light.h" />
     <ClInclude Include="Renderer\Material.h" />
     <ClInclude Include="Renderer\Mesh.h" />
+    <ClInclude Include="Renderer\World.h" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="Raytracer.cu" />

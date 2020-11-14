@@ -44,5 +44,8 @@
     <ClInclude Include="Core\cuda.h" />
     <ClInclude Include="Math\mat4.h" />
     <ClInclude Include="Renderer\Light.h" />
+    <ClInclude Include="Math\AABB.h" />
+    <ClInclude Include="Renderer\World.h" />
+    <ClInclude Include="Math\BVHNode.h" />
   </ItemGroup>
 </Project>

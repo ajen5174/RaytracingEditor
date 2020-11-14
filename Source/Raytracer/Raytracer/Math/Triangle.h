@@ -13,14 +13,40 @@ public:
 		vertices[1] = v2;
 		vertices[2] = v3;
 		normal = Cross(v2 - v1, v3 - v1).UnitVector();
+		CreateBox();
 	}
 	__host__ __device__ Triangle(vec3 v1, vec3 v2, vec3 v3, vec3 normal)
+		: Hittable()
 	{
 		vertices[0] = v1;
 		vertices[1] = v2;
 		vertices[2] = v3;
 		this->normal = normal;
+		CreateBox();
 	}
+
+private:
+	__host__ __device__ void CreateBox()
+	{
+		vec3 averagePosition = (vertices[0] + vertices[1] + vertices[2]) / 3;
+
+		float distances[3] = { (averagePosition - vertices[0]).Magnitude(), (averagePosition - vertices[1]).Magnitude(), (averagePosition - vertices[2]).Magnitude() };
+		int furthestIndex = 0;
+		float prevDist = 100000000000.0f;
+		for (int i = 0; i < 3; i++)
+		{
+			if (distances[i] < prevDist)
+			{
+				prevDist = distances[i];
+				furthestIndex = i;
+			}
+		}
+
+		vec3 furth = vec3(fabs(vertices[furthestIndex].x), fabs(vertices[furthestIndex].y), fabs(vertices[furthestIndex].z));
+		box = AABB(averagePosition - furth, averagePosition + furth);
+	}
+
+
 
 public:
 	// Inherited via Hittable
@@ -81,6 +107,19 @@ public:
 		return true;
 	}
 
+	__device__ virtual bool BoundingBox(AABB& outputBox) override
+	{
+		outputBox.min.x = box.min.x;
+		outputBox.min.y = box.min.y;
+		outputBox.min.z = box.min.z;
+
+		outputBox.max.x = box.max.x;
+		outputBox.max.y = box.max.y;
+		outputBox.max.z = box.max.z;
+		return true;
+	}
+
+
 public:
 	vec3 vertices[3];
 
@@ -88,4 +127,5 @@ public:
 	//vec3 averagePosition;
 	Material* material = nullptr;
 	vec3 normal;
+	AABB box;
 };

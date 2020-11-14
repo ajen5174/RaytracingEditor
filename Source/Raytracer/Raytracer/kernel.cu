@@ -16,6 +16,11 @@ int main(int argc, char** argv)
     //    std::cout << "Argument " << i << ": " << argv[i] << '\n';
     //}
 
+    cudaDeviceSetLimit(cudaLimit::cudaLimitStackSize, 65536);
+
+    //size_t limit;
+    //cudaDeviceGetLimit(&limit, cudaLimit::cudaLimitStackSize);
+
     Raytracer* rt;
     if (argc == 7)
     {
@@ -28,6 +33,7 @@ int main(int argc, char** argv)
                                   "C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Raytracer\\Outputs\\output.ppm");
     }
 
+    
     
     rt->StartRender();
     rt->WriteToFile();

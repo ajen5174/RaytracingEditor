@@ -1,4 +1,6 @@
 #include "Raytracer.h"
+#include "Math/BVHNode.h"
+#include "Math/AABB.h"
 #include "Math/Sphere.h"
 #include "Math/Triangle.h"
 
@@ -7,7 +9,7 @@
 #include <assimp/postprocess.h>
 #include <curand_kernel.h>
 #include "Core/Json.h"
-
+#include "Renderer/World.h"
 
 
 __global__ void CreateEntity(Entity* entity)
@@ -26,19 +28,44 @@ __device__ bool HitWorld(Entity** list, int count, float maxDist, const Ray& r, 
     {
         if (list[j]->mesh)
         {
-            //if (list[j]->mesh->boundingSphere->Hit(r, 0.0f, 100.0f, info)) //bug here for suzanne
+            //if (list[j]->mesh->triangles)
+            //{
+            //    if (list[j]->mesh->triangles[0]->Hit(r, 0.001f, closestSoFar, info))
+            //    {
+            //        return true;
+            //    }
+            //}
+            
+            if ((*list[j]->mesh->bvh))
             {
-                for (int i = 0; i < list[j]->mesh->numTriangles; i++)
+                if((*list[j]->mesh->bvh)->Hit(r, 0.001f, closestSoFar, tempInfo))
                 {
-                    if (list[j]->mesh->triangles[i]->Hit(r, 0.001f, closestSoFar, tempInfo))
-                    {
-                        info = tempInfo;
-                        closestSoFar = info.distance;
-                        hit = true;
-
-                    }
+                    info = tempInfo;
+                    closestSoFar = info.distance;
+                    hit = true;
                 }
             }
+            //if (list[j]->mesh->bvh->Hit(r, 0.001f, closestSoFar, tempInfo))
+            //{
+            //    info = tempInfo;
+            //    closestSoFar = info.distance;
+            //    hit = true;
+            //}
+
+
+            //if (list[j]->mesh->boundingSphere->Hit(r, 0.0f, 100.0f, info)) //bug here for suzanne
+            //{
+            //    for (int i = 0; i < list[j]->mesh->numTriangles; i++)
+            //    {
+            //        if (list[j]->mesh->triangles[i]->Hit(r, 0.001f, closestSoFar, tempInfo))
+            //        {
+            //            info = tempInfo;
+            //            closestSoFar = info.distance;
+            //            hit = true;
+
+            //        }
+            //    }
+            //}
         }
     }
     return hit;
@@ -130,21 +157,19 @@ __global__ void RenderInit(int width, int height, curandState* randState)
     curand_init(1984, pixel_index, 0, &randState[pixel_index]);
 }
 
-__global__ void Render(vec3* frameBuffer, int width, int height, int samples, int maxRecursion, Camera* cam, Entity** list, int numEntities, Light** lights, int numLights, curandState* randState) {
+__global__ void Render(vec3* frameBuffer, int width, int height, int samples, int maxRecursion, Camera* cam, Entity** list, int numEntities, Light** lights, int numLights, curandState* randState) 
+{
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     int j = threadIdx.y + blockIdx.y * blockDim.y;
     if ((i >= width) || (j >= height)) return;
     int pixel_index = j * width + i;
     curandState localRandState = randState[pixel_index];
 
-    
-
     vec3 color(0.0f);
     float u = (i + curand_uniform(&localRandState)) / (float)width;
     float v = (j + curand_uniform(&localRandState)) / (float)height;
     Ray r = cam->GetRay(u, v);
     //color = GetShadows(list, numEntities, lights, numLights, r, maxRecursion, &localRandState);
-
 
     for (int k = 0; k < samples; k++)//number of samples
     {
@@ -276,7 +301,7 @@ Raytracer::Raytracer(std::string sceneToLoad, std::string renderPath)
 {
     //std::cout << "Default settings used...\n";
     LoadScene(sceneToLoad);
-    samplesPerPixel = 30;
+    samplesPerPixel = 5;
     maxRecursion = 50;
     width = 266.6666666f;// 533.333333f;
     height = 150.0f;// 300.0f;
