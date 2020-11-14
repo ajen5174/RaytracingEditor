@@ -31,7 +31,7 @@ namespace WPFSceneEditor
 		{
 			//process nonsense
 			Process p = new Process();
-			p.StartInfo.FileName = "C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Raytracer\\x64\\Debug\\Raytracer.exe";
+			p.StartInfo.FileName = "C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Raytracer\\x64\\Release\\Raytracer.exe";
 
 			int samplesPerPixel;
 			if (!int.TryParse(SamplesPerPixelBox.Text, out samplesPerPixel) || samplesPerPixel < 1) return;
