@@ -36,13 +36,20 @@ __device__ bool HitWorld(Entity** list, int count, float maxDist, const Ray& r, 
             //    }
             //}
             
-            if ((*list[j]->mesh->bvh))
+            //if ((*list[j]->mesh->box))
             {
-                if((*list[j]->mesh->bvh)->Hit(r, 0.001f, closestSoFar, tempInfo))
+                if(list[j]->mesh->box.Hit(r, 0.001f, closestSoFar))
                 {
-                    info = tempInfo;
-                    closestSoFar = info.distance;
-                    hit = true;
+                    for (int i = 0; i < list[j]->mesh->numTriangles; i++)
+                    {
+                        if (list[j]->mesh->triangles[i]->Hit(r, 0.001f, closestSoFar, tempInfo))
+                        {
+                            info = tempInfo;
+                            closestSoFar = info.distance;
+                            hit = true;
+
+                        }
+                    }
                 }
             }
             //if (list[j]->mesh->bvh->Hit(r, 0.001f, closestSoFar, tempInfo))

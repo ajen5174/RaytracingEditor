@@ -1,6 +1,6 @@
 #pragma once
 #include "vec3.h"
-#include "../Renderer/Hittable.h"
+#include "AABB.h"
 
 class Triangle : public Hittable
 {
@@ -127,7 +127,7 @@ public:
 		return true;
 	}
 
-	__device__ virtual bool BoundingBox(AABB& outputBox) override
+	__host__ __device__ virtual bool BoundingBox(AABB& outputBox) override
 	{
 		outputBox.min.x = box.min.x;
 		outputBox.min.y = box.min.y;

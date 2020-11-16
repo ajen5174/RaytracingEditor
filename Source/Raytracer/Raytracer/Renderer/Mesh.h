@@ -53,6 +53,7 @@ inline __global__ void CreateMeshTriangles(Triangle** triangles, int numTriangle
 
 
 class Mesh
+	: public Hittable
 {
 public:
     //this is a device only call, because we need the space allocated in device memory for our members, not host
@@ -62,21 +63,45 @@ public:
         //boundingSphere = new Sphere(vec3(0.0f), 0.0f);
 	}
 
+	__host__ __device__ virtual bool Hit(const Ray& ray, float minDist, float maxDist, HitInfo& hitInfo) override
+	{
+		bool hit = false;
+		float closestSoFar = maxDist;
+		HitInfo tempInfo;
+		if (box.Hit(ray, minDist, maxDist))
+		{
+			for (int i = 0; i < numTriangles; i++)
+			{
+				if (triangles[i]->Hit(ray, 0.001f, closestSoFar, tempInfo))
+				{
+				    hitInfo = tempInfo;
+				    closestSoFar = hitInfo.distance;
+				    hit = true;
 
-	//__host__ __device__ virtual bool BoundingBox(AABB& outputBox) override
-	//{
-	//	if (numTriangles < 1) return false;
+				}
+			}
+		}
+		return hit;
+	}
+	__host__ __device__ virtual bool BoundingBox(AABB& outputBox) override
+	{
 
-	//	AABB tempBox;
-	//	bool firstBox = true;
+		vec3 min(100000000.0f);
+		vec3 max(-100000000.0f);
 
-	//	for (int i = 0; i < numTriangles; i++)
-	//	{
-	//		if (!triangles[i]->BoundingBox(tempBox)) return false;
-	//		outputBox = firstBox ? tempBox : SurroundingBox(outputBox, tempBox);
-	//		firstBox = false;
-	//	}
-	//}
+		for (int i = 0; i < numTriangles * 3; i++)
+		{
+			min.x = vertices[i].x < min.x ? vertices[i].x : min.x;
+			min.y = vertices[i].y < min.y ? vertices[i].y : min.y;
+			min.z = vertices[i].z < min.z ? vertices[i].z : min.z;
+
+			max.x = vertices[i].x > max.x ? vertices[i].x : max.x;
+			max.y = vertices[i].y > max.y ? vertices[i].y : max.y;
+			max.z = vertices[i].z > max.z ? vertices[i].z : max.z;
+		}
+		outputBox = AABB(min, max);
+		return true;
+	}
 
 	bool Load(rapidjson::Value& value)
 	{
@@ -104,26 +129,41 @@ public:
 			vertices[i].z = temp.z;
 		}
 
-		Triangle** triangles;
 		CheckCudaErrors(cudaMallocManaged((void**)&(triangles), (numVertices / 3) * sizeof(Triangle*)));
 		CheckCudaErrors(cudaDeviceSynchronize());
 
-		int numTriangles = numVertices / 3;
+		numTriangles = numVertices / 3;
 
 		CreateMeshTriangles << <1, 1 >> > (triangles, numTriangles, vertices, numVertices, material, parentTransform);
 		CheckCudaErrors(cudaDeviceSynchronize());
 
 		//instead of allocating the triangles on the GPU we allocate the BVHNode on the GPU
-		CheckCudaErrors(cudaMallocManaged((void**)&(bvh), sizeof(BVHNode*)));
-		clock_t start, stop;
-		start = clock();
-		std::cout << "Creating BVH\n";
-		CheckCudaErrors(cudaDeviceSynchronize()); 
-		CreateBVHNode<<<1, 1>>>(bvh, triangles, numTriangles);
-		CheckCudaErrors(cudaDeviceSynchronize());
-		stop = clock();
-		double seconds = ((double)(stop - start)) / CLOCKS_PER_SEC;
-		std::cout << "BVH Complete in " << seconds << " seconds.\n";
+		//CheckCudaErrors(cudaMallocManaged((void**)&(bvh), sizeof(BVHNode*)));
+		//clock_t start, stop;
+		//start = clock();
+		//std::cout << "Creating BVH\n";
+		//CheckCudaErrors(cudaDeviceSynchronize()); 
+		//CreateBVHNode<<<1, 1>>>(bvh, triangles, numTriangles);
+		//CheckCudaErrors(cudaDeviceSynchronize());
+		//stop = clock();
+		//double seconds = ((double)(stop - start)) / CLOCKS_PER_SEC;
+		//std::cout << "BVH Complete in " << seconds << " seconds.\n";
+
+		//make box because we have to "new" on GPU
+		vec3 min(100000000.0f);
+		vec3 max(-100000000.0f);
+
+		for (int i = 0; i < numTriangles * 3; i++)
+		{
+			min.x = vertices[i].x < min.x ? vertices[i].x : min.x;
+			min.y = vertices[i].y < min.y ? vertices[i].y : min.y;
+			min.z = vertices[i].z < min.z ? vertices[i].z : min.z;
+
+			max.x = vertices[i].x > max.x ? vertices[i].x : max.x;
+			max.y = vertices[i].y > max.y ? vertices[i].y : max.y;
+			max.z = vertices[i].z > max.z ? vertices[i].z : max.z;
+		}
+		box = AABB((min - vec3(0.00001f)), (max + vec3(0.00001f)));
 
 		//std::vector<Hittable*> triangleList;
 		//for (int i = 0; i < numTriangles; i++)
@@ -137,9 +177,10 @@ public:
 
 public:
     vec3* vertices;
-	//Triangle** triangles;
-	//int numTriangles;
-	BVHNode** bvh;
+	Triangle** triangles;
+	int numTriangles;
+	//BVHNode** bvh;
+	AABB box;
 	Transform* parentTransform;
     //temporary render speed up, surrounds all triangles in the mesh
     //Sphere* boundingSphere;

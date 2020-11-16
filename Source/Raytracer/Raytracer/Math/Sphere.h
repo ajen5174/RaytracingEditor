@@ -1,5 +1,5 @@
 #pragma once
-#include "../Renderer/Hittable.h"
+#include "AABB.h"
 
 class Sphere : public Hittable
 {
@@ -47,7 +47,7 @@ public:
 
 	}
 
-	__device__ virtual bool BoundingBox(AABB& outputBox) override
+	__host__ __device__ virtual bool BoundingBox(AABB& outputBox) override
 	{
 		outputBox = AABB(center - vec3(radius), center + vec3(radius));
 		return true;

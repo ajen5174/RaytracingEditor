@@ -1,6 +1,6 @@
 #pragma once
 #include "Triangle.h"
-#include "../Renderer/Hittable.h"
+#include "AABB.h"
 #include "../Core/Entity.h"
 
 
@@ -132,6 +132,7 @@ public:
 public:
 	virtual __host__ __device__ bool Hit(const Ray& ray, float minDist, float maxDist, HitInfo& hitInfo) override
 	{
+
 		if(!box.Hit(ray, minDist, maxDist))
 			return false;
 
@@ -142,7 +143,7 @@ public:
 		return hitLeft || hitRight;
 	}
 
-	virtual __device__ bool BoundingBox(AABB& outputBox) override
+	virtual __host__ __device__ bool BoundingBox(AABB& outputBox) override
 	{
 		outputBox.min.x = box.min.x;
 		outputBox.min.y = box.min.y;
