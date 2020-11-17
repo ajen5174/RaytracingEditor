@@ -1,3 +1,6 @@
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+
+
 #include "Raytracer.h"
 #include "Math/BVHNode.h"
 #include "Math/AABB.h"
@@ -8,6 +11,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <curand_kernel.h>
+#include <stb_image_write.h>
 #include "Core/Json.h"
 #include "Renderer/World.h"
 
@@ -15,7 +19,6 @@
 __global__ void CreateEntity(Entity* entity)
 {
     entity = new Entity();
-
 }
 
 
@@ -311,8 +314,8 @@ Raytracer::Raytracer(std::string sceneToLoad, std::string renderPath)
     LoadScene(sceneToLoad);
     samplesPerPixel = 30;
     maxRecursion = 50;
-    width = 266.6666666f;// 533.333333f;
-    height = 150.0f;// 300.0f;
+    width = 32;// 16;// 266.6666666f;// 533.333333f;
+    height = 18;// 9;// 150.0f;// 300.0f;
 }
 
 bool Raytracer::StartRender()
@@ -361,21 +364,64 @@ bool Raytracer::StartRender()
 
 void Raytracer::WriteToFile()
 {
-
-    //not sure why but it won't use relative paths here?
-    std::ofstream myFile(renderPath);
-
-    // Output FB as Image
-    myFile << "P3\n" << width << " " << height << "\n255\n";
-    for (int j = height - 1; j >= 0; j--) {
-        for (int i = 0; i < width; i++) {
-            size_t pixel_index = j * width + i;
-            vec3 color = frameBuffer[pixel_index];
-            int ir = int(255.99 * color.x);
-            int ig = int(255.99 * color.y);
-            int ib = int(255.99 * color.z);
-            myFile << ir << " " << ig << " " << ib << "\n";
+    std::string extension = renderPath.substr(renderPath.find('.'));
+    if (extension == ".ppm")
+    {
+        std::ofstream myFile(renderPath);
+        // Output FB as PPM
+        myFile << "P3\n" << width << " " << height << "\n255\n";
+        for (int j = height - 1; j >= 0; j--) {
+            for (int i = 0; i < width; i++) {
+                size_t pixel_index = j * width + i;
+                vec3 color = frameBuffer[pixel_index];
+                int ir = int(255.99 * color.x);
+                int ig = int(255.99 * color.y);
+                int ib = int(255.99 * color.z);
+                myFile << ir << " " << ig << " " << ib << "\n";
+            }
         }
     }
+    else
+    {
+        int size = width * height * sizeof(vec3);
+        unsigned char* data = new unsigned char[size];
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                size_t pixel_index = j * width + i;
+                vec3 color = frameBuffer[(width * height) - pixel_index - 1];//read the data backwards to flip it vertically
+                unsigned char ir = unsigned char(255.99f * color.x);
+                unsigned char ig = unsigned char(255.99f * color.y);
+                unsigned char ib = unsigned char(255.99f * color.z);
+                data[(pixel_index * 3) + 0] = ir;
+                data[(pixel_index * 3) + 1] = ig;
+                data[(pixel_index * 3) + 2] = ib;
+            }
+        }
+
+        if (extension == ".png")
+        {
+            stbi_write_png(renderPath.c_str(), width, height, 3, data, 0);
+        }
+        else if (extension == ".jpg" || extension == ".jpeg")
+        {
+            stbi_write_jpg(renderPath.c_str(), width, height, 3, data, 100);
+        }
+        else if (extension == ".bmp")
+        {
+            stbi_write_bmp(renderPath.c_str(), width, height, 3, data);
+        }
+        else
+        {
+            std::cout << "Error writing file, output type not supported.";
+        }
+
+    }
+
+
+    
+    
+
+
+    
     CheckCudaErrors(cudaFree(frameBuffer));
 }

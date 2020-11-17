@@ -54,7 +54,7 @@ namespace WPFSceneEditor
 		private void OutputFile_Click(object sender, RoutedEventArgs e)
 		{
 			SaveFileDialog sfd = new SaveFileDialog();
-			sfd.Filter = "PPM image file (*.ppm)|*.ppm";
+			sfd.Filter = "Image files (*.ppm, *.jpg, *.jpeg, *.png, *.bmp)|*.ppm;*.jpg;*.jpeg;*.png;*.bmp";
 			if (sfd.ShowDialog() == true)
 			{
 				string filename = sfd.FileName;
