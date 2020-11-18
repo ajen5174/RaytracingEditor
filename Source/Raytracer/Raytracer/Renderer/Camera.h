@@ -31,6 +31,10 @@ public:
 
 	__device__ Ray Camera::GetRay(float u, float v)// u and v because they are normalized (0.0 - 1.0)
 	{
+		vec3 tempO = origin;
+		vec3 templl = lowerLeft;
+		vec3 tempv = vertical;
+		vec3 temph = horizontal;
 		return Ray(origin, (lowerLeft + u * horizontal + v * vertical) - origin);
 	}
 

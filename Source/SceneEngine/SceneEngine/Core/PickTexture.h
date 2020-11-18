@@ -21,7 +21,8 @@ public:
 	PickTexture();
 	~PickTexture();
 
-	bool Initialize(int windowHeight, int windowWidth);
+	bool Initialize(int windowWidth, int windowHeight);
+
 
 	void EnableWriting();
 
@@ -29,6 +30,7 @@ public:
 	
 	PickInfo ReadPixel(int x, int y);
 
+	void Resize(int windowWidth, int windowHeight);
 
 private:
 	GLuint fbo;

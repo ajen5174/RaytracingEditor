@@ -20,7 +20,7 @@ namespace WPFSceneEditor.Controls
 	public partial class MaterialEdit : UserControl
 	{
 		private float selectedEntityID;
-		private string meshFilePath;
+		
 
 		public MaterialEdit()
 		{
@@ -31,20 +31,17 @@ namespace WPFSceneEditor.Controls
 		{
 			selectedEntityID = entityID;
 			//we need one string, and 5 floats
-			string[] stringData = new string[2];
+			string[] stringData = new string[1];
 
-			if (Engine.GetStringData(selectedEntityID, (int)Engine.ComponentType.MODEL_RENDER, stringData, Engine.maxStringSize, 2))
+			if (Engine.GetStringData(selectedEntityID, (int)Engine.ComponentType.MATERIAL, stringData, Engine.maxStringSize, 1))
 			{
-				MeshPathBox.Text = stringData[0];
-				meshFilePath = stringData[0];
-				//stringData[1][0] = char.ToUpper(stringData[1][0]);
-				StringBuilder sb = new StringBuilder(stringData[1]);
+				StringBuilder sb = new StringBuilder(stringData[0]);
 				if(sb.Length > 0) sb[0] = char.ToUpper(sb[0]);
 				MaterialTypeBox.Text = sb.ToString();
 			}
 
 			float[] data = new float[5];
-			if(Engine.GetFloatData(selectedEntityID, (int)Engine.ComponentType.MODEL_RENDER, data, 5))
+			if(Engine.GetFloatData(selectedEntityID, (int)Engine.ComponentType.MATERIAL, data, 5))
 			{
 				AlbedoBoxR.Text = "" + data[0];
 				AlbedoBoxG.Text = "" + data[1];
@@ -64,16 +61,7 @@ namespace WPFSceneEditor.Controls
 			SetMaterialFloatData();
 		}
 
-		private void SelectMesh_Click(object sender, RoutedEventArgs e)
-		{
-			OpenFileDialog open = new OpenFileDialog();
-			if(open.ShowDialog() == true)
-			{
-				meshFilePath = open.FileName;
-				SetModelStringData();
 
-			}
-		}
 
 		private void SetMaterialFloatData()
 		{
@@ -96,33 +84,25 @@ namespace WPFSceneEditor.Controls
 				return;
 
 			float[] data = { albedoR, albedoG, albedoB, fuzz, index };
-			Engine.SetFloatData(selectedEntityID, (int)Engine.ComponentType.MODEL_RENDER, data, 5);
+			Engine.SetFloatData(selectedEntityID, (int)Engine.ComponentType.MATERIAL, data, 5);
 		}
 
-		private void SetModelStringData()
+		private void SetMaterialStringData()
 		{
-			string[] data = new string[2];
+			string[] data = new string[1];
 			StringBuilder sb = new StringBuilder(MaterialTypeBox.Text);
 			sb[0] = char.ToLower(sb[0]);
-			data[0] = meshFilePath;
-			data[1] = sb.ToString();
-			Engine.SetStringData(selectedEntityID, (int)Engine.ComponentType.MODEL_RENDER, data, Engine.maxStringSize, 2);
+			//data[0] = meshFilePath;
+			data[0] = sb.ToString();
+			Engine.SetStringData(selectedEntityID, (int)Engine.ComponentType.MATERIAL, data, Engine.maxStringSize, 1);
 		}
 
 		private void MaterialTypeBox_DropDownClosed(object sender, EventArgs e)
 		{
-			SetModelStringData();
+			SetMaterialStringData();
 
 		}
 
-		private void Delete_Click(object sender, RoutedEventArgs e)
-		{
-			Engine.RemoveComponent(selectedEntityID, (int)Engine.ComponentType.MODEL_RENDER);
-
-			float temp = selectedEntityID;
-			Engine.EntitySelect(0);
-			Engine.EntitySelect(temp);
-		}
 
 		private void Reset_Click(object sender, RoutedEventArgs e)
 		{
@@ -132,7 +112,7 @@ namespace WPFSceneEditor.Controls
 			AlbedoBoxB.Text = "" + 0.8f;
 			FuzzBox.Text = "" + 0.0f;
 			RefractionIndex.Text = "" + 0.0f;
-			SetModelStringData();
+			SetMaterialStringData();
 			SetMaterialFloatData();
 		}
 	}

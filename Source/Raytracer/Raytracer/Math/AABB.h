@@ -10,7 +10,7 @@ public:
 	__host__ __device__ AABB(const vec3& min, const vec3& max) : min(min), max(max) {}
 
 
-	__host__ __device__ bool Hit(const Ray& r, float minDist, float maxDist)
+	__host__ __device__ bool Hit(const Ray& r, float minDist, float maxDist) const
 	{
 
 		for (int i = 0; i < 3; i++)

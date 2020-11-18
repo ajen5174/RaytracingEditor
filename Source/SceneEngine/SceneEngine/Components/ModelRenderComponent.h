@@ -1,9 +1,9 @@
+#pragma once
 #include "RenderComponent.h"
 #include "../Renderer/Model.h"
 #include "../Renderer/Shader.h"
 
-#ifndef MODEL_RENDER_COMPONENT_H
-#define MODEL_RENDER_COMPONENT_H
+
 class ModelRenderComponent : public RenderComponent
 {
 public:
@@ -27,8 +27,8 @@ private:
 	Shader* outlineShader;
 
 
+
 };
 
 
 
-#endif

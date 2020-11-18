@@ -63,7 +63,7 @@ public:
         //boundingSphere = new Sphere(vec3(0.0f), 0.0f);
 	}
 
-	__host__ __device__ virtual bool Hit(const Ray& ray, float minDist, float maxDist, HitInfo& hitInfo) override
+	__host__ __device__ virtual bool Hit(const Ray& ray, float minDist, float maxDist, HitInfo& hitInfo) const override
 	{
 		bool hit = false;
 		float closestSoFar = maxDist;

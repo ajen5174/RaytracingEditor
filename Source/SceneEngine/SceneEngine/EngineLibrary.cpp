@@ -138,7 +138,7 @@ ENGINE_DLL void SetFloatData(float entityID, int component, float* data, int siz
 
 		break;
 	}
-	case ComponentType::MODEL_RENDER:
+	case ComponentType::MATERIAL:
 	{
 		ModelRenderComponent* render = entity->GetComponent<ModelRenderComponent>();
 		if (size < 5 || !render)
@@ -195,18 +195,26 @@ ENGINE_DLL bool GetStringData(float entityID, int component, char* data[], int s
 		ModelRenderComponent* render = entity->GetComponent<ModelRenderComponent>();
 		if (!render)
 			return false;
-		if (count < 2 || count > 2)
+		if (count < 1 || count > 1)
 			return false;
 		int filePathSize = render->model->mesh->directory.length() + 1;
 		if (filePathSize > size)
 			return false;
 		data[0] = new char[size];
-		data[1] = new char[size];
 
 		memcpy(data[0], render->model->mesh->directory.c_str(), filePathSize);
-		memcpy(data[1], render->model->material->materialType.c_str(), render->model->material->materialType.length() + 1);
 		break;
 	}
+	case ComponentType::MATERIAL:
+		ModelRenderComponent* render = entity->GetComponent<ModelRenderComponent>();
+		if (!render)
+			return false;
+		if (count < 1 || count > 1)
+			return false;
+		data[0] = new char[size];
+		memcpy(data[0], render->model->material->materialType.c_str(), render->model->material->materialType.length() + 1);
+
+		break;
 	}
 
 	return true;
@@ -232,10 +240,10 @@ ENGINE_DLL void SetStringData(float entityID, int component, char* data[], int s
 		ModelRenderComponent* render = entity->GetComponent<ModelRenderComponent>();
 		if (!render)
 			return;
-		if (count < 2 || count > 2)
+		if (count < 1 || count > 1)
 			return;
 
-		PrintDebugMessage("Setting STring Data...");
+		PrintDebugMessage("Setting String Data...");
 		if (data[0] != render->model->mesh->directory)
 		{
 			render->model->ReloadMesh(data[0]);
@@ -247,13 +255,41 @@ ENGINE_DLL void SetStringData(float entityID, int component, char* data[], int s
 			render->model->mesh->directory = data[0];
 			PrintDebugMessage("Model not reloaded");
 		}
-		render->model->material->materialType = data[1];
 		
 		break;
 	}
+	case ComponentType::MATERIAL:
+		ModelRenderComponent* render = entity->GetComponent<ModelRenderComponent>();
+		if (!render)
+			return;
+		if (count < 1 || count > 1)
+			return; 
+		render->model->material->materialType = data[0];
+
+		break;
 	}
 
 	
+}
+ENGINE_DLL bool GetIntData(float entityID, int component, int* data, int size)
+{
+	Entity* entity = scene->GetEntityByFloatId(entityID);
+
+	ComponentType type = (ComponentType)component;
+	if (!entity)
+		return false;
+	switch (type)
+	{
+	case ComponentType::MODEL_RENDER:
+	{
+		ModelRenderComponent* m = entity->GetComponent<ModelRenderComponent>();
+		if (size > 1 || size < 1 || !m)
+			return false;
+		data[0] = (int)m->model->modelType;
+
+			break;
+	}
+	}
 }
 
 
@@ -289,7 +325,7 @@ ENGINE_DLL bool GetFloatData(float entityID, int component, float* data, int siz
 		data[8] = t->scale.z;
 		break;
 	}
-	case ComponentType::MODEL_RENDER:
+	case ComponentType::MATERIAL:
 	{
 		ModelRenderComponent* render = entity->GetComponent<ModelRenderComponent>();
 		if (!render || size < 5)
@@ -502,6 +538,22 @@ ENGINE_DLL void AddComponent(float entityID, int component)
 		PrintDebugMessage("Component Added");
 		SceneLoaded();
 	}
+	else if (type == ComponentType::SPHERE)
+	{
+		ModelRenderComponent* mrc = e->GetComponent<ModelRenderComponent>();
+		if (mrc)
+		{
+			PrintDebugMessage("Already has component");
+
+			return;
+		}
+		mrc = new ModelRenderComponent(e->GetName(), e);
+		mrc->model->modelType = ModelType::SPHERE;
+		mrc->model->ReloadMesh("");
+		e->AddComponent(mrc);
+		PrintDebugMessage("Component Added");
+		SceneLoaded();
+	}
 
 }
 
@@ -609,7 +661,7 @@ void RunEngine()
 
 
 	PickTexture* pick = new PickTexture();
-	pick->Initialize(windowHeight, windowWidth);
+	pick->Initialize(windowWidth, windowHeight);
 	
 	uint32_t timeA = 0;
 	SDL_Event sdlEvent;
@@ -707,6 +759,7 @@ void RunEngine()
 				//windowHeight = sdlEvent.window.data2;
 				SDL_SetWindowSize(engineWindow, windowWidth, windowHeight);
 				glViewport(0, 0, windowWidth, windowHeight);
+				pick->Resize(windowWidth, windowHeight);
 				
 			}
 			

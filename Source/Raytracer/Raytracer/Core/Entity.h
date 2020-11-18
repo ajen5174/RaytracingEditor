@@ -16,6 +16,11 @@ inline __global__ void CreateLight(Light* light)
 	light = new Light();
 }
 
+inline __global__ void CreateSphere(Sphere* sphere)
+{
+	sphere = new Sphere(vec3(0.0f), 1.0f);
+}
+
 inline __global__ void CreateCamera(Camera* cam)
 {
 	cam = new Camera();
@@ -27,7 +32,7 @@ inline __global__ void CreateMesh(Mesh* mesh)
 	
 }
 
-inline __global__ void CreateMaterial(Material* material, char materialType)
+inline __global__ void CreateMaterial(Material* material)
 {
 	material = new Material();
 }
@@ -70,6 +75,12 @@ inline __global__ void CreateMaterial(Material* material, char materialType)
 //	mesh->boundingSphere = new Sphere(averagePosition, boundingRadius);
 //
 //}
+
+enum ModelType
+{
+	POLYGON_MESH,
+	SPHERE
+};
 
 class Entity
 {
@@ -138,17 +149,12 @@ public:
 				//else 
 				if (componentType == "ModelRender")
 				{
-					Mesh* mesh;
-					CheckCudaErrors(cudaMallocManaged(&mesh, sizeof(Mesh)));
-					CreateMesh << <1, 1 >> > (mesh);
-					CheckCudaErrors(cudaDeviceSynchronize());
-
 					std::string materialType;
 					json::GetString(componentValue, "materialType", materialType);
 
 					Material* material;
 					CheckCudaErrors(cudaMallocManaged(&material, sizeof(Material)));
-					CreateMaterial << <1, 1 >> > (material, materialType.c_str()[0]);
+					CreateMaterial << <1, 1 >> > (material);
 					CheckCudaErrors(cudaDeviceSynchronize());
 
 					if (materialType == "lambert")
@@ -168,12 +174,35 @@ public:
 						material->materialType = 'd';
 					}
 
-					mesh->parentTransform = this->transform;
-					mesh->material = material;
-					if (mesh->Load(componentValue))
+					int modelType = (int)ModelType::POLYGON_MESH;
+					json::GetInt(componentValue, "modelType", modelType);
+					if (modelType == (int)ModelType::POLYGON_MESH)
 					{
-						this->mesh = mesh;
+						Mesh* mesh;
+						CheckCudaErrors(cudaMallocManaged(&mesh, sizeof(Mesh)));
+						CreateMesh << <1, 1 >> > (mesh);
+						CheckCudaErrors(cudaDeviceSynchronize());
+						mesh->parentTransform = this->transform;
+						mesh->material = material; 
+						if (mesh->Load(componentValue))
+						{
+							this->mesh = mesh;
+						}
 					}
+					else if(modelType == (int)ModelType::SPHERE)
+					{
+						Sphere* sphere;
+						CheckCudaErrors(cudaMallocManaged(&sphere, sizeof(Sphere)));
+						CreateSphere<<<1, 1>>>(sphere);
+						CheckCudaErrors(cudaDeviceSynchronize());
+						sphere->center = transform->translation;
+						sphere->radius = fmax(transform->scale.x, transform->scale.y);
+						sphere->radius = fmax(sphere->radius, transform->scale.z);
+						sphere->material = material;
+						this->primitive = sphere;
+					}
+					
+					
 				}
 				else if (componentType == "Camera")
 				{
@@ -219,6 +248,7 @@ public:
 	Transform* transform;
 	Camera* cam;
 	Mesh* mesh;
+	Sphere* primitive;
 	Light* light;
 
 };

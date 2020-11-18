@@ -180,9 +180,26 @@ namespace WPFSceneEditor
 			te.LoadData(selectedEntityID);
 			ComponentEditor.Children.Add(te);
 
-			MaterialEdit me = new MaterialEdit();
-			if (me.LoadData(selectedEntityID))
-				ComponentEditor.Children.Add(me);
+			ModelRenderEdit mre = new ModelRenderEdit();
+			SphereEdit se = new SphereEdit();
+			if(mre.LoadData(selectedEntityID))
+			{
+				ComponentEditor.Children.Add(mre);
+
+				MaterialEdit me = new MaterialEdit();
+				if (me.LoadData(selectedEntityID))
+					ComponentEditor.Children.Add(me);
+			}
+			else if(se.LoadData(selectedEntityID))
+            {
+				ComponentEditor.Children.Add(se);
+
+				MaterialEdit me = new MaterialEdit();
+				if (me.LoadData(selectedEntityID))
+					ComponentEditor.Children.Add(me);
+			}
+
+			
 
 			CameraEdit ce = new CameraEdit();
 			if (ce.LoadData(selectedEntityID))
@@ -196,7 +213,7 @@ namespace WPFSceneEditor
 
 		
 
-		private void Open_Click(object sender, RoutedEventArgs e)
+		private void Open()
 		{
 			OpenFileDialog openFile = new OpenFileDialog();
 			openFile.Filter = "JSON text files (*.txt;*.json)|*.txt;*.json";
@@ -211,7 +228,7 @@ namespace WPFSceneEditor
 
 		}
 
-		private void Save_Click(object sender, RoutedEventArgs e)
+		private void Save()
 		{
 			if(Engine.currentFilePath.Length > 1)
 			{
@@ -219,12 +236,12 @@ namespace WPFSceneEditor
 			}
 			else
 			{
-				SaveAs_Click(sender, e);
+				SaveAs();
 			}
 			
 		}
 
-		private void SaveAs_Click(object sender, RoutedEventArgs e)
+		private void SaveAs()
 		{
 			SaveFileDialog save = new SaveFileDialog();
 			save.Filter = "JSON text files (*.txt;*.json)|*.txt;*.json";
@@ -257,7 +274,16 @@ namespace WPFSceneEditor
 			EntitySelect(temp);//reselect to show new component
 		}
 
-		private void New_Click(object sender, RoutedEventArgs e)
+		private void AddSphere_Click(object sender, RoutedEventArgs e)
+        {
+			Engine.AddComponent(selectedEntityID, (int)Engine.ComponentType.SPHERE);
+
+			float temp = selectedEntityID;
+			EntitySelect(0);
+			EntitySelect(temp);//reselect to show new component
+		}
+
+		private void New()
 		{
 			Engine.currentFilePath = "";
 			Engine.ReloadScene("");
@@ -276,5 +302,26 @@ namespace WPFSceneEditor
 			EntitySelect(0);
 			EntitySelect(temp);//reselect to show new component
 		}
+
+		private void NewCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
+		{
+			New();
+		}
+
+		private void OpenCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
+		{
+			Open();
+		}
+
+		private void SaveCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
+		{
+			Save();
+		}
+
+		private void SaveAsCommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
+		{
+			SaveAs();
+		}
+
 	}
 }

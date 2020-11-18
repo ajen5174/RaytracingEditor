@@ -28,6 +28,7 @@ extern "C" ENGINE_DLL void RegisterSceneLoadedCallback(SceneLoadedCallback callb
 extern "C" ENGINE_DLL bool GetFloatData(float entityID, int component, float* data, int size);
 extern "C" ENGINE_DLL void SetFloatData(float entityID, int component, float* data, int size);
 extern "C" ENGINE_DLL bool GetStringData(float entityID, int component, char* data[], int size, int count);
+extern "C" ENGINE_DLL bool GetIntData(float entityID, int component, int* data, int size);
 extern "C" ENGINE_DLL void SetStringData(float entityID, int component, char* data[], int size, int count);
 extern "C" ENGINE_DLL void AddComponent(float entityID, int component);
 extern "C" ENGINE_DLL void RemoveComponent(float entityID, int component);

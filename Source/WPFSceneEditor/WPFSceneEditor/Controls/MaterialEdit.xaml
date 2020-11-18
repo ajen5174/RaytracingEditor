@@ -10,7 +10,6 @@
 		<Grid Background="Transparent">
 			<Grid.ContextMenu>
 				<ContextMenu>
-					<MenuItem Header="_Delete" Click="Delete_Click"></MenuItem>
 					<MenuItem Header="_Reset" Click="Reset_Click"></MenuItem>
 				</ContextMenu>
 			</Grid.ContextMenu>
@@ -25,17 +24,10 @@
 				<RowDefinition/>
 				<RowDefinition/>
 				<RowDefinition/>
-				<RowDefinition/>
-				<RowDefinition/>
 			</Grid.RowDefinitions>
 
-			<Label Grid.ColumnSpan="2" Grid.Row="0">Mesh Path</Label>
-			<TextBox Name="MeshPathBox" Grid.ColumnSpan="2" 
-					 Grid.Row="0" Grid.Column="2"></TextBox>
-			<Button Grid.Row="1" Grid.Column="4"
-					Click="SelectMesh_Click">Select Mesh File</Button>
-			<Label Grid.ColumnSpan="2" Grid.Row="2">Material Type</Label>
-			<ComboBox Name="MaterialTypeBox" Grid.Row="2"
+            <Label Grid.ColumnSpan="2" Grid.Row="0">Material Type</Label>
+            <ComboBox Name="MaterialTypeBox" Grid.Row="0"
 					  Grid.Column="2" Grid.ColumnSpan="2"
 					  DropDownClosed="MaterialTypeBox_DropDownClosed">
 				<ComboBoxItem>Lambert</ComboBoxItem>
@@ -43,18 +35,18 @@
 				<ComboBoxItem>Dielectric</ComboBoxItem>
 			</ComboBox>
 
-			<Label Grid.Row="3" Grid.Column="0">Albedo</Label>
-			<TextBox Grid.Row="3" Grid.Column="1" Name="AlbedoBoxR" KeyUp="AlbedoBox_KeyUp">0</TextBox>
-			<TextBox Grid.Row="3" Grid.Column="2" Name="AlbedoBoxG" KeyUp="AlbedoBox_KeyUp">0</TextBox>
-			<TextBox Grid.Row="3" Grid.Column="3" Name="AlbedoBoxB" KeyUp="AlbedoBox_KeyUp">0</TextBox>
+			<Label Grid.Row="1" Grid.Column="0">Albedo</Label>
+			<TextBox Grid.Row="1" Grid.Column="1" Name="AlbedoBoxR" KeyUp="AlbedoBox_KeyUp">0</TextBox>
+			<TextBox Grid.Row="1" Grid.Column="2" Name="AlbedoBoxG" KeyUp="AlbedoBox_KeyUp">0</TextBox>
+			<TextBox Grid.Row="1" Grid.Column="3" Name="AlbedoBoxB" KeyUp="AlbedoBox_KeyUp">0</TextBox>
 
-			<Label Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">Fuzz</Label>
-			<TextBox Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" 
+			<Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">Fuzz</Label>
+			<TextBox Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2" 
 				 Name="FuzzBox" KeyUp="AlbedoBox_KeyUp">0</TextBox>
 
 
-			<Label Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2">Index</Label>
-			<TextBox Grid.Row="5" Grid.Column="2" Name="RefractionIndex" Grid.ColumnSpan="2"
+			<Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">Index</Label>
+			<TextBox Grid.Row="3" Grid.Column="2" Name="RefractionIndex" Grid.ColumnSpan="2"
 				 KeyUp="AlbedoBox_KeyUp">0</TextBox>
 
 		</Grid>

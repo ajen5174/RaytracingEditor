@@ -31,51 +31,29 @@ __device__ bool HitWorld(Entity** list, int count, float maxDist, const Ray& r, 
     {
         if (list[j]->mesh)
         {
-            //if (list[j]->mesh->triangles)
-            //{
-            //    if (list[j]->mesh->triangles[0]->Hit(r, 0.001f, closestSoFar, info))
-            //    {
-            //        return true;
-            //    }
-            //}
-            
-            //if ((*list[j]->mesh->box))
+            if(list[j]->mesh->box.Hit(r, 0.001f, closestSoFar))
             {
-                if(list[j]->mesh->box.Hit(r, 0.001f, closestSoFar))
+                for (int i = 0; i < list[j]->mesh->numTriangles; i++)
                 {
-                    for (int i = 0; i < list[j]->mesh->numTriangles; i++)
+                    if (list[j]->mesh->triangles[i]->Hit(r, 0.001f, closestSoFar, tempInfo))
                     {
-                        if (list[j]->mesh->triangles[i]->Hit(r, 0.001f, closestSoFar, tempInfo))
-                        {
-                            info = tempInfo;
-                            closestSoFar = info.distance;
-                            hit = true;
+                        info = tempInfo;
+                        closestSoFar = info.distance;
+                        hit = true;
 
-                        }
                     }
                 }
             }
-            //if (list[j]->mesh->bvh->Hit(r, 0.001f, closestSoFar, tempInfo))
-            //{
-            //    info = tempInfo;
-            //    closestSoFar = info.distance;
-            //    hit = true;
-            //}
 
-
-            //if (list[j]->mesh->boundingSphere->Hit(r, 0.0f, 100.0f, info)) //bug here for suzanne
-            //{
-            //    for (int i = 0; i < list[j]->mesh->numTriangles; i++)
-            //    {
-            //        if (list[j]->mesh->triangles[i]->Hit(r, 0.001f, closestSoFar, tempInfo))
-            //        {
-            //            info = tempInfo;
-            //            closestSoFar = info.distance;
-            //            hit = true;
-
-            //        }
-            //    }
-            //}
+        }
+        else if (list[j]->primitive)
+        {
+            if (list[j]->primitive->Hit(r, 0.001f, closestSoFar, tempInfo))
+            {
+                info = tempInfo;
+                closestSoFar = info.distance;
+                hit = true;
+            }
         }
     }
     return hit;
@@ -86,7 +64,7 @@ __device__ vec3 GetShadows(Entity** list, int numEntities, Light** lights, int n
 }
 
 
-__device__ vec3 GetColor(Entity** list, int numEntities,  Light** lights, int numLights, const Ray& r, int maxRecursion, curandState* localRandState)
+__device__ vec3 GetColor(Entity** list, int numEntities, Light** lights, int numLights, const Ray& r, int maxRecursion, curandState* localRandState)
 {
     Ray currentRay = r;
     vec3 currentAttenuation = vec3(0.0f);
@@ -314,8 +292,8 @@ Raytracer::Raytracer(std::string sceneToLoad, std::string renderPath)
     LoadScene(sceneToLoad);
     samplesPerPixel = 30;
     maxRecursion = 50;
-    width = 32;// 16;// 266.6666666f;// 533.333333f;
-    height = 18;// 9;// 150.0f;// 300.0f;
+    width = 266.6666666f;// 533.333333f;
+    height = 150.0f;// 300.0f;
 }
 
 bool Raytracer::StartRender()
@@ -388,7 +366,8 @@ void Raytracer::WriteToFile()
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
                 size_t pixel_index = j * width + i;
-                vec3 color = frameBuffer[(width * height) - pixel_index - 1];//read the data backwards to flip it vertically
+                size_t read_index = j * width + (width - i);
+                vec3 color = frameBuffer[(width * height) - read_index - 1];//read the data backwards to flip it vertically
                 unsigned char ir = unsigned char(255.99f * color.x);
                 unsigned char ig = unsigned char(255.99f * color.y);
                 unsigned char ib = unsigned char(255.99f * color.z);

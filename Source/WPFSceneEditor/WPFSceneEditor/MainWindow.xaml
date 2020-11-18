@@ -9,6 +9,21 @@
         Title="MainWindow" Height="800" Width="1000"
 		Loaded="Window_Loaded" Closing="Window_Closing"
 		SizeChanged="Window_SizeChanged">
+
+	<Window.CommandBindings>
+		<CommandBinding Command="New" Executed="NewCommandBinding_Executed"/>
+		<CommandBinding Command="Open" Executed="OpenCommandBinding_Executed"/>
+		<CommandBinding Command="Save" Executed="SaveCommandBinding_Executed"/>
+		<CommandBinding Command="SaveAs" Executed="SaveAsCommandBinding_Executed"/>
+	</Window.CommandBindings>
+
+	<Window.InputBindings>
+		<KeyBinding Key="N" Modifiers="Control" Command="New"/>
+		<KeyBinding Key="O" Modifiers="Control" Command="Open"/>
+		<KeyBinding Key="S" Modifiers="Control" Command="Save"/>
+		<KeyBinding Key="S" Modifiers="Control+Shift" Command="SaveAs"/>
+	</Window.InputBindings>
+
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="1*"/>
@@ -23,10 +38,10 @@
 		</Grid.RowDefinitions>
 		<Menu Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" MaxHeight="40" VerticalAlignment="Top">
 			<MenuItem Header="_File">
-				<MenuItem Header="_New" Click="New_Click"/>
-				<MenuItem Header="_Open" Click="Open_Click"/>
-				<MenuItem Header="_Save" Click="Save_Click"/>
-				<MenuItem Header="_SaveAs" Click="SaveAs_Click"/>
+				<MenuItem Header="_New" InputGestureText="Ctrl+N" Command="New" />
+				<MenuItem Header="_Open" InputGestureText="Ctrl+O" Command="Open"/>
+				<MenuItem Header="_Save" InputGestureText="Ctrl+S" Command="Save"/>
+				<MenuItem Header="_SaveAs" InputGestureText="Ctrl+Shift+S" Command="SaveAs"/>
 				<Separator />
 				<MenuItem Header="_Exit" Click="Exit_Click"/>
 			</MenuItem>
@@ -84,6 +99,11 @@
 					<ContextMenu>
 						<MenuItem Header="_Add">
 							<MenuItem Header="_Model" Click="AddModelRender_Click"></MenuItem>
+							<MenuItem Header="_Primitive">
+								<MenuItem Header="_Sphere" Click="AddSphere_Click"></MenuItem>
+								<MenuItem Header="_Box"></MenuItem>
+								<MenuItem Header="_Rectangle"></MenuItem>
+							</MenuItem>
 							<MenuItem Header="_Light" Click="AddLight_Click"></MenuItem>
 						</MenuItem>
 					</ContextMenu>

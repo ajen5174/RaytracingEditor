@@ -7,13 +7,21 @@ namespace WPFSceneEditor
 {
 	public static class Engine
 	{
+
+		public enum ModelType
+        {
+			POLYGON_MESH,
+			SPHERE
+        }
 		public enum ComponentType
 		{
 			NONE = 0,
 			TRANSFORM,
 			LIGHT,
 			MODEL_RENDER,
-			CAMERA
+			CAMERA,
+			MATERIAL,
+			SPHERE
 		}
 
 		public delegate void DebugCallback(string message);
@@ -65,7 +73,10 @@ namespace WPFSceneEditor
 		public static extern void SetFloatData(float entityID, int component, [In] float[] data, int size);
 
 		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
-		public static extern bool GetStringData(float entityID, int component, [In][Out][MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)]string[] data, int size, int count);
+		public static extern bool GetStringData(float entityID, int component, [In][Out][MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] string[] data, int size, int count);
+
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern bool GetIntData(float entityID, int component, [In, Out]int[] data, int size);
 
 		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
 		public static extern void SetStringData(float entityID, int component, [In][Out][MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)]string[] data, int size, int count);

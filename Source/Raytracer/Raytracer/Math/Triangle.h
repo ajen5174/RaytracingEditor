@@ -70,7 +70,7 @@ private:
 
 public:
 	// Inherited via Hittable
-	virtual __host__ __device__ bool Hit(const Ray& ray, float minDist, float maxDist, HitInfo& hitInfo) override
+	virtual __host__ __device__ bool Hit(const Ray& ray, float minDist, float maxDist, HitInfo& hitInfo) const override
 	{
 		//using Moller-Trumbore algorithm
 		vec3 O = ray.origin;

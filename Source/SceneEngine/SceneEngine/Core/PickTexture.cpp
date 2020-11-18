@@ -10,7 +10,7 @@ PickTexture::~PickTexture()
 {
 }
 
-bool PickTexture::Initialize(int windowHeight, int windowWidth)
+bool PickTexture::Initialize(int windowWidth, int windowHeight)
 {
     //Create buffer
     glGenFramebuffers(1, &fbo);
@@ -18,16 +18,12 @@ bool PickTexture::Initialize(int windowHeight, int windowWidth)
 
     //Create texture to hold our pixel info
     glGenTextures(1, &pickTexture);
-    glBindTexture(GL_TEXTURE_2D, pickTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, windowWidth, windowHeight, 0, GL_RGB, GL_FLOAT, NULL);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-        pickTexture, 0);
+    
 
     //Create depth texture to be used to guarantee the closest object gets selected.
     glGenTextures(1, &depthTexture);
-    glBindTexture(GL_TEXTURE_2D, depthTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, windowWidth, windowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+   
+    Resize(windowWidth, windowHeight);
 
     //glGenRenderbuffers(1, &depthTexture);
     //glBindRenderbuffer(GL_RENDERBUFFER, depthTexture);
@@ -77,4 +73,18 @@ PickTexture::PickInfo PickTexture::ReadPixel(int x, int y)
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
     return pixel;
+}
+
+
+void PickTexture::Resize(int windowWidth, int windowHeight)
+{
+    glBindTexture(GL_TEXTURE_2D, pickTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, windowWidth, windowHeight, 0, GL_RGB, GL_FLOAT, NULL);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+        pickTexture, 0);
+
+    glBindTexture(GL_TEXTURE_2D, depthTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, windowWidth, windowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+
 }

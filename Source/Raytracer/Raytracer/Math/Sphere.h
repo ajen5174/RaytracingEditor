@@ -1,44 +1,47 @@
 #pragma once
 #include "AABB.h"
 
-class Sphere : public Hittable
+class Sphere
 {
 public:
-	__device__ Sphere(vec3& center, float radius) : center(center), radius(radius) {}
+
+	__host__ __device__ Sphere() {}
+	__host__ __device__ Sphere(vec3& center, float radius)
+	{
+		this->center = center;
+		this->radius = radius;
+	}
 
 
-
-
-	// Inherited via Hittable
-	__host__ __device__ virtual bool Hit(const Ray& ray, float minDist, float maxDist, HitInfo& hitInfo) override
+	__host__ __device__ bool Hit(const Ray& ray, float minDist, float maxDist, HitInfo& hitInfo) const 
 	{
 		vec3 sphereToOrigin = ray.origin - center;
 		float a = Dot(ray.direction, ray.direction);
-		float b = 2.0f * Dot(ray.direction, sphereToOrigin);
+		float b = Dot(ray.direction, sphereToOrigin);
 		float c = Dot(sphereToOrigin, sphereToOrigin) - radius * radius;
 
-		float discriminant = b * b - 4.0f * a * c;
+		float discriminant = b * b - a * c;
 
 		
 		if (discriminant > 0.0f)
 		{
 			//two hits
-			float temp = (-b - sqrtf(discriminant)) / 2.0f * a;
+			float temp = (-b - sqrtf(discriminant)) / a;
 			if (temp < maxDist && temp > minDist)
 			{
 				hitInfo.distance = temp;
+				hitInfo.normal = Normalize(hitInfo.point - center);
 				hitInfo.point = ray.PointAt(temp);
-				hitInfo.normal = (hitInfo.point - center) / radius;
-				//hitInfo.material = material;
+				hitInfo.material = material;
 				return true;
 			}
-			temp = (-b + sqrtf(discriminant)) / 2.0f * a;
+			temp = (-b + sqrtf(discriminant)) / a;
 			if (temp < maxDist && temp > minDist)
 			{
 				hitInfo.distance = temp;
+				hitInfo.normal = Normalize(hitInfo.point - center);
 				hitInfo.point = ray.PointAt(temp);
-				hitInfo.normal = (hitInfo.point - center) / radius;
-				//hitInfo.material = material;
+				hitInfo.material = material;
 				return true;
 			}
 		}
@@ -47,14 +50,15 @@ public:
 
 	}
 
-	__host__ __device__ virtual bool BoundingBox(AABB& outputBox) override
+	__host__ __device__  bool BoundingBox(AABB& outputBox) 
 	{
 		outputBox = AABB(center - vec3(radius), center + vec3(radius));
 		return true;
 	}
+
 public:
 	vec3 center;
-	float radius;
+	float radius = 1.0f;
 	//Texture* texture;
 	Material* material = nullptr;
 };

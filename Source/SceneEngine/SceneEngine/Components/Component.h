@@ -10,7 +10,9 @@ enum class ComponentType
 	TRANSFORM,
 	LIGHT,
 	MODEL_RENDER,
-	CAMERA
+	CAMERA,
+	MATERIAL,
+	SPHERE
 };
 
 class Component : public Object

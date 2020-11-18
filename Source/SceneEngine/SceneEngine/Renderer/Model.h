@@ -4,6 +4,12 @@
 #include "Mesh.h"
 #include "Material.h"
 
+enum ModelType
+{
+	POLYGON_MODEL,
+	SPHERE
+};
+
 class Model : Object
 {
 public:
@@ -23,5 +29,6 @@ public:
 	//texture
 	Material* material;
 	Mesh* mesh;
-	
+	ModelType modelType = ModelType::POLYGON_MODEL;
+
 };

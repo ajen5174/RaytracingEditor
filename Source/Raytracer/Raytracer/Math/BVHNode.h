@@ -130,7 +130,7 @@ public:
 
 
 public:
-	virtual __host__ __device__ bool Hit(const Ray& ray, float minDist, float maxDist, HitInfo& hitInfo) override
+	virtual __host__ __device__ bool Hit(const Ray& ray, float minDist, float maxDist, HitInfo& hitInfo) const override
 	{
 
 		if(!box.Hit(ray, minDist, maxDist))

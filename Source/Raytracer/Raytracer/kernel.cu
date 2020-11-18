@@ -16,10 +16,6 @@ int main(int argc, char** argv)
     //    std::cout << "Argument " << i << ": " << argv[i] << '\n';
     //}
 
-    cudaDeviceSetLimit(cudaLimit::cudaLimitStackSize, 166535);
-
-    size_t limit;
-    cudaDeviceGetLimit(&limit, cudaLimit::cudaLimitStackSize);
 
     Raytracer* rt;
     if (argc == 7)
@@ -29,8 +25,8 @@ int main(int argc, char** argv)
     else 
     {
         //for debugging
-        rt = new Raytracer("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Content\\Scenes\\scene.txt", 
-                                  "C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Raytracer\\Outputs\\output.ppm");
+        rt = new Raytracer("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Content\\Scenes\\sphere_testing.txt", 
+                                  "C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Content\\Outputs\\output.png");
     }
 
     
