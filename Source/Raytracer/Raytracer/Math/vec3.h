@@ -15,7 +15,7 @@ struct vec3
 	__host__ __device__ float& operator[](int i) { return (&x)[i]; }
 
 	__host__ __device__ float Magnitude() const { return sqrtf(x * x + y * y + z * z); }
-	__host__ __device__ float SqrMagnitude() const { return sqrtf(x * x + y * y + z * z); }
+	__host__ __device__ float SqrMagnitude() const { return (x * x + y * y + z * z); }
 	__host__ __device__ vec3 UnitVector()
 	{
 		float k = 1.0f / sqrtf(x * x + y * y + z * z);

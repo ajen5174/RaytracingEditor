@@ -30,8 +30,8 @@ public:
 			if (temp < maxDist && temp > minDist)
 			{
 				hitInfo.distance = temp;
-				hitInfo.normal = Normalize(hitInfo.point - center);
 				hitInfo.point = ray.PointAt(temp);
+				hitInfo.normal = Normalize(hitInfo.point - center);
 				hitInfo.material = material;
 				return true;
 			}
@@ -39,8 +39,8 @@ public:
 			if (temp < maxDist && temp > minDist)
 			{
 				hitInfo.distance = temp;
-				hitInfo.normal = Normalize(hitInfo.point - center);
 				hitInfo.point = ray.PointAt(temp);
+				hitInfo.normal = Normalize(hitInfo.point - center);
 				hitInfo.material = material;
 				return true;
 			}

@@ -31,11 +31,11 @@ __device__ bool HitWorld(Entity** list, int count, float maxDist, const Ray& r, 
     {
         if (list[j]->mesh)
         {
-            if(list[j]->mesh->box.Hit(r, 0.001f, closestSoFar))
+            if(list[j]->mesh->box.Hit(r, 0.1f, closestSoFar))
             {
                 for (int i = 0; i < list[j]->mesh->numTriangles; i++)
                 {
-                    if (list[j]->mesh->triangles[i]->Hit(r, 0.001f, closestSoFar, tempInfo))
+                    if (list[j]->mesh->triangles[i]->Hit(r, 0.1f, closestSoFar, tempInfo))
                     {
                         info = tempInfo;
                         closestSoFar = info.distance;
@@ -48,7 +48,7 @@ __device__ bool HitWorld(Entity** list, int count, float maxDist, const Ray& r, 
         }
         else if (list[j]->primitive)
         {
-            if (list[j]->primitive->Hit(r, 0.001f, closestSoFar, tempInfo))
+            if (list[j]->primitive->Hit(r, 0.1f, closestSoFar, tempInfo))
             {
                 info = tempInfo;
                 closestSoFar = info.distance;
@@ -57,10 +57,6 @@ __device__ bool HitWorld(Entity** list, int count, float maxDist, const Ray& r, 
         }
     }
     return hit;
-}
-__device__ vec3 GetShadows(Entity** list, int numEntities, Light** lights, int numLights, const Ray& r, int maxRecursion, curandState* localRandState)
-{
-
 }
 
 
@@ -110,30 +106,33 @@ __device__ vec3 GetColor(Entity** list, int numEntities, Light** lights, int num
                     HitInfo shadowInfo;
                     //if we cast a ray, and hit nothing until the light, then the light affects this material
                      //so we multiply the attenuation by the light color instead of the background color
-                    if (!HitWorld(list, numEntities, distance, Ray(info.point, pointToLight), shadowInfo))
+                    if (!HitWorld(list, numEntities, distance, Ray(info.point, Normalize(pointToLight)), shadowInfo)) //super unsure why I need to do the -1.0f
                     {
                         float tempDot = Dot(Normalize(pointToLight), Normalize(info.normal));
                         float lDotN = tempDot > 0.0f ? tempDot : 0.0f;
 
-                        if (tempDot < 0.0f)
+                        if (tempDot == 0.0f) //negative number to prevent artifacts?
                         {
                             return vec3(0.0f);
                         }
-                        
-                        currentAttenuation = currentAttenuation + (lights[i]->color * lights[i]->intensity) * lDotN;
+
+                        currentAttenuation = currentAttenuation + (lights[i]->color * lights[i]->intensity) * lDotN;// / (distance * distance);
+                        vec3 unitDir = Normalize(currentRay.direction);
+                        float t = 0.5f * (unitDir.y + 1.0f);//based on how high it is, change the weight of the color from white to light blue
+                        vec3 backgroundColor = (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);
+                        //currentAttenuation = (currentAttenuation * (backgroundColor));
                     }
+                    
                 }
             }
-
+            
             return currentAttenuation / (M_PI * k);
         }
     }
     
 
     
-    
-    return vec3(0.0f); // recursion exceeded
-    
+    return vec3(0.0f);
 }
 
 __global__ void RenderInit(int width, int height, curandState* randState)
@@ -290,7 +289,7 @@ Raytracer::Raytracer(std::string sceneToLoad, std::string renderPath)
 {
     //std::cout << "Default settings used...\n";
     LoadScene(sceneToLoad);
-    samplesPerPixel = 30;
+    samplesPerPixel = 10;
     maxRecursion = 50;
     width = 266.6666666f;// 533.333333f;
     height = 150.0f;// 300.0f;
@@ -367,7 +366,7 @@ void Raytracer::WriteToFile()
             for (int i = 0; i < width; i++) {
                 size_t pixel_index = j * width + i;
                 size_t read_index = j * width + (width - i);
-                vec3 color = frameBuffer[(width * height) - read_index - 1];//read the data backwards to flip it vertically
+                vec3 color = frameBuffer[(width * height) - read_index];//read the data backwards to flip it vertically
                 unsigned char ir = unsigned char(255.99f * color.x);
                 unsigned char ig = unsigned char(255.99f * color.y);
                 unsigned char ib = unsigned char(255.99f * color.z);

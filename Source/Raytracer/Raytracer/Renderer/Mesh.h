@@ -163,7 +163,7 @@ public:
 			max.y = vertices[i].y > max.y ? vertices[i].y : max.y;
 			max.z = vertices[i].z > max.z ? vertices[i].z : max.z;
 		}
-		box = AABB((min - vec3(0.00001f)), (max + vec3(0.00001f)));
+		box = AABB((min), (max));
 
 		//std::vector<Hittable*> triangleList;
 		//for (int i = 0; i < numTriangles; i++)
