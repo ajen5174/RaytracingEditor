@@ -11,6 +11,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <curand_kernel.h>
+#include <cuda.h>
 #include <stb_image_write.h>
 #include "Core/Json.h"
 #include "Renderer/World.h"
@@ -144,7 +145,7 @@ __global__ void RenderInit(int width, int height, curandState* randState)
     curand_init(1984, pixel_index, 0, &randState[pixel_index]);
 }
 
-__global__ void Render(vec3* frameBuffer, int width, int height, int samples, int maxRecursion, Camera* cam, Entity** list, int numEntities, Light** lights, int numLights, curandState* randState) 
+__global__ void Render(vec3* frameBuffer, int width, int height, int samples, int maxRecursion, Camera* cam, Entity** list, int numEntities, Light** lights, int numLights, volatile int* progress, curandState* randState) 
 {
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     int j = threadIdx.y + blockIdx.y * blockDim.y;
@@ -172,7 +173,15 @@ __global__ void Render(vec3* frameBuffer, int width, int height, int samples, in
     //color.z = sqrt(color.z);
 
     frameBuffer[pixel_index] = color;
-
+    int temp = *progress;
+    temp += 1;
+    //progress update here
+    if (!(threadIdx.x || threadIdx.y)) //pretty sure this simplifies to both being 0
+    {
+        //atomicAdd((int*)progress, 1);//builds properly?
+        //__threadfence_system();
+        *progress += 1;
+    }
 }
 
 
@@ -309,8 +318,8 @@ bool Raytracer::StartRender()
     int threadX = 8;
     int threadY = 8;
 
-    clock_t start, stop;
-    start = clock();
+    /*clock_t start, stop;
+    start = clock();*/
     
 
     dim3 blocks(width / threadX + 1, height / threadY + 1);
@@ -319,13 +328,51 @@ bool Raytracer::StartRender()
 
     RenderInit << <blocks, threads >> > (width, height, randState);
     CheckCudaErrors(cudaDeviceSynchronize());
+
+    volatile int* progress;
+    CheckCudaErrors(cudaMallocManaged((void**)&progress, sizeof(int)));
+    *progress = 0;
+
+    volatile int* d_data, *h_data;
+    cudaSetDeviceFlags(cudaDeviceMapHost);
+    cudaHostAlloc((void**)&h_data, sizeof(int), cudaHostAllocMapped);
+    cudaHostGetDevicePointer((int**)&d_data, (int*)h_data, 0);
+    CheckCudaErrors(cudaDeviceSynchronize());
+    *h_data = 0;
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start); 
+    cudaEventCreate(&stop); 
     std::cout << "Initialized!\n";
     std::cout << "Rendering...\n";
-    Render <<<blocks, threads>>> (frameBuffer, width, height, samplesPerPixel, maxRecursion, mainCamera, entityList, numEntities, lights, numLights, randState);
+    cudaEventRecord(start);
+    Render <<<blocks, threads>>> (frameBuffer, width, height, samplesPerPixel, maxRecursion, mainCamera, entityList, numEntities, lights, numLights, d_data, randState);
+    cudaEventRecord(stop);
+    unsigned int numBlocks = blocks.x * blocks.y;
+    float myProgress = 0.0f;
+    int value = 0;
+    std::cout << "Progress:\n";
+    do 
+    {
+        cudaEventQuery(stop);
+        int value1 = *h_data;
+        float renderProgress = (float)value1 / (float)numBlocks;
+        if (renderProgress - myProgress > 0.1f)
+        {
+            std::cout << (int)(renderProgress * 100) << "% Complete...\n";
+            myProgress = renderProgress;
+        }
+
+
+    } while (myProgress < 0.9f);
+
     CheckCudaErrors(cudaGetLastError());
     CheckCudaErrors(cudaDeviceSynchronize());
-    stop = clock();
-    double seconds = ((double)(stop - start)) / CLOCKS_PER_SEC;
+    //stop = clock();
+    //double seconds = ((double)(stop - start)) / CLOCKS_PER_SEC;
+    float seconds;
+    CheckCudaErrors(cudaEventElapsedTime(&seconds, start, stop));
+    CheckCudaErrors(cudaDeviceSynchronize());
+    seconds /= 1000; //milliseconds to seconds
     std::cerr << "Render took " << seconds << " seconds.\n";
 
     //FreeWorld << <1, 1 >> > (cam);
