@@ -32,7 +32,11 @@ int windowHeight = 600;
 
 bool sizeChanged = false;
 
+#ifdef _WINDLL
+const std::string defaultPath = "..\\..\\..\\..\\..\\Content\\Scenes\\default.txt";
+#else
 const std::string defaultPath = "C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Content\\Scenes\\default.txt";
+#endif
 
 std::string gPath = defaultPath;
 bool reloadScene = false;
