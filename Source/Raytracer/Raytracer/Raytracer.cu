@@ -102,32 +102,37 @@ __device__ vec3 GetColor(Entity** list, int numEntities, Light** lights, int num
             {
                 for (int i = 0; i < numLights; i++)
                 {
-                    vec3 pointToLight = lights[i]->owner->transform->translation - info.point;
-                    float distance = pointToLight.Magnitude();
-                    HitInfo shadowInfo;
-                    //if we cast a ray, and hit nothing until the light, then the light affects this material
-                     //so we multiply the attenuation by the light color instead of the background color
-                    if (!HitWorld(list, numEntities, distance, Ray(info.point, Normalize(pointToLight)), shadowInfo)) //super unsure why I need to do the -1.0f
+                    if (lights[i]->lightType == Light::LightType::POINT || lights[i]->lightType == Light::LightType::DIRECTION)
                     {
-                        float tempDot = Dot(Normalize(pointToLight), Normalize(info.normal));
-                        float lDotN = tempDot > 0.0f ? tempDot : 0.0f;
-
-                        if (tempDot == 0.0f) //negative number to prevent artifacts?
+                        vec3 pointToLight = lights[i]->owner->transform->translation - info.point;
+                        float distance = lights[i]->lightType == Light::LightType::POINT ? pointToLight.Magnitude() : 1000.0f;
+                        HitInfo shadowInfo;
+                        Ray shadowRay = lights[i]->lightType == Light::LightType::POINT ? Ray(info.point, Normalize(pointToLight)) : Ray(info.point, -lights[i]->direction);
+                        //if we cast a ray, and hit nothing until the light, then the light affects this material
+                         //so we multiply the attenuation by the light color instead of the background color
+                        if (!HitWorld(list, numEntities, distance, shadowRay, shadowInfo)) //super unsure why I need to do the -1.0f
                         {
-                            return vec3(0.0f);
-                        }
+                            float tempDot = Dot(Normalize(pointToLight), Normalize(info.normal));
+                            float lDotN = tempDot > 0.0f ? tempDot : 0.0f;
 
-                        currentAttenuation = currentAttenuation + (lights[i]->color * lights[i]->intensity) * lDotN;// / (distance * distance);
-                        vec3 unitDir = Normalize(currentRay.direction);
-                        float t = 0.5f * (unitDir.y + 1.0f);//based on how high it is, change the weight of the color from white to light blue
-                        vec3 backgroundColor = (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);
-                        //currentAttenuation = (currentAttenuation * (backgroundColor));
+                            if (tempDot == 0.0f) //negative number to prevent artifacts?
+                            {
+                                return vec3(0.0f);
+                            }
+
+                            currentAttenuation = currentAttenuation + (lights[i]->color * lights[i]->intensity) * lDotN;// / (distance * distance);
+                            vec3 unitDir = Normalize(currentRay.direction);
+                            float t = 0.5f * (unitDir.y + 1.0f);//based on how high it is, change the weight of the color from white to light blue
+                            vec3 backgroundColor = (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);
+                            //currentAttenuation = (currentAttenuation * (backgroundColor));
+                        }
                     }
+                    
                     
                 }
             }
             
-            return currentAttenuation / (M_PI * k);
+            return currentAttenuation / (M_PI * (k));
         }
     }
     
@@ -178,7 +183,7 @@ __global__ void Render(vec3* frameBuffer, int width, int height, int samples, in
     //progress update here
     if (!(threadIdx.x || threadIdx.y)) //pretty sure this simplifies to both being 0
     {
-        //atomicAdd((int*)progress, 1);//builds properly?
+        //atomicAdd((int*)progress, 1);
         //__threadfence_system();
         *progress += 1;
     }
@@ -310,6 +315,16 @@ bool Raytracer::StartRender()
     
     int numPixels = width * height;
 
+    //int deviceCount;
+    //CheckCudaErrors(cudaGetDeviceCount(&deviceCount));
+    //CheckCudaErrors(cudaDeviceSynchronize());
+
+    //cudaDeviceProp properties;
+    //CheckCudaErrors(cudaGetDeviceProperties(&properties, 0));
+
+    CheckCudaErrors(cudaSetDevice(0));
+    CheckCudaErrors(cudaDeviceSynchronize());
+
     curandState* randState;
     CheckCudaErrors(cudaMallocManaged(&randState, numPixels * sizeof(curandState)));
 
@@ -329,15 +344,15 @@ bool Raytracer::StartRender()
     RenderInit << <blocks, threads >> > (width, height, randState);
     CheckCudaErrors(cudaDeviceSynchronize());
 
-    volatile int* progress;
-    CheckCudaErrors(cudaMallocManaged((void**)&progress, sizeof(int)));
-    *progress = 0;
-
+    //we have to allocate the shared memory manually because using unified memory here
+        //causes an access violation for some reason
     volatile int* d_data, *h_data;
     cudaSetDeviceFlags(cudaDeviceMapHost);
     cudaHostAlloc((void**)&h_data, sizeof(int), cudaHostAllocMapped);
     cudaHostGetDevicePointer((int**)&d_data, (int*)h_data, 0);
     CheckCudaErrors(cudaDeviceSynchronize());
+
+
     *h_data = 0;
     cudaEvent_t start, stop;
     cudaEventCreate(&start); 
@@ -353,7 +368,7 @@ bool Raytracer::StartRender()
     std::cout << "Progress:\n";
     do 
     {
-        cudaEventQuery(stop);
+        cudaEventQuery(stop);//this query forces an updated read to our h_data value
         int value1 = *h_data;
         float renderProgress = (float)value1 / (float)numBlocks;
         if (renderProgress - myProgress > 0.1f)

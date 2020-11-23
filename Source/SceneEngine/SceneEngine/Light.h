@@ -5,9 +5,12 @@
 #include "Core/Entity.h"
 #include "Components/Transform.h"
 
+
+
 class Light : public Component
 {
 public:
+
 	Light(StringId& name, Entity* owner) : Component(name, owner) {}
 
 	// Inherited via Component
@@ -23,4 +26,6 @@ public:
 public:
 	float intensity;
 	glm::vec3 color;
+	glm::vec3 direction;
+	std::string lightType = "point";
 };

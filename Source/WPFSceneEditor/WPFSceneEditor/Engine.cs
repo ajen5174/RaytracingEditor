@@ -7,7 +7,6 @@ namespace WPFSceneEditor
 {
 	public static class Engine
 	{
-
 		public enum ModelType
         {
 			POLYGON_MESH,

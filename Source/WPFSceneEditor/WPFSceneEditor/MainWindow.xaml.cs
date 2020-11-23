@@ -35,7 +35,6 @@ namespace WPFSceneEditor
 		private float EngineAspectRatio = 16f / 9f;
 		private float selectedEntityID = 0.0f;
 
-		private Popup popup;
 
 		public MainWindow()
 		{
@@ -51,9 +50,20 @@ namespace WPFSceneEditor
 
 		}
 
+		//private void ScrollBoxToBottom()
+  //      {
+		//	DebugOutput.ScrollToEnd();
+		//}
+
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			Dispatcher.BeginInvoke(new Action(() => //this is just here to delay this code until the program is idling.
+			//DebugOutput.TextChanged += (sender, e) =>
+			//{
+			//	DebugOutput.CaretIndex = DebugOutput.Text.Length;
+			//	DebugOutput.ScrollToEnd();
+			//};
+
+            Dispatcher.BeginInvoke(new Action(() => //this is just here to delay this code until the program is idling.
 			{
 				Trace.WriteLine("DONE!", "Rendering");
 				Trace.WriteLine("Launching...");
@@ -80,19 +90,12 @@ namespace WPFSceneEditor
 			
 		}
 
-		private void Button_Click(object sender, RoutedEventArgs e)
-		{
-			
-		}
-
 		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
 		{
 			Trace.WriteLine("Window closing");
 			Engine.StopEngine();
 			Trace.WriteLine("Engine stopped");
 		}
-
-		
 
 		private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
 		{
@@ -144,7 +147,8 @@ namespace WPFSceneEditor
 		private void PrintDebugMessage(string message)
 		{
 			Trace.WriteLine(message, "ENGINE_DEBUG");
-			DebugOutput.Text += "ENGINE_DEBUG: " + message + "\n";
+			DebugOutput.Text += ("ENGINE_DEBUG: " + message + "\n");
+			DebugScrollViewer.ScrollToEnd();
 		}
 
 		public void EntitySelect(float entityID)

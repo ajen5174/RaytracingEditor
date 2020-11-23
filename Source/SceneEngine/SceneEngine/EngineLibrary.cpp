@@ -164,11 +164,12 @@ ENGINE_DLL void SetFloatData(float entityID, int component, float* data, int siz
 	case ComponentType::LIGHT:
 	{
 		Light* light = entity->GetComponent<Light>();
-		if (!light || size < 4)
+		if (!light || size < 7)
 			return;
 
 		light->color = glm::vec3(data[0], data[1], data[2]);
 		light->intensity = data[3];
+		light->direction = glm::vec3(data[4], data[5], data[6]);
 		break;
 	}
 	}
@@ -206,6 +207,7 @@ ENGINE_DLL bool GetStringData(float entityID, int component, char* data[], int s
 		break;
 	}
 	case ComponentType::MATERIAL:
+	{
 		ModelRenderComponent* render = entity->GetComponent<ModelRenderComponent>();
 		if (!render)
 			return false;
@@ -215,6 +217,23 @@ ENGINE_DLL bool GetStringData(float entityID, int component, char* data[], int s
 		memcpy(data[0], render->model->material->materialType.c_str(), render->model->material->materialType.length() + 1);
 
 		break;
+	}
+	case ComponentType::LIGHT:
+	{
+		Light* light = entity->GetComponent<Light>();
+		if (!light)
+			return false;
+		if (count != 1)
+			return false;
+		
+		data[0] = new char[size];
+
+		memcpy(data[0], light->lightType.c_str(), light->lightType.length() + 1);
+
+
+		break;
+	}
+		
 	}
 
 	return true;
@@ -259,14 +278,27 @@ ENGINE_DLL void SetStringData(float entityID, int component, char* data[], int s
 		break;
 	}
 	case ComponentType::MATERIAL:
+	{
 		ModelRenderComponent* render = entity->GetComponent<ModelRenderComponent>();
 		if (!render)
 			return;
 		if (count < 1 || count > 1)
-			return; 
+			return;
 		render->model->material->materialType = data[0];
 
 		break;
+	}
+	case ComponentType::LIGHT:
+	{
+		Light* light = entity->GetComponent<Light>();
+		if (!light)
+			return;
+		if (count != 1)
+			return;
+		light->lightType = data[0];
+
+		break;
+	}
 	}
 
 	
@@ -358,6 +390,9 @@ ENGINE_DLL bool GetFloatData(float entityID, int component, float* data, int siz
 		data[1] = light->color.g;
 		data[2] = light->color.b;
 		data[3] = light->intensity;
+		data[4] = light->direction.x;
+		data[5] = light->direction.y;
+		data[6] = light->direction.z;
 		break;
 	}
 	}
@@ -738,14 +773,14 @@ void RunEngine()
 			//PrintDebugMessage("ID of suzanne: " + std::to_string(testEntity->GetName().GetId()));
 			if (selected)
 			{
-				PrintDebugMessage("Selected ID: " +std::to_string(idRead));
+				//PrintDebugMessage("Selected ID: " +std::to_string(idRead));
 				EntitySelect(idRead);
 				//selected->selected = true;
 			}
 			else
 			{
 				EntitySelect(0);
-				PrintDebugMessage("failed to find ID: " + std::to_string(idRead));
+				//PrintDebugMessage("failed to find ID: " + std::to_string(idRead));
 				//SaveScene("C:/Users/Student/OneDrive - Neumont College of Computer Science/Q9 FALL 2020/Capstone Project/CapstoneWork/Source/Content/Scenes/save.txt");
 			}
 		}

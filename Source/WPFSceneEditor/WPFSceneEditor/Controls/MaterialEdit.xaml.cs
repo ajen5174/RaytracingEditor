@@ -20,7 +20,10 @@ namespace WPFSceneEditor.Controls
 	public partial class MaterialEdit : UserControl
 	{
 		private float selectedEntityID;
-		
+		private GridLength cachedFuzzRowHeight = new GridLength(0);
+		private GridLength cachedRefractionRowHeight = new GridLength(0);
+		private GridLength cachedAlbedoRowHeight = new GridLength(0);
+
 
 		public MaterialEdit()
 		{
@@ -29,6 +32,10 @@ namespace WPFSceneEditor.Controls
 
 		public bool LoadData(float entityID)
 		{
+			cachedFuzzRowHeight = FuzzRow.Height;
+			cachedRefractionRowHeight = RefractionRow.Height;
+			cachedAlbedoRowHeight = AlbedoRow.Height;
+
 			selectedEntityID = entityID;
 			//we need one string, and 5 floats
 			string[] stringData = new string[1];
@@ -50,6 +57,7 @@ namespace WPFSceneEditor.Controls
 				FuzzBox.Text = "" + data[3];
 				RefractionIndex.Text = "" + data[4];
 
+				RowUpdate();
 				return true;
 			}
 
@@ -61,6 +69,28 @@ namespace WPFSceneEditor.Controls
 			SetMaterialFloatData();
 		}
 
+		private void RowUpdate()
+        {
+			if(MaterialTypeBox.Text == "Lambert")
+            {
+				FuzzRow.Height = new GridLength(0);
+				RefractionRow.Height = new GridLength(0);
+				AlbedoRow.Height = cachedAlbedoRowHeight;
+			}
+			else if(MaterialTypeBox.Text == "Metal")
+            {
+				FuzzRow.Height = cachedFuzzRowHeight;
+				AlbedoRow.Height = cachedAlbedoRowHeight;
+				RefractionRow.Height = new GridLength(0);
+			}
+			else if(MaterialTypeBox.Text == "Dielectric")
+            {
+				FuzzRow.Height = new GridLength(0);
+				AlbedoRow.Height = new GridLength(0);
+				RefractionRow.Height = cachedRefractionRowHeight;
+
+			}
+		}
 
 
 		private void SetMaterialFloatData()
@@ -100,6 +130,7 @@ namespace WPFSceneEditor.Controls
 		private void MaterialTypeBox_DropDownClosed(object sender, EventArgs e)
 		{
 			SetMaterialStringData();
+			RowUpdate();
 
 		}
 
