@@ -13,6 +13,7 @@
 #include <curand_kernel.h>
 #include <cuda.h>
 #include <stb_image_write.h>
+#include <shlwapi.h>
 #include "Core/Json.h"
 #include "Renderer/World.h"
 
@@ -76,7 +77,7 @@ __device__ vec3 GetColor(Entity** list, int numEntities, Light** lights, int num
             hitOnce = true;
             if (info.material->Scatter(currentRay, info, attenuation, scattered, localRandState))
             {
-                currentAttenuation = currentAttenuation + attenuation; //color multiplication
+                currentAttenuation = currentAttenuation + attenuation; 
                 currentRay = scattered;
 
             }
@@ -107,9 +108,22 @@ __device__ vec3 GetColor(Entity** list, int numEntities, Light** lights, int num
                         vec3 pointToLight = lights[i]->owner->transform->translation - info.point;
                         float distance = lights[i]->lightType == Light::LightType::POINT ? pointToLight.Magnitude() : 1000.0f;
                         HitInfo shadowInfo;
-                        Ray shadowRay = lights[i]->lightType == Light::LightType::POINT ? Ray(info.point, Normalize(pointToLight)) : Ray(info.point, -lights[i]->direction);
+                        Ray shadowRay = lights[i]->lightType == Light::LightType::POINT ? Ray(info.point, Normalize(pointToLight)) : Ray(info.point, -Normalize(lights[i]->direction));
                         //if we cast a ray, and hit nothing until the light, then the light affects this material
                          //so we multiply the attenuation by the light color instead of the background color
+                        vec3 unitDir = Normalize(currentRay.direction);
+                        float t = 0.5f * (unitDir.y + 1.0f);//based on how high it is, change the weight of the color from white to light blue
+                        vec3 backgroundColor = (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);
+                        
+                        if (info.material->materialType == 'm')
+                        {
+                            currentAttenuation = (currentAttenuation + ((backgroundColor) / M_PI));
+                        }
+                        else
+                        {
+                            currentAttenuation = (currentAttenuation + ((backgroundColor * 0.1f) / M_PI));
+                        }
+                        
                         if (!HitWorld(list, numEntities, distance, shadowRay, shadowInfo)) //super unsure why I need to do the -1.0f
                         {
                             float tempDot = Dot(Normalize(pointToLight), Normalize(info.normal));
@@ -120,11 +134,9 @@ __device__ vec3 GetColor(Entity** list, int numEntities, Light** lights, int num
                                 return vec3(0.0f);
                             }
 
-                            currentAttenuation = currentAttenuation + (lights[i]->color * lights[i]->intensity) * lDotN;// / (distance * distance);
-                            vec3 unitDir = Normalize(currentRay.direction);
-                            float t = 0.5f * (unitDir.y + 1.0f);//based on how high it is, change the weight of the color from white to light blue
-                            vec3 backgroundColor = (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);
-                            //currentAttenuation = (currentAttenuation * (backgroundColor));
+                            currentAttenuation = currentAttenuation + (lights[i]->color * lights[i]->intensity * 2.5f) * lDotN;// / (distance * distance);
+                           
+                            
                         }
                     }
                     
@@ -404,6 +416,7 @@ bool Raytracer::StartRender()
 void Raytracer::WriteToFile()
 {
     std::string extension = renderPath.substr(renderPath.find('.'));
+    bool written = true;
     if (extension == ".ppm")
     {
         std::ofstream myFile(renderPath);
@@ -453,11 +466,12 @@ void Raytracer::WriteToFile()
         else
         {
             std::cout << "Error writing file, output type not supported.";
+            bool written = false;
         }
 
     }
-
-
+    if(written)
+        ShellExecute(0, 0, renderPath.c_str(), 0, 0, SW_SHOW);
     
     
 
