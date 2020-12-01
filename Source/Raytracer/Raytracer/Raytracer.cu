@@ -196,7 +196,7 @@ __global__ void Render(vec3* frameBuffer, int width, int height, int samples, in
     if (!(threadIdx.x || threadIdx.y)) //pretty sure this simplifies to both being 0
     {
         //atomicAdd((int*)progress, 1);
-        //__threadfence_system();
+        __threadfence_system();
         *progress += 1;
     }
 }
@@ -315,10 +315,10 @@ Raytracer::Raytracer(std::string sceneToLoad, std::string renderPath)
 {
     //std::cout << "Default settings used...\n";
     LoadScene(sceneToLoad);
-    samplesPerPixel = 10;
+    samplesPerPixel = 100;
     maxRecursion = 50;
-    width = 266.6666666f;// 533.333333f;
-    height = 150.0f;// 300.0f;
+    width = 1920;// 266.6666666f;// 533.333333f;
+    height = 1080;// 150.0f;// 300.0f;
 }
 
 bool Raytracer::StartRender()
