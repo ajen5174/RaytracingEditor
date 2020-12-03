@@ -68,6 +68,8 @@ __device__ vec3 GetColor(Entity** list, int numEntities, Light** lights, int num
     vec3 currentAttenuation = vec3(0.0f);
     bool hitOnce = false;
     HitInfo info;
+    int numOfColorsContributing = 0;
+
     for (int k = 0; k < maxRecursion; k++)
     {
         if (HitWorld(list, numEntities, 100.0f, currentRay, info))
@@ -77,13 +79,13 @@ __device__ vec3 GetColor(Entity** list, int numEntities, Light** lights, int num
             hitOnce = true;
             if (info.material->Scatter(currentRay, info, attenuation, scattered, localRandState))
             {
-                currentAttenuation = currentAttenuation + attenuation; 
                 currentRay = scattered;
+                if (info.material->materialType != 'd')
+                {
+                    currentAttenuation = currentAttenuation + attenuation; 
+                    numOfColorsContributing++;
 
-            }
-            else
-            {
-                return vec3(0.0f);
+                }
             }
         }
         else
@@ -119,9 +121,14 @@ __device__ vec3 GetColor(Entity** list, int numEntities, Light** lights, int num
                         {
                             currentAttenuation = (currentAttenuation + ((backgroundColor) / M_PI));
                         }
-                        else
+                        else if (info.material->materialType == 'l')
                         {
                             currentAttenuation = (currentAttenuation + ((backgroundColor * 0.1f) / M_PI));
+                        }
+                        else
+                        {
+                            if (numOfColorsContributing == 0)
+                                return backgroundColor;
                         }
                         
                         if (!HitWorld(list, numEntities, distance, shadowRay, shadowInfo)) //super unsure why I need to do the -1.0f
@@ -134,17 +141,19 @@ __device__ vec3 GetColor(Entity** list, int numEntities, Light** lights, int num
                                 return vec3(0.0f);
                             }
 
-                            currentAttenuation = currentAttenuation + (lights[i]->color * lights[i]->intensity * 2.5f) * lDotN;// / (distance * distance);
-                           
+                            currentAttenuation = currentAttenuation + ((lights[i]->color * lights[i]->intensity) * 2.0f * lDotN);// / (/*4 **/ M_PI * distance * distance);
+
                             
                         }
+
+                        
                     }
                     
                     
                 }
             }
-            
-            return currentAttenuation / (M_PI * (k));
+
+            return currentAttenuation / (M_PI * (numOfColorsContributing));
         }
     }
     
@@ -188,6 +197,10 @@ __global__ void Render(vec3* frameBuffer, int width, int height, int samples, in
     //color.x = sqrt(color.x);//sqrt gives a more accurate color, this is gamma correction, this has been moved to the get color function when we divide by PI pretty sure
     //color.y = sqrt(color.y);
     //color.z = sqrt(color.z);
+
+    if (color.x > 1.0f) color.x = 1.0f;
+    if (color.y > 1.0f) color.y = 1.0f;
+    if (color.z > 1.0f) color.z = 1.0f;
 
     frameBuffer[pixel_index] = color;
     int temp = *progress;
