@@ -75,49 +75,54 @@
         </Border>
         <Border Grid.Column="1" Grid.Row="1"
 				BorderBrush="Black" BorderThickness="4">
-            <StackPanel Background="Transparent">
-                <StackPanel.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="_Add">
-                            <MenuItem Header="_Entity" Click="AddEntity_Click"></MenuItem>
-                        </MenuItem>
-                    </ContextMenu>
-                </StackPanel.ContextMenu>
-                
-                <Label HorizontalAlignment="Center" FontSize="16" FontWeight="Bold">Scene</Label>
-                
-                <StackPanel Name="SceneHierarchy">
-                    
-                </StackPanel>
-            </StackPanel>
-			
+			<ScrollViewer Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" VerticalScrollBarVisibility="Auto">
+
+				<StackPanel Background="Transparent">
+					<StackPanel.ContextMenu>
+						<ContextMenu>
+							<MenuItem Header="_Add">
+								<MenuItem Header="_Entity" Click="AddEntity_Click"></MenuItem>
+								<MenuItem Header="_Random Sphere" Click="AddRandomSphere_Click"></MenuItem>
+							</MenuItem>
+						</ContextMenu>
+					</StackPanel.ContextMenu>
+
+					<Label HorizontalAlignment="Center" FontSize="16" FontWeight="Bold">Scene</Label>
+
+					<StackPanel Name="SceneHierarchy">
+
+					</StackPanel>
+				</StackPanel>
+			</ScrollViewer>
 
 		</Border>
 		
 		<Border Grid.Column="2" Grid.Row="1"
 				BorderBrush="Black" BorderThickness="4">
-            <StackPanel Background="Transparent">
-                <StackPanel.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="_Add">
-                            <MenuItem Header="_Model" Click="AddModelRender_Click"></MenuItem>
-                            <MenuItem Header="_Primitive">
-                                <MenuItem Header="_Sphere" Click="AddSphere_Click"></MenuItem>
-                                <!--<MenuItem Header="_Box"></MenuItem>-->
-                                <!--<MenuItem Header="_Rectangle"></MenuItem>-->
-                            </MenuItem>
-                            <MenuItem Header="_Light" Click="AddLight_Click"></MenuItem>
-                        </MenuItem>
-                    </ContextMenu>
-                </StackPanel.ContextMenu>
-                
-                <Label HorizontalAlignment="Center" FontSize="16" FontWeight="Bold">Components</Label>
-                
-                <StackPanel Name="ComponentEditor">
-                    
-                </StackPanel>
-            </StackPanel>
+			<ScrollViewer Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="1" VerticalScrollBarVisibility="Auto">
 
+				<StackPanel Background="Transparent">
+					<StackPanel.ContextMenu>
+						<ContextMenu>
+							<MenuItem Header="_Add">
+								<MenuItem Header="_Model" Click="AddModelRender_Click"></MenuItem>
+								<MenuItem Header="_Primitive">
+									<MenuItem Header="_Sphere" Click="AddSphere_Click"></MenuItem>
+									<!--<MenuItem Header="_Box"></MenuItem>-->
+									<!--<MenuItem Header="_Rectangle"></MenuItem>-->
+								</MenuItem>
+								<MenuItem Header="_Light" Click="AddLight_Click"></MenuItem>
+							</MenuItem>
+						</ContextMenu>
+					</StackPanel.ContextMenu>
+
+					<Label HorizontalAlignment="Center" FontSize="16" FontWeight="Bold">Components</Label>
+
+					<StackPanel Name="ComponentEditor">
+
+					</StackPanel>
+				</StackPanel>
+			</ScrollViewer>
 		</Border>
 	</Grid>
 	

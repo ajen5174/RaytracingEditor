@@ -38,6 +38,7 @@ extern "C" ENGINE_DLL void EntitySelect(float entityID);
 extern "C" ENGINE_DLL void AddNewEntity();
 extern "C" ENGINE_DLL void DeleteEntity(float entityID);
 extern "C" ENGINE_DLL float RenameEntity(float entityID, char* newName);
+extern "C" ENGINE_DLL void CreateRandomSphere();
 
 
 

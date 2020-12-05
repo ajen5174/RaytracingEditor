@@ -31,7 +31,7 @@ public:
 			{
 				hitInfo.distance = temp;
 				hitInfo.point = ray.PointAt(temp);
-				hitInfo.normal = Normalize(hitInfo.point - center);
+				hitInfo.normal = (hitInfo.point - center) / radius;
 				hitInfo.material = material;
 				return true;
 			}
@@ -40,7 +40,7 @@ public:
 			{
 				hitInfo.distance = temp;
 				hitInfo.point = ray.PointAt(temp);
-				hitInfo.normal = Normalize(hitInfo.point - center);
+				hitInfo.normal = (hitInfo.point - center) / radius;
 				hitInfo.material = material;
 				return true;
 			}

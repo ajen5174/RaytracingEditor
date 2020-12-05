@@ -259,6 +259,7 @@ namespace WPFSceneEditor
 
 		private void Render_Click(object sender, RoutedEventArgs e)
 		{
+			Save();
 			RenderWindow rw = new RenderWindow();
 			rw.Owner = this;
 			rw.ShowDialog();
@@ -268,6 +269,13 @@ namespace WPFSceneEditor
 		{
 			Engine.AddNewEntity();
 		}
+
+		private void AddRandomSphere_Click(object sender, RoutedEventArgs e)
+		{
+			Engine.CreateRandomSphere();
+		}
+
+		
 
 		private void AddModelRender_Click(object sender, RoutedEventArgs e)
 		{

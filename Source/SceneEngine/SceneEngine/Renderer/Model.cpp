@@ -48,7 +48,7 @@ bool Model::ReloadMesh(std::string path)
 
         if (mesh) delete mesh;
         mesh = new Mesh(path);
-
+        PrintDebugMessage("This mesh contains " + std::to_string(loadedMesh->mNumVertices) + " vertices.");
         return mesh->Load(loadedMesh);
     }
     else if (modelType == ModelType::SPHERE)

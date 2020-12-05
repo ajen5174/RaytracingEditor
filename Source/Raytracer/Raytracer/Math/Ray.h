@@ -12,13 +12,26 @@ __device__ inline float Schlick(float cosine, float index)
 	return r0 + (1 - r0) * powf((1 - cosine), 5);
 }
 
-__device__ inline vec3 Refract(const vec3& direction, const vec3& normal, float niOverNt/*, vec3& refracted*/)
+__device__ inline bool Refract(const vec3& direction, const vec3& normal, float niOverNt, vec3& refracted)
 {
-	//using snells law
-	auto cosTheta = fmin(Dot(-direction, normal), 1.0f);
+	//using snells 
+	vec3 normalizedDir = Normalize(direction);
+	float dt = Dot(normalizedDir, normal);
+	float discriminant = 1.0f - niOverNt * niOverNt * (1 - dt * dt);
+	if (discriminant > 0.0f)
+	{
+		refracted = niOverNt * (normalizedDir - normal * dt) - normal * sqrtf(discriminant);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+	/*auto cosTheta = fmin(Dot(-direction, normal), 1.0f);
 	vec3 rOutPerp = niOverNt * (direction + cosTheta * normal);
 	vec3 rOutParallel = -sqrtf(fabs(1.0f - rOutPerp.SqrMagnitude())) * normal;
-	return rOutPerp + rOutParallel;
+	refracted =  rOutPerp + rOutParallel;*/
 }
 
 __device__ inline vec3 Reflect(const vec3& direction, const vec3& normal)

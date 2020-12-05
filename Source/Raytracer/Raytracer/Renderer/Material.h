@@ -26,33 +26,54 @@ public:
 		{
 			color = vec3(1.0f);
 			vec3 outwardNormal;
-			//vec3 reflected = Reflect(ray.direction, hitInfo.normal);
+			vec3 reflected = Reflect(ray.direction, hitInfo.normal);
+			vec3 refracted;
 			float niOverNt;
+			float cosine;
+			float reflectProb;
 			if (Dot(ray.direction, hitInfo.normal) > 0.0f) // if we hit the back of the object
 			{
 				outwardNormal = -hitInfo.normal;
 				niOverNt = refractionIndex;
-				//cosine = Dot(ray.direction, hitInfo.normal) / ray.direction.Magnitude();
-				//cosine = sqrtf(1.0f - refractionIndex * refractionIndex * (1 - cosine * cosine));
+				cosine = Dot(ray.direction, hitInfo.normal) / ray.direction.Magnitude();
+				cosine = sqrtf(1.0f - refractionIndex * refractionIndex * (1 - cosine * cosine));
 			}
 			else
 			{
 				outwardNormal = hitInfo.normal;
 				niOverNt = 1.0f / refractionIndex;
-				//cosine = -Dot(ray.direction, hitInfo.normal) / ray.direction.Magnitude();
+				cosine = -Dot(ray.direction, hitInfo.normal) / ray.direction.Magnitude();
 			}
-			vec3 unitDirection = ray.direction.UnitVector();
-			float cosTheta = fmin(Dot(-unitDirection, outwardNormal), 1.0f);
-			float sinTheta = sqrtf(1.0f - cosTheta * cosTheta);
-
-			bool cannotRefract = niOverNt * sinTheta > 1.0f;
-			vec3 direction;
-			if (cannotRefract)
-				direction = Reflect(unitDirection, outwardNormal);
+			if (Refract(ray.direction, outwardNormal, niOverNt, refracted))
+			{
+				reflectProb = Schlick(cosine, refractionIndex);
+			}
 			else
-				direction = Refract(unitDirection, outwardNormal, niOverNt);
-			
-			bouncedRay = Ray(hitInfo.point, direction);
+			{
+				reflectProb = 1.0f;
+			}
+			if (curand_uniform(localRandState) < reflectProb)
+			{
+				bouncedRay = Ray(hitInfo.point, reflected);
+			}
+			else
+			{
+				bouncedRay = Ray(hitInfo.point, refracted);
+			}
+
+			//snells?
+			//vec3 unitDirection = ray.direction.UnitVector();
+			//float cosTheta = fmin(Dot(-unitDirection, outwardNormal), 1.0f);
+			//float sinTheta = sqrtf(1.0f - cosTheta * cosTheta);
+
+			//bool cannotRefract = niOverNt * sinTheta > 1.0f;
+			//vec3 direction;
+			//if (cannotRefract)
+			//	direction = Reflect(unitDirection, outwardNormal);
+			//else
+			//	direction = Refract(unitDirection, outwardNormal, niOverNt, refracted);
+			//
+			//bouncedRay = Ray(hitInfo.point, direction);
 			return true;
 		}
 		

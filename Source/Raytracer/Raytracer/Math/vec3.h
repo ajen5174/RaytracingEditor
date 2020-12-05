@@ -93,4 +93,11 @@ __host__ __device__ inline vec3 Normalize(vec3 v)
 	return v / v.Magnitude();
 }
 
+__host__ __device__ inline vec3 Rotate(vec3 v, vec3 degrees)
+{
+
+
+	return v / v.Magnitude();
+}
+
 #define RANDVEC3 vec3(curand_uniform(localRandState),curand_uniform(localRandState),curand_uniform(localRandState))

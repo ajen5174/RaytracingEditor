@@ -31,36 +31,116 @@ __device__ bool HitWorld(Entity** list, int count, float maxDist, const Ray& r, 
     HitInfo tempInfo;
     for (int j = 0; j < count; j++)
     {
-        if (list[j]->mesh)
+        if (list[j]->primitive)
         {
-            if(list[j]->mesh->box.Hit(r, 0.1f, closestSoFar))
-            {
-                for (int i = 0; i < list[j]->mesh->numTriangles; i++)
-                {
-                    if (list[j]->mesh->triangles[i]->Hit(r, 0.1f, closestSoFar, tempInfo))
-                    {
-                        info = tempInfo;
-                        closestSoFar = info.distance;
-                        hit = true;
-
-                    }
-                }
-            }
-
-        }
-        else if (list[j]->primitive)
-        {
-            if (list[j]->primitive->Hit(r, 0.1f, closestSoFar, tempInfo))
+            if (list[j]->primitive->Hit(r, 0.0001f, closestSoFar, tempInfo))
             {
                 info = tempInfo;
                 closestSoFar = info.distance;
                 hit = true;
             }
         }
+        else if (list[j]->mesh)
+        {
+        if (list[j]->mesh->box.Hit(r, 0.0001f, closestSoFar))
+        {
+            for (int i = 0; i < list[j]->mesh->numTriangles; i++)
+            {
+                if (list[j]->mesh->triangles[i]->Hit(r, 0.0001f, closestSoFar, tempInfo))
+                {
+                    info = tempInfo;
+                    closestSoFar = info.distance;
+                    hit = true;
+
+                }
+            }
+        }
+
+        }
     }
     return hit;
 }
 
+
+__device__ vec3 AlternateGetColor(Entity** list, int numEntities, Light** lights, int numLights, const Ray& r, int maxRecursion, curandState* localRandState)
+{
+    Ray currentRay = r;
+    vec3 currentAttenuation = vec3(1.0f);
+    HitInfo info;
+    bool hitOnce = false;
+    for (int k = 0; k < maxRecursion; k++)
+    {
+        if (HitWorld(list, numEntities, 100.0f, currentRay, info))
+        {
+            Ray scattered;
+            vec3 attenuation;
+            if (info.material->Scatter(currentRay, info, attenuation, scattered, localRandState))
+            {
+                currentRay = scattered;
+                currentAttenuation = currentAttenuation * attenuation;
+                hitOnce = true;
+            }
+            else
+            {
+                return vec3(0.0f);
+            }
+        }
+        else
+        {
+            vec3 lightContribution = vec3(0.0f);
+            for (int i = 0; i < numLights; i++)
+            {
+                if (lights[i]->lightType == Light::LightType::POINT || lights[i]->lightType == Light::LightType::DIRECTION)
+                {
+                    vec3 pointToLight = lights[i]->owner->transform->translation - info.point;
+                    float distance = lights[i]->lightType == Light::LightType::POINT ? pointToLight.Magnitude() : 1000.0f;
+                    HitInfo shadowInfo;
+                    Ray shadowRay = lights[i]->lightType == Light::LightType::POINT ? Ray(info.point, Normalize(pointToLight)) : Ray(info.point, -Normalize(lights[i]->direction));
+                    //if we cast a ray, and hit nothing until the light, then the light affects this material
+                        //so we multiply the attenuation by the light color instead of the background color
+
+                    if (!HitWorld(list, numEntities, distance, shadowRay, shadowInfo)) //super unsure why I need to do the -1.0f
+                    {
+                        float tempDot = lights[i]->lightType == Light::LightType::POINT ? Dot(Normalize(pointToLight), Normalize(info.normal)) : Dot(Normalize(-lights[i]->direction), Normalize(info.normal));
+                        float lDotN = tempDot > 0.0f ? tempDot : 0.0f;
+
+                        if (tempDot == 0.0f) //negative number to prevent artifacts?
+                        {
+                            return vec3(0.0f);
+                        }
+
+                        lightContribution = lightContribution + ((lights[i]->color * lights[i]->intensity) * lDotN);// / (distance * distance);
+                    }
+                }
+            }
+            vec3 unitDir = Normalize(currentRay.direction);
+            float t = 0.5f * (unitDir.y + 1.0f);//based on how high it is, change the weight of the color from white to light blue
+            vec3 backgroundColor = (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);//blue
+            //vec3 backgroundColor = (1.0f - t) * vec3(0.0f) + t * vec3(0.0f);//black
+            //lightContribution = lightContribution + backgroundColor;
+            lightContribution = lightContribution / numLights;
+            
+            if (hitOnce)
+            {
+                if (backgroundColor.Magnitude() - currentAttenuation.Magnitude() > -0.2f && info.material->materialType == 'm')
+                {
+                    return (lightContribution * currentAttenuation * (backgroundColor));
+                }
+                else
+                {
+                    return lightContribution * currentAttenuation;
+                }
+            }
+            else
+                return backgroundColor;
+
+        }
+    }
+
+
+
+    return vec3(0.0f);
+}
 
 __device__ vec3 GetColor(Entity** list, int numEntities, Light** lights, int numLights, const Ray& r, int maxRecursion, curandState* localRandState)
 {
@@ -117,23 +197,11 @@ __device__ vec3 GetColor(Entity** list, int numEntities, Light** lights, int num
                         float t = 0.5f * (unitDir.y + 1.0f);//based on how high it is, change the weight of the color from white to light blue
                         vec3 backgroundColor = (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);
                         
-                        if (info.material->materialType == 'm')
-                        {
-                            currentAttenuation = (currentAttenuation + ((backgroundColor) / M_PI));
-                        }
-                        else if (info.material->materialType == 'l')
-                        {
-                            currentAttenuation = (currentAttenuation + ((backgroundColor * 0.1f) / M_PI));
-                        }
-                        else
-                        {
-                            if (numOfColorsContributing == 0)
-                                return backgroundColor;
-                        }
+                        
                         
                         if (!HitWorld(list, numEntities, distance, shadowRay, shadowInfo)) //super unsure why I need to do the -1.0f
                         {
-                            float tempDot = Dot(Normalize(pointToLight), Normalize(info.normal));
+                            float tempDot = lights[i]->lightType == Light::LightType::POINT ? Dot(Normalize(pointToLight), Normalize(info.normal)) : Dot(Normalize(-lights[i]->direction), Normalize(info.normal));
                             float lDotN = tempDot > 0.0f ? tempDot : 0.0f;
 
                             if (tempDot == 0.0f) //negative number to prevent artifacts?
@@ -145,7 +213,19 @@ __device__ vec3 GetColor(Entity** list, int numEntities, Light** lights, int num
 
                             
                         }
-
+                        if (info.material->materialType == 'm')
+                        {
+                            currentAttenuation = (currentAttenuation + ((backgroundColor / M_PI)));
+                        }
+                        else if (info.material->materialType == 'l')
+                        {
+                            currentAttenuation = (currentAttenuation + ((backgroundColor * 0.1f) / M_PI));
+                        }
+                        else
+                        {
+                            if (numOfColorsContributing == 0)
+                                return backgroundColor;
+                        }
                         
                     }
                     
@@ -190,13 +270,13 @@ __global__ void Render(vec3* frameBuffer, int width, int height, int samples, in
         u = (i + curand_uniform(&localRandState)) / (float)width;
         v = (j + curand_uniform(&localRandState)) / (float)height;
         r = cam->GetRay(u, v);
-        color = color + GetColor(list, numEntities, lights, numLights, r, maxRecursion, &localRandState);
+        color = color + AlternateGetColor(list, numEntities, lights, numLights, r, maxRecursion, &localRandState);
     }
 
     color = color / (float)samples;
-    //color.x = sqrt(color.x);//sqrt gives a more accurate color, this is gamma correction, this has been moved to the get color function when we divide by PI pretty sure
-    //color.y = sqrt(color.y);
-    //color.z = sqrt(color.z);
+    color.x = sqrt(color.x);//sqrt gives a more accurate color, this is gamma correction, this has been moved to the get color function when we divide by PI pretty sure
+    color.y = sqrt(color.y);
+    color.z = sqrt(color.z);
 
     if (color.x > 1.0f) color.x = 1.0f;
     if (color.y > 1.0f) color.y = 1.0f;
@@ -208,9 +288,9 @@ __global__ void Render(vec3* frameBuffer, int width, int height, int samples, in
     //progress update here
     if (!(threadIdx.x || threadIdx.y)) //pretty sure this simplifies to both being 0
     {
-        //atomicAdd((int*)progress, 1);
+        atomicAdd((int*)progress, 1);
         __threadfence_system();
-        *progress += 1;
+        //*progress += 1;
     }
 }
 
@@ -330,8 +410,8 @@ Raytracer::Raytracer(std::string sceneToLoad, std::string renderPath)
     LoadScene(sceneToLoad);
     samplesPerPixel = 100;
     maxRecursion = 50;
-    width = 1920;// 266.6666666f;// 533.333333f;
-    height = 1080;// 150.0f;// 300.0f;
+    width = 266.6666666f;// 533.333333f;
+    height = 150.0f;// 300.0f;
 }
 
 bool Raytracer::StartRender()

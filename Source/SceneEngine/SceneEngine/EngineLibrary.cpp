@@ -543,13 +543,87 @@ ENGINE_DLL float RenameEntity(float entityID, char* newName)
 	return e->GetName().GetFloatId();
 }
 
+ENGINE_DLL void CreateRandomSphere()
+{
+	StringId newName = StringId("sphere", true);
+	Entity* entity = new Entity(newName);
+	scene->Add(entity);
+	AddComponent(entity->GetName().GetFloatId(), (int)ComponentType::SPHERE);
+
+	Transform* transform = entity->GetComponent<Transform>();
+	//random transform
+	glm::vec3 positionRange = glm::vec3(10.0f);
+	glm::vec3 newPosition;
+	glm::vec3 scaleRange = glm::vec3(1.0f);
+	glm::vec3 newScale;
+
+	newPosition.x = (float)(rand()) / (float)RAND_MAX * (positionRange.x * 2.0f) - positionRange.x;
+	newPosition.y = 0.0f;// (float)(rand()) / (float)RAND_MAX * (maxPosition.y * 2.0f) - max.y;
+	newPosition.z = (float)(rand()) / (float)RAND_MAX * (positionRange.z * 2.0f) - positionRange.z;
+
+	newScale = glm::vec3((float)(rand()) / (float)RAND_MAX * (scaleRange.x) + 0.5f);
+	
+	transform->translation = newPosition;
+	transform->scale = newScale;
+
+
+	ModelRenderComponent* mrc = entity->GetComponent<ModelRenderComponent>();
+	//randomize material type
+	Material* mat = mrc->model->material;
+	int randType = rand() % 3;
+
+	switch (randType)
+	{
+	case 0:
+	{
+		mat->materialType = "lambert";
+		//randomize albedo
+		glm::vec3 albedo;
+		albedo.x = (float)rand() / RAND_MAX;
+		albedo.y = (float)rand() / RAND_MAX;
+		albedo.z = (float)rand() / RAND_MAX;
+		mat->albedo = albedo;
+		break;
+	}
+
+	case 1:
+	{
+		mat->materialType = "metal";
+		//randomize albedo and fuzz
+		glm::vec3 albedo;
+		albedo.x = (float)rand() / RAND_MAX;
+		albedo.y = (float)rand() / RAND_MAX;
+		albedo.z = (float)rand() / RAND_MAX;
+		mat->albedo = albedo;
+		mat->fuzz = (float)rand() / RAND_MAX;
+		break;
+	}
+
+	case 2:
+	{
+		mat->materialType = "dielectric";
+		//randomize refractive index?
+		mat->refractionIndex = 1.3;
+		break;
+	}
+
+	default:
+		break;
+	}
+
+
+
+	SceneLoaded();
+
+}
+
+
 
 ENGINE_DLL void AddComponent(float entityID, int component)
 {
 	Entity* e = scene->GetEntityByFloatId(entityID);
 	if (!e) return;
 	ComponentType type = (ComponentType)component;
-	PrintDebugMessage("Trying to add");
 	if (type == ComponentType::MODEL_RENDER)
 	{
 		ModelRenderComponent* mrc = e->GetComponent<ModelRenderComponent>();
@@ -561,7 +635,6 @@ ENGINE_DLL void AddComponent(float entityID, int component)
 		}
 		mrc = new ModelRenderComponent(e->GetName(), e);
 		e->AddComponent(mrc);
-		PrintDebugMessage("Component Added");
 		SceneLoaded();
 	}
 	else if (type == ComponentType::LIGHT)
@@ -574,7 +647,6 @@ ENGINE_DLL void AddComponent(float entityID, int component)
 		}
 		light = new Light(e->GetName(), e);
 		e->AddComponent(light);
-		PrintDebugMessage("Component Added");
 		SceneLoaded();
 	}
 	else if (type == ComponentType::SPHERE)
@@ -583,14 +655,12 @@ ENGINE_DLL void AddComponent(float entityID, int component)
 		if (mrc)
 		{
 			PrintDebugMessage("Already has component");
-
 			return;
 		}
 		mrc = new ModelRenderComponent(e->GetName(), e);
 		mrc->model->modelType = ModelType::SPHERE;
 		mrc->model->ReloadMesh("");
 		e->AddComponent(mrc);
-		PrintDebugMessage("Component Added");
 		SceneLoaded();
 	}
 
@@ -601,7 +671,6 @@ ENGINE_DLL void RemoveComponent(float entityID, int component)
 	Entity* e = scene->GetEntityByFloatId(entityID);
 	if (!e) return;
 	ComponentType type = (ComponentType)component;
-	PrintDebugMessage("Removing");
 	if (type == ComponentType::MODEL_RENDER)
 	{
 		ModelRenderComponent* mrc = e->GetComponent<ModelRenderComponent>();
@@ -630,6 +699,8 @@ ENGINE_DLL void RemoveComponent(float entityID, int component)
 
 bool InitializeGraphics()
 {
+	srand(time(NULL));
+
 	int result = SDL_Init(SDL_INIT_VIDEO);
 	if (result != 0)
 	{

@@ -108,5 +108,8 @@ namespace WPFSceneEditor
 
 		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
 		public static extern float RenameEntity(float entityID, string newName);
+
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void CreateRandomSphere();
 	}
 }

@@ -213,7 +213,7 @@ public:
 					if (cam->Load(componentValue))
 					{
 						this->cam = cam;
-						this->cam->SetView(this->transform->translation, this->transform->translation + vec3(0.0f, 0.0f, -1.0f), vec3(0.0f, 1.0f, 0.0f)); //matches opengl
+						this->cam->SetView(this->transform->translation, this->transform->translation + (mat4(vec3(0.0f), this->transform->rotation, vec3(1.0f)) * vec3(0.0f, 0.0f, 1.0f)), vec3(0.0f, 1.0f, 0.0f));
 					}
 				}
 				else if (componentType == "Light")
