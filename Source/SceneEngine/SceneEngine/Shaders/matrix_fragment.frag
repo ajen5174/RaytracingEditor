@@ -41,7 +41,7 @@ void main()
 		vec3 ambient = vec3(0.3);
 
 		float lDotN = max(0.0, dot(positionToLight, fnormal));
-		finalColor += lights[i].intensity * lights[i].color * material.diffuse * lDotN; //this is super wrong but works for now?
+		finalColor += lights[i].intensity * lights[i].color * material.diffuse * lDotN / 4 * 3.14159265358979323842 * length(positionToLight) * length(positionToLight); //this is super wrong but works for now?
 	}
 
 
