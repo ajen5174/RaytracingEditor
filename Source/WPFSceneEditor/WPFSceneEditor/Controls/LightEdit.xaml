@@ -30,7 +30,7 @@
 			<Label Grid.ColumnSpan="2" Grid.Row="0">Light Type</Label>
 			<ComboBox Name="LightTypeBox" Grid.Row="0"
 					  Grid.Column="2" Grid.ColumnSpan="2"
-					  DropDownClosed="LightTypeBox_DropDownClosed">
+					  DropDownClosed="LightTypeBox_DropDownClosed" SelectionChanged="LightTypeBox_SelectionChanged">
 				<ComboBoxItem>Point</ComboBoxItem>
 				<ComboBoxItem>Direction</ComboBoxItem>
 				<!--<ComboBoxItem>Spotlight</ComboBoxItem>-->

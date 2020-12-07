@@ -151,5 +151,10 @@ namespace WPFSceneEditor.Controls
 			SetFloatData();
 			SetStringData();
 		}
+
+		private void LightTypeBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+
+		}
 	}
 }

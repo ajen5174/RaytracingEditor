@@ -22,8 +22,10 @@ namespace WPFSceneEditor
 		public RenderWindow()
 		{
 			InitializeComponent();
-			OutputImageWidthBox.Text = Engine.renderWidth.ToString();
-			OutputImageHeightBox.Text = Engine.renderHeight.ToString();
+			OutputImageWidthBox.Text = Engine.previousRenderWidth.ToString();
+			OutputImageHeightBox.Text = Engine.previousRenderHeight.ToString();
+			RecursionDepthBox.Text = Engine.previousRenderDepth.ToString();
+			SamplesPerPixelBox.Text = Engine.previousRenderSamples.ToString();
 			OutputPathBox.Text = Engine.outputFilePath;
 		}
 
@@ -44,6 +46,11 @@ namespace WPFSceneEditor
 
 			int outputHeight;
 			if (!int.TryParse(OutputImageHeightBox.Text, out outputHeight) || outputHeight < 1) return;
+
+			Engine.previousRenderWidth = outputWidth;
+			Engine.previousRenderHeight = outputHeight;
+			Engine.previousRenderSamples = samplesPerPixel;
+			Engine.previousRenderDepth = maxRecursionDepth;
 
 			p.StartInfo.Arguments = "\"" + Engine.currentFilePath + "\" \"" + Engine.outputFilePath + "\" " + samplesPerPixel + " " + maxRecursionDepth + " " + outputWidth + " " + outputHeight;
 			p.Start();

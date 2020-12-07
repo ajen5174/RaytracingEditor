@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFSceneEditor"
         mc:Ignorable="d"
-        Title="RenderWindow" Height="300" Width="500">
+        Title="RenderWindow" Height="300" Width="500"
+		Background="#c3c3c3">
     <Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition/>

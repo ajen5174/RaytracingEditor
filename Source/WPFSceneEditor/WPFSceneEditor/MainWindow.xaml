@@ -6,20 +6,20 @@
         xmlns:local="clr-namespace:WPFSceneEditor"
 		xmlns:controls="clr-namespace:WPFSceneEditor.Controls"
 		mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="1000"
+        Title="MainWindow" Height="1000" Width="1300"
 		Loaded="Window_Loaded" Closing="Window_Closing"
-		SizeChanged="Window_SizeChanged">
+		SizeChanged="Window_SizeChanged"
+			 Background="#c3c3c3">
 
     <Window.Resources>
-        <Style TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="Arial"/>
-        </Style>
-        <Style TargetType="Border">
-            <Setter Property="BorderBrush" Value="Black"/>
-            <Setter Property="BorderThickness" Value="4"/>
-            <Setter Property="CornerRadius" Value="4"/>
-        </Style>
-    </Window.Resources>
+
+		<Style TargetType="Border">
+			<Setter Property="BorderThickness" Value="4"/>
+			<Setter Property="BorderBrush" Value="Black"/>
+			<Setter Property="CornerRadius" Value="4"/>
+			<Setter Property="Background" Value="#c3c3c3"/>
+		</Style>
+	</Window.Resources>
          
 	<Window.CommandBindings>
 		<CommandBinding Command="New" Executed="NewCommandBinding_Executed"/>
@@ -43,7 +43,7 @@
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="20px"/>
-			<RowDefinition Name="SceneRowDefinition" Height="500px"/>
+			<RowDefinition Name="SceneRowDefinition" Height="6*"/>
 			<RowDefinition Height="2*"/>
 		</Grid.RowDefinitions>
 		<Menu Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" MaxHeight="40" VerticalAlignment="Top">
@@ -64,12 +64,13 @@
 				<MenuItem Header="_Paste"/>
 			</MenuItem>-->
 			<MenuItem Header="_Render" Click="Render_Click"/>
+			<MenuItem Header="_Settings" Click="Settings_Click"/>
 		</Menu>
 		
 		<Border Grid.Column="0" Grid.Row="1"
 				>
 
-			<Grid Name="EngineContainer" Background="LightGray">
+			<Grid Name="EngineContainer">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition/>
 				</Grid.ColumnDefinitions>
@@ -98,7 +99,7 @@
 						</ContextMenu>
 					</StackPanel.ContextMenu>
 
-					<Label HorizontalAlignment="Center" FontSize="16" FontWeight="Bold">Scene</Label>
+					<Label HorizontalAlignment="Center" FontSize="20" FontWeight="Bold">Scene</Label>
 
 					<StackPanel Name="SceneHierarchy">
 
@@ -127,7 +128,7 @@
 						</ContextMenu>
 					</StackPanel.ContextMenu>
 
-					<Label HorizontalAlignment="Center" FontSize="16" FontWeight="Bold">Components</Label>
+					<Label HorizontalAlignment="Center" FontSize="20" FontWeight="Bold">Components</Label>
 
 					<StackPanel Name="ComponentEditor">
 

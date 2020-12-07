@@ -6,11 +6,14 @@
              xmlns:local="clr-namespace:WPFSceneEditor.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="100">
+	
 
-	<Grid x:Name="ContainerGrid">
+		<Grid x:Name="ContainerGrid">
 		<Button Name="EntityName" Click="EntityName_Click" 
 				HorizontalContentAlignment="Left" Padding="5"
-				></Button>
+				FontSize="16px"
+				>
+		</Button>
 		<Grid.ContextMenu>
 			<ContextMenu>
 				<MenuItem Header="_Delete" Click="Delete_Click"></MenuItem>

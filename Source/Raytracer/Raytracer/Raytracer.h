@@ -37,6 +37,7 @@ private:
 	std::string renderPath;
 	Entity** entityList;
 	int numEntities = 0;
+	vec3 backgroundColor;
 	Camera* mainCamera;
 	//std::vector<Hittable*> hittables;
 	Light** lights;

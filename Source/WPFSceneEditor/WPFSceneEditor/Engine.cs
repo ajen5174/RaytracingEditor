@@ -30,8 +30,11 @@ namespace WPFSceneEditor
 		public static string currentFilePath = "";
 		public static string outputFilePath = "";
 
-		public static int renderWidth = 266;
-		public static int renderHeight = 150;
+		public static float[] backgroundColor = new float[3];
+		public static int previousRenderWidth = 266;
+		public static int previousRenderHeight = 150;
+		public static int previousRenderSamples = 10;
+		public static int previousRenderDepth = 50;
 		public static int maxStringSize = 512;
 
 
@@ -111,5 +114,11 @@ namespace WPFSceneEditor
 
 		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
 		public static extern void CreateRandomSphere();
+
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void SetBackgroundColor([In, Out] float[] color);
+
+		[DllImport("..\\..\\..\\..\\..\\SceneEngine\\x64\\Release\\SceneEngine.dll")]
+		public static extern void GetBackgroundColor([In, Out]float[] color);
 	}
 }

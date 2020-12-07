@@ -54,6 +54,7 @@ void Scene::Deselect()
 void Scene::BuildJSON(rapidjson::Document& doc)
 {
 	json::BuildInt(doc, "EntityCount", entities.size(), doc.GetAllocator());
+	json::BuildVec3(doc, "BackgroundColor", backgroundColor, doc.GetAllocator());
 	rapidjson::Value entityArray;
 	entityArray.SetArray();
 	rapidjson::Value name;
@@ -75,6 +76,8 @@ void Scene::BuildJSON(rapidjson::Document& doc)
 void Scene::Load(rapidjson::Value& value)
 {
 	PrintDebugMessage("Loading file...");
+	json::GetVec3(value, "BackgroundColor", backgroundColor);
+
 	const rapidjson::Value& enititiesArray = value["entities"];
 	if (enititiesArray.IsArray())
 	{

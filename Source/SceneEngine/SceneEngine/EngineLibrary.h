@@ -39,6 +39,8 @@ extern "C" ENGINE_DLL void AddNewEntity();
 extern "C" ENGINE_DLL void DeleteEntity(float entityID);
 extern "C" ENGINE_DLL float RenameEntity(float entityID, char* newName);
 extern "C" ENGINE_DLL void CreateRandomSphere();
+extern "C" ENGINE_DLL void SetBackgroundColor(float* color);
+extern "C" ENGINE_DLL void GetBackgroundColor(float* color);
 
 
 

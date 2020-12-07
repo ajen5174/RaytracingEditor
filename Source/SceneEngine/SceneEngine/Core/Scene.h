@@ -28,7 +28,7 @@ public:
 
 public:
 	Camera* mainCamera;
-
+	glm::vec3 backgroundColor = glm::vec3(0.5f, 0.7f, 1.0f);
 private:
 	std::vector<Entity*> entities;
 

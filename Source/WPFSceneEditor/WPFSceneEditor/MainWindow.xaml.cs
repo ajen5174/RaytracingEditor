@@ -36,6 +36,8 @@ namespace WPFSceneEditor
 		private float selectedEntityID = 0.0f;
 
 
+
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -75,7 +77,6 @@ namespace WPFSceneEditor
 					Engine.RegisterDebugCallback(new Engine.DebugCallback(PrintDebugMessage));
 					Engine.RegisterSelectionCallback(new Engine.SelectionCallback(EntitySelect));
 					Engine.RegisterSceneLoadedCallback(new Engine.SceneLoadedCallback(SceneLoaded));
-
 					ResizeSceneWindow();
 
 					Trace.WriteLine("Ready to start");
@@ -141,7 +142,8 @@ namespace WPFSceneEditor
 				e.EntityName.Content = sb.ToString().Trim();
 				SceneHierarchy.Children.Add(e);
 			}
-			
+			Engine.GetBackgroundColor(Engine.backgroundColor);
+
 		}
 
 		private void PrintDebugMessage(string message)
@@ -256,7 +258,12 @@ namespace WPFSceneEditor
 				Engine.SaveScene(save.FileName);
 			}
 		}
-
+		private void Settings_Click(object sender, RoutedEventArgs e)
+		{
+			SettingsWindow sw = new SettingsWindow();
+			sw.Owner = this;
+			sw.ShowDialog();
+		}
 		private void Render_Click(object sender, RoutedEventArgs e)
 		{
 			Save();

@@ -62,7 +62,7 @@ __device__ bool HitWorld(Entity** list, int count, float maxDist, const Ray& r, 
 }
 
 
-__device__ vec3 AlternateGetColor(Entity** list, int numEntities, Light** lights, int numLights, const Ray& r, int maxRecursion, curandState* localRandState)
+__device__ vec3 AlternateGetColor(Entity** list, int numEntities, Light** lights, int numLights, const Ray& r, int maxRecursion, vec3 backgroundColor, curandState* localRandState)
 {
     Ray currentRay = r;
     vec3 currentAttenuation = vec3(1.0f);
@@ -118,7 +118,7 @@ __device__ vec3 AlternateGetColor(Entity** list, int numEntities, Light** lights
             }
             vec3 unitDir = Normalize(currentRay.direction);
             float t = 0.5f * (unitDir.y + 1.0f);//based on how high it is, change the weight of the color from white to light blue
-            vec3 backgroundColor = (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);//blue
+            //vec3 backgroundColor = (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + t * vec3(0.5f, 0.7f, 1.0f);//blue
             //vec3 backgroundColor = (1.0f - t) * vec3(0.0f) + t * vec3(0.0f);//black
             //lightContribution = lightContribution + backgroundColor;
             lightContribution = lightContribution / numLights;
@@ -129,7 +129,7 @@ __device__ vec3 AlternateGetColor(Entity** list, int numEntities, Light** lights
                 {
                     return currentAttenuation * backgroundColor;
                 }
-                else if (backgroundColor.Magnitude() - currentAttenuation.Magnitude() > -0.2f && info.material->materialType == 'm')
+                else if (/*backgroundColor.Magnitude() - currentAttenuation.Magnitude() > 0.0f && */info.material->materialType == 'm')
                 {
                     return (lightContribution * currentAttenuation * (backgroundColor));
                 }
@@ -258,7 +258,7 @@ __global__ void RenderInit(int width, int height, curandState* randState)
     curand_init(1984, pixel_index, 0, &randState[pixel_index]);
 }
 
-__global__ void Render(vec3* frameBuffer, int width, int height, int samples, int maxRecursion, Camera* cam, Entity** list, int numEntities, Light** lights, int numLights, volatile int* progress, curandState* randState) 
+__global__ void Render(vec3* frameBuffer, int width, int height, int samples, int maxRecursion, Camera* cam, Entity** list, int numEntities, Light** lights, int numLights, volatile int* progress, vec3 backgroundColor, curandState* randState) 
 {
     int i = threadIdx.x + blockIdx.x * blockDim.x;
     int j = threadIdx.y + blockIdx.y * blockDim.y;
@@ -277,7 +277,7 @@ __global__ void Render(vec3* frameBuffer, int width, int height, int samples, in
         u = (i + curand_uniform(&localRandState)) / (float)width;
         v = (j + curand_uniform(&localRandState)) / (float)height;
         r = cam->GetRay(u, v);
-        color = color + AlternateGetColor(list, numEntities, lights, numLights, r, maxRecursion, &localRandState);
+        color = color + AlternateGetColor(list, numEntities, lights, numLights, r, maxRecursion, backgroundColor, &localRandState);
     }
 
     color = color / (float)samples;
@@ -320,7 +320,7 @@ bool Raytracer::LoadScene(std::string sceneToLoad)
     rapidjson::Document doc;
     if (json::LoadFromFile(sceneToLoad, doc))
     {
-        
+        json::GetVec3(doc, "BackgroundColor", backgroundColor);
         json::GetInt(doc, "EntityCount", numEntities);
 
         CheckCudaErrors(cudaMallocManaged(&entityList, sizeof(Entity*) * numEntities));
@@ -472,7 +472,7 @@ bool Raytracer::StartRender()
     std::cout << "Initialized!\n";
     std::cout << "Rendering...\n";
     cudaEventRecord(start);
-    Render <<<blocks, threads>>> (frameBuffer, width, height, samplesPerPixel, maxRecursion, mainCamera, entityList, numEntities, lights, numLights, d_data, randState);
+    Render <<<blocks, threads>>> (frameBuffer, width, height, samplesPerPixel, maxRecursion, mainCamera, entityList, numEntities, lights, numLights, d_data, backgroundColor, randState);
     cudaEventRecord(stop);
     unsigned int numBlocks = blocks.x * blocks.y;
     float myProgress = 0.0f;

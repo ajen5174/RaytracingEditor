@@ -20,8 +20,6 @@
 #include "Core/Json.h"
 #include "Light.h"
 
-float color1[] = { 0.2f, 0.3f, 0.3f };
-
 static SDL_Window* engineWindow = nullptr;
 static SDL_GLContext engineContext = nullptr;
 static bool isRunning = false;
@@ -49,7 +47,17 @@ DebugCallback gDebugCallback;
 SelectionCallback gSelectionCallback;
 SceneLoadedCallback gSceneLoadedCallback;
 
+ENGINE_DLL void GetBackgroundColor(float* color)
+{
+	color[0] = scene->backgroundColor.r;
+	color[1] = scene->backgroundColor.g;
+	color[2] = scene->backgroundColor.b;
+}
 
+ENGINE_DLL void SetBackgroundColor(float* color)
+{
+	scene->backgroundColor = glm::vec3(color[0], color[1], color[2]);
+}
 
 
 ENGINE_DLL int GetEntityCount()
@@ -818,7 +826,7 @@ void RunEngine()
 		pick->DisableWriting();
 
 		//draw
-		glClearColor(color1[0], color1[1], color1[2], 1.0f);
+		glClearColor(scene->backgroundColor.r, scene->backgroundColor.g, scene->backgroundColor.b, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		scene->Draw();
