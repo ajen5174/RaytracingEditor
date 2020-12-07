@@ -32,6 +32,7 @@ namespace WPFSceneEditor
 		private void Render_Click(object sender, RoutedEventArgs e)
 		{
 			//process nonsense
+			if (Engine.outputFilePath.Length < 1) return;
 			Process p = new Process();
 			p.StartInfo.FileName = "..\\..\\..\\..\\..\\\\Raytracer\\x64\\Release\\Raytracer.exe";
 

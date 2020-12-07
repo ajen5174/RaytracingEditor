@@ -148,8 +148,8 @@ namespace WPFSceneEditor
 
 		private void PrintDebugMessage(string message)
 		{
-			Trace.WriteLine(message, "ENGINE_DEBUG");
-			DebugOutput.Text += ("ENGINE_DEBUG: " + message + "\n");
+			Trace.WriteLine(message, "ENGINE_MESSAGE");
+			DebugOutput.Text += ("ENGINE_MESSAGE: " + message + "\n");
 			DebugScrollViewer.ScrollToEnd();
 		}
 

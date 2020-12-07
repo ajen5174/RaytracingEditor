@@ -46,7 +46,7 @@
 			<RowDefinition Name="SceneRowDefinition" Height="6*"/>
 			<RowDefinition Height="2*"/>
 		</Grid.RowDefinitions>
-		<Menu Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" MaxHeight="40" VerticalAlignment="Top">
+		<Menu Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" MaxHeight="40" VerticalAlignment="Top" FontSize="16px">
 			<MenuItem Header="_File">
 				<MenuItem Header="_New" InputGestureText="Ctrl+N" Command="New" />
 				<MenuItem Header="_Open" InputGestureText="Ctrl+O" Command="Open"/>

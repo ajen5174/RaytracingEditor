@@ -28,8 +28,9 @@
 				<RowDefinition/>
 			</Grid.RowDefinitions>
 			<TextBox HorizontalAlignment="Left" VerticalAlignment="Center"
-				 Width="200" Height="20"
-				 Name="OutputPathBox" Margin="10 0"></TextBox>
+				 MinWidth="300" Height="20"
+				 Name="OutputPathBox" Margin="10 0"
+					 Grid.ColumnSpan="2"></TextBox>
 			<Button Grid.Row="1" Click="OutputFile_Click"> Select file</Button>
 		</Grid>
 
@@ -39,7 +40,7 @@
 
 		<TextBox Grid.Row="1" Grid.Column="1"
 				 HorizontalAlignment="Left" VerticalAlignment="Center"
-				 Width="200" Height="20"
+				 MinWidth="300" Height="20"
 				 Name="SamplesPerPixelBox" Margin="10 0">10</TextBox>
 
 		<Label Grid.Row="2" HorizontalAlignment="Right" 
@@ -47,7 +48,7 @@
 
 		<TextBox Grid.Row="2" Grid.Column="1"
 				 HorizontalAlignment="Left" VerticalAlignment="Center"
-				 Width="200" Height="20"
+				 MinWidth="300" Height="20"
 				 Name="RecursionDepthBox" Margin="10 0">50</TextBox>
 
 		<Label Grid.Row="3" HorizontalAlignment="Right" 
@@ -55,7 +56,7 @@
 
 		<TextBox Grid.Row="3" Grid.Column="1"
 				 HorizontalAlignment="Left" VerticalAlignment="Center"
-				 Width="200" Height="20"
+				 MinWidth="300" Height="20"
 				 Name="OutputImageWidthBox" Margin="10 0"></TextBox>
 
 		<Label Grid.Row="4" HorizontalAlignment="Right" 
@@ -63,7 +64,7 @@
 
 		<TextBox Grid.Row="4" Grid.Column="1"
 				 HorizontalAlignment="Left" VerticalAlignment="Center"
-				 Width="200" Height="20"
+				 MinWidth="300" Height="20"
 				 Name="OutputImageHeightBox" Margin="10 0"></TextBox>
 
 		<Button Grid.Column="1" Grid.Row="5" Click="Render_Click">Render</Button>
