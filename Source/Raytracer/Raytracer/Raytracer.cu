@@ -99,7 +99,7 @@ __device__ vec3 AlternateGetColor(Entity** list, int numEntities, Light** lights
                     //if we cast a ray, and hit nothing until the light, then the light affects this material
                         //so we multiply the attenuation by the light color instead of the background color
 
-                    if (!HitWorld(list, numEntities, distance, shadowRay, shadowInfo)) //super unsure why I need to do the -1.0f
+                    if(!HitWorld(list, numEntities, distance, shadowRay, shadowInfo))
                     {
                         float tempDot = lights[i]->lightType == Light::LightType::POINT ? Dot(Normalize(pointToLight), Normalize(info.normal)) : Dot(Normalize(-lights[i]->direction), Normalize(info.normal));
                         float lDotN = tempDot > 0.0f ? tempDot : 0.0f;
@@ -108,8 +108,11 @@ __device__ vec3 AlternateGetColor(Entity** list, int numEntities, Light** lights
                         {
                             return vec3(0.0f);
                         }
+                        //if (info.material && info.material->materialType != 'd')
+                        {
+                            lightContribution = lightContribution + ((lights[i]->color * lights[i]->intensity) * lDotN);// / (distance * distance);
 
-                        lightContribution = lightContribution + ((lights[i]->color * lights[i]->intensity) * lDotN);// / (distance * distance);
+                        }
                     }
                 }
             }
@@ -122,7 +125,11 @@ __device__ vec3 AlternateGetColor(Entity** list, int numEntities, Light** lights
             
             if (hitOnce)
             {
-                if (backgroundColor.Magnitude() - currentAttenuation.Magnitude() > -0.2f && info.material->materialType == 'm')
+                if (info.material->materialType == 'd')
+                {
+                    return currentAttenuation * backgroundColor;
+                }
+                else if (backgroundColor.Magnitude() - currentAttenuation.Magnitude() > -0.2f && info.material->materialType == 'm')
                 {
                     return (lightContribution * currentAttenuation * (backgroundColor));
                 }
