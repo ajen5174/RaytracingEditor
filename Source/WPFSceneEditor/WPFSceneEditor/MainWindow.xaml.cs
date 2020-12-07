@@ -114,7 +114,7 @@ namespace WPFSceneEditor
 				newHeight = (int)Math.Ceiling(EngineContainer.ActualHeight);
 				newWidth = (int)((float)Math.Ceiling(EngineContainer.ActualHeight) * EngineAspectRatio);
 			}
-			
+			//SceneRowDefinition.Height = new GridLength(EngineContainer.ActualHeight); //doesn't work right
 			Engine.ResizeWindow(newWidth, newHeight);
 			Engine.SetWindowPos(SceneHandle, IntPtr.Zero, (int)EngineTopLeft.X, (int)EngineTopLeft.Y, newWidth, newHeight, 0x0040);
 			Engine.SetParent(SceneHandle, EditorHandle);
