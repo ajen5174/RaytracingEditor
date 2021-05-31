@@ -1,0 +1,63 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30517.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Raytracer", "..\Source\Raytracer\Raytracer\Raytracer.vcxproj", "{996A75AD-AD00-4664-8AE8-45EF1454E9E6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPFSceneEditor", "..\Source\WPFSceneEditor\WPFSceneEditor\WPFSceneEditor.csproj", "{BFC43F74-6124-4744-A64C-B95196F26A37}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6CEF3C78-4135-4734-8E43-7B8A77A4AC3B} = {6CEF3C78-4135-4734-8E43-7B8A77A4AC3B}
+		{996A75AD-AD00-4664-8AE8-45EF1454E9E6} = {996A75AD-AD00-4664-8AE8-45EF1454E9E6}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SceneEngine", "..\Source\SceneEngine\SceneEngine\SceneEngine.vcxproj", "{6CEF3C78-4135-4734-8E43-7B8A77A4AC3B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{996A75AD-AD00-4664-8AE8-45EF1454E9E6}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{996A75AD-AD00-4664-8AE8-45EF1454E9E6}.Debug|x64.ActiveCfg = Debug|x64
+		{996A75AD-AD00-4664-8AE8-45EF1454E9E6}.Debug|x64.Build.0 = Debug|x64
+		{996A75AD-AD00-4664-8AE8-45EF1454E9E6}.Debug|x86.ActiveCfg = Debug|x64
+		{996A75AD-AD00-4664-8AE8-45EF1454E9E6}.Release|Any CPU.ActiveCfg = Release|x64
+		{996A75AD-AD00-4664-8AE8-45EF1454E9E6}.Release|x64.ActiveCfg = Release|x64
+		{996A75AD-AD00-4664-8AE8-45EF1454E9E6}.Release|x64.Build.0 = Release|x64
+		{996A75AD-AD00-4664-8AE8-45EF1454E9E6}.Release|x86.ActiveCfg = Release|x64
+		{BFC43F74-6124-4744-A64C-B95196F26A37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFC43F74-6124-4744-A64C-B95196F26A37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFC43F74-6124-4744-A64C-B95196F26A37}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BFC43F74-6124-4744-A64C-B95196F26A37}.Debug|x64.Build.0 = Debug|Any CPU
+		{BFC43F74-6124-4744-A64C-B95196F26A37}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BFC43F74-6124-4744-A64C-B95196F26A37}.Debug|x86.Build.0 = Debug|Any CPU
+		{BFC43F74-6124-4744-A64C-B95196F26A37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFC43F74-6124-4744-A64C-B95196F26A37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFC43F74-6124-4744-A64C-B95196F26A37}.Release|x64.ActiveCfg = Release|Any CPU
+		{BFC43F74-6124-4744-A64C-B95196F26A37}.Release|x64.Build.0 = Release|Any CPU
+		{BFC43F74-6124-4744-A64C-B95196F26A37}.Release|x86.ActiveCfg = Release|Any CPU
+		{BFC43F74-6124-4744-A64C-B95196F26A37}.Release|x86.Build.0 = Release|Any CPU
+		{6CEF3C78-4135-4734-8E43-7B8A77A4AC3B}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{6CEF3C78-4135-4734-8E43-7B8A77A4AC3B}.Debug|x64.ActiveCfg = Debug|x64
+		{6CEF3C78-4135-4734-8E43-7B8A77A4AC3B}.Debug|x64.Build.0 = Debug|x64
+		{6CEF3C78-4135-4734-8E43-7B8A77A4AC3B}.Debug|x86.ActiveCfg = Debug|Win32
+		{6CEF3C78-4135-4734-8E43-7B8A77A4AC3B}.Debug|x86.Build.0 = Debug|Win32
+		{6CEF3C78-4135-4734-8E43-7B8A77A4AC3B}.Release|Any CPU.ActiveCfg = Release|Win32
+		{6CEF3C78-4135-4734-8E43-7B8A77A4AC3B}.Release|x64.ActiveCfg = Release|x64
+		{6CEF3C78-4135-4734-8E43-7B8A77A4AC3B}.Release|x64.Build.0 = Release|x64
+		{6CEF3C78-4135-4734-8E43-7B8A77A4AC3B}.Release|x86.ActiveCfg = Release|Win32
+		{6CEF3C78-4135-4734-8E43-7B8A77A4AC3B}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0B65D169-777F-4C62-A35C-0EAC6FE34355}
+	EndGlobalSection
+EndGlobal

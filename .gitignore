@@ -348,3 +348,10 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+
+#Don't ignore meshes that are used for testing
+!Source/Content/Meshes/*.obj
+
+#Don't ignore meshes that the application is dependent on
+!Source/SceneEngine/external/meshes/*.obj

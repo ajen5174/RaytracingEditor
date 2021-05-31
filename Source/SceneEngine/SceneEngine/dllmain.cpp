@@ -22,6 +22,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     return TRUE;
 }
 
+//This main should only be called if we are testing manually by building to an exe. Not used in the final build
 int main(int argc, char** argv)
 {
     InitializeWindow();

@@ -40,7 +40,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -78,9 +78,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)..\..\WPFSceneEditor\WPFSceneEditor\bin\$(Configuration)\netcoreapp3.1</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)..\..\WPFSceneEditor\WPFSceneEditor\bin\$(Configuration)\netcoreapp3.1</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -130,15 +132,19 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)external\glad\include;$(SolutionDir)external\SDL2-2.0.10\include;$(SolutionDir)external\glm;$(SolutionDir)external;$(SolutionDir)external\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\external\glad\include;$(ProjectDir)..\external\SDL2-2.0.10\include;$(ProjectDir)..\external\glm;$(ProjectDir)..\external;$(ProjectDir)..\external\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>sdl2.lib;sdl2main.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)external\SDL2-2.0.10\lib\$(PlatformTarget);$(SolutionDir)external\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\external\SDL2-2.0.10\lib\$(PlatformTarget);$(ProjectDir)..\external\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy "$(ProjectDir)..\external\assimp\lib\assimp-vc142-mtd.dll" "$(ProjectDir)..\..\WPFSceneEditor\WPFSceneEditor\bin\$(Configuration)\netcoreapp3.1"
+copy "$(ProjectDir)..\external\SDL2-2.0.10\lib\x64\SDL2.dll" "$(ProjectDir)..\..\WPFSceneEditor\WPFSceneEditor\bin\$(Configuration)\netcoreapp3.1"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -150,7 +156,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)external\glad\include;$(SolutionDir)external\SDL2-2.0.10\include;$(SolutionDir)external\glm;$(SolutionDir)external;$(SolutionDir)external\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\external\glad\include;$(ProjectDir)..\external\SDL2-2.0.10\include;$(ProjectDir)..\external\glm;$(ProjectDir)..\external;$(ProjectDir)..\external\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -159,8 +165,16 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>sdl2.lib;sdl2main.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)external\SDL2-2.0.10\lib\$(PlatformTarget);$(SolutionDir)external\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\external\SDL2-2.0.10\lib\$(PlatformTarget);$(ProjectDir)..\external\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
+    <PostBuildEvent>
+      <Command>copy "$(ProjectDir)..\external\assimp\lib\assimp-vc142-mtd.dll" "$(ProjectDir)..\..\WPFSceneEditor\WPFSceneEditor\bin\$(Configuration)\netcoreapp3.1" /y
+copy "$(ProjectDir)..\external\SDL2-2.0.10\lib\x64\SDL2.dll" "$(ProjectDir)..\..\WPFSceneEditor\WPFSceneEditor\bin\$(Configuration)\netcoreapp3.1" /y
+xcopy "$(ProjectDir)..\external\meshes\sphere.obj" "$(ProjectDir)..\..\WPFSceneEditor\WPFSceneEditor\bin\$(Configuration)\netcoreapp3.1\content\" /e /y
+xcopy "$(ProjectDir)..\external\scenes\default_scene.txt" "$(ProjectDir)..\..\WPFSceneEditor\WPFSceneEditor\bin\$(Configuration)\netcoreapp3.1\content\" /e /y
+xcopy "$(ProjectDir)Shaders" "$(ProjectDir)..\..\WPFSceneEditor\WPFSceneEditor\bin\$(Configuration)\netcoreapp3.1\content\shaders\" /y /e /s</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Components\Component.h" />

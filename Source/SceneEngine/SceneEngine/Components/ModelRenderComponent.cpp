@@ -14,14 +14,14 @@ ModelRenderComponent::ModelRenderComponent(StringId& name, Entity* owner)
 	shader = new Shader(programName);
 	//read file nonsense?
 #ifdef _WINDLL
-	std::string vertexPath("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\matrix_vertex.vert");
+	std::string vertexPath("content\\shaders\\matrix_vertex.vert");
 #else
 	std::string vertexPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\matrix_vertex.vert");
 #endif
 
 	char* fragSource;
 #ifdef _WINDLL
-	std::string fragPath("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\matrix_fragment.frag");
+	std::string fragPath("content\\shaders\\matrix_fragment.frag");
 #else
 	std::string fragPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\matrix_fragment.frag");
 #endif
@@ -34,14 +34,14 @@ ModelRenderComponent::ModelRenderComponent(StringId& name, Entity* owner)
 
 	char* pickVertexSource;
 #ifdef _WINDLL
-	std::string pickVertexPath("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\picking.vert");
+	std::string pickVertexPath("content\\shaders\\picking.vert");
 #else
 	std::string pickVertexPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\picking.vert");
 #endif
 
 	char* pickFragSource;
 #ifdef _WINDLL
-	std::string pickFragPath("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\picking.frag");
+	std::string pickFragPath("content\\shaders\\picking.frag");
 #else
 	std::string pickFragPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\picking.frag");
 #endif
@@ -58,14 +58,14 @@ ModelRenderComponent::ModelRenderComponent(StringId& name, Entity* owner)
 
 	char* outlineVertexSource;
 #ifdef _WINDLL
-	std::string outlineVertexPath("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\outline.vert");
+	std::string outlineVertexPath("content\\shaders\\outline.vert");
 #else
 	std::string outlineVertexPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\outline.vert");
 #endif
 
 	char* outlineFragSource;
 #ifdef _WINDLL
-	std::string outlineFragPath("..\\..\\..\\..\\..\\SceneEngine\\SceneEngine\\Shaders\\outline.frag");
+	std::string outlineFragPath("content\\shaders\\outline.frag");
 #else
 	std::string outlineFragPath("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\SceneEngine\\SceneEngine\\Shaders\\outline.frag");
 #endif

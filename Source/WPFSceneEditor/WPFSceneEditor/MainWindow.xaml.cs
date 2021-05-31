@@ -21,6 +21,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using WPFSceneEditor.Controls;
+using System.IO;
 
 namespace WPFSceneEditor
 {
@@ -108,6 +109,8 @@ namespace WPFSceneEditor
 			//Trace.WriteLine("Scene Handle: " + SceneHandle.ToString());
 			//Trace.WriteLine(EngineContainer.ActualHeight + " " + EngineContainer.ActualWidth);
 			Point EngineTopLeft = EngineContainer.TransformToAncestor(this).Transform(new Point(0, 0));
+
+
 			int newWidth = (int)Math.Ceiling(EngineContainer.ActualWidth);
 			int newHeight = (int)((float)Math.Ceiling(EngineContainer.ActualWidth) / EngineAspectRatio);
 			if(newHeight > EngineContainer.ActualHeight)

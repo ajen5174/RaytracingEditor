@@ -53,7 +53,7 @@ bool Model::ReloadMesh(std::string path)
     }
     else if (modelType == ModelType::SPHERE)
     {
-        std::string spherePath = "../../../../../Content/Meshes/sphere.obj";
+        std::string spherePath = "content\\sphere.obj";
 
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(spherePath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
@@ -115,7 +115,7 @@ bool Model::Load(const rapidjson::Value& value)
     }
     else if (modelType == ModelType::SPHERE)
     {
-        std::string spherePath = "../../../../../Content/Meshes/sphere.obj";
+        std::string spherePath = "content\\sphere.obj";
         
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(spherePath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);

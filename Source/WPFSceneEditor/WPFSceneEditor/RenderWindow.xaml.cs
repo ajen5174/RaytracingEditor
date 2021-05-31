@@ -34,7 +34,8 @@ namespace WPFSceneEditor
 			//process nonsense
 			if (Engine.outputFilePath.Length < 1) return;
 			Process p = new Process();
-			p.StartInfo.FileName = "..\\..\\..\\..\\..\\\\Raytracer\\x64\\Release\\Raytracer.exe";
+			//p.StartInfo.FileName = "..\\..\\..\\..\\..\\\\Raytracer\\x64\\Release\\Raytracer.exe";
+			p.StartInfo.FileName = "Raytracer.exe";
 
 			int samplesPerPixel;
 			if (!int.TryParse(SamplesPerPixelBox.Text, out samplesPerPixel) || samplesPerPixel < 1) return;
