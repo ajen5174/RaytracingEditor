@@ -25,8 +25,11 @@ int main(int argc, char** argv)
     else 
     {
         //for debugging
-        rt = new Raytracer("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Content\\Scenes\\new_sphere_testing.txt", 
-                                  "C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Content\\Outputs\\output.png");
+        //rt = new Raytracer("C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Content\\Scenes\\new_sphere_testing.txt", 
+        //                          "C:\\Users\\Student\\OneDrive - Neumont College of Computer Science\\Q9 FALL 2020\\Capstone Project\\CapstoneWork\\Source\\Content\\Outputs\\output.png");
+
+        rt = new Raytracer("D:\\RaytracerTesting\\RaytracingEditor\\Source\\Content\\Desktop Scenes\\testing_spheres.txt",
+                                      "D:\\RaytracerTesting\\RaytracingEditor\\Source\\Content\\Desktop Outputs\\output.png");
     }
 
     

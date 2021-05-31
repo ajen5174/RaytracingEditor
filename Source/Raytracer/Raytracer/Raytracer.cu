@@ -417,8 +417,8 @@ Raytracer::Raytracer(std::string sceneToLoad, std::string renderPath)
     LoadScene(sceneToLoad);
     samplesPerPixel = 100;
     maxRecursion = 50;
-    width = 266.6666666f;// 533.333333f;
-    height = 150.0f;// 300.0f;
+    width = 133.33333f;//266.6666666f;// 533.333333f;
+    height = 75.0f;//150.0f;// 300.0f;
 }
 
 bool Raytracer::StartRender()
