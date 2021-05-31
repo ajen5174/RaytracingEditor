@@ -355,3 +355,4 @@ MigrationBackup/
 
 #Don't ignore meshes that the application is dependent on
 !Source/SceneEngine/external/meshes/*.obj
+
