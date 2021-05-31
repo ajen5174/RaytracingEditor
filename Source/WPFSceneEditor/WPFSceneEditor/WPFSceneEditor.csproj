@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy $(OutDir) $(SolutionDir)x64\ /y /e /s" />
+    <Exec Command="xcopy &quot;$(OutDir)&quot; &quot;$(SolutionDir)x64\&quot; /y /e /s" />
   </Target>
 
 </Project>
