@@ -18,6 +18,7 @@
 
 #include "Core/Json.h"
 #include "Light.h"
+#include <time.h>
 
 static SDL_Window* engineWindow = nullptr;
 static SDL_GLContext engineContext = nullptr;
