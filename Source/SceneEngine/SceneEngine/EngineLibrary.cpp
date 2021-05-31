@@ -5,7 +5,6 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <chrono>
 #include "Core/Entity.h"
 #include "Renderer/Shader.h"
 #include "Renderer/VertexArray.h"
